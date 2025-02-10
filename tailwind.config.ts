@@ -55,7 +55,22 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+		  keyframes: {
+			'slide-top-sm': {
+			  from: { transform: 'translateY(0)' },
+			  to: { transform: 'translateY(-4px)' },
+			},
+			'slide-bottom-sm': {
+			  from: { transform: 'translateY(-4px)' },
+			  to: {transform: 'translateY(0)' }
+			},
+			
+		  },
+		  animation: {
+			'slide-top-sm': 'slide-top-sm 0.2s ease-out both',
+			'slide-bottom-sm': 'slide-bottom-sm 0.2s ease-out both',
+		  },
   	}
   },
   plugins: [require("tailwindcss-animate")],

@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -10,11 +14,15 @@ export default function Header() {
         <Link href="/">
           <h1 className="cursor-pointer text-3xl text-white">청약플래닛</h1>
         </Link>
-        <div>
+        <div className="flex gap-5">
           {routes.map((route) => (
-            <Button key={route}>
-              <Link href={`/${route === 'home' ? '' : route}`}>{route}</Link>
-            </Button>
+            <Link
+              className="hover:animate-slide-top-sm animate-slide-bottom-sm cursor-pointer text-lg text-white"
+              href={`/${route === 'home' ? '' : route}`}
+              key={route}
+            >
+              {route}
+            </Link>
           ))}
         </div>
       </div>

@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className={`${BMJUAFont.className} antialiased`}>
         <ReactQueryProvider>
           <Header />
-          <main className="mx-auto mt-6 max-w-screen-xl">{children}</main>
+          <main className="mx-auto mt-12 max-w-screen-xl">{children}</main>
           <Footer />
         </ReactQueryProvider>
       </body>
