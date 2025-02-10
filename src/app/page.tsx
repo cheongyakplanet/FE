@@ -1,3 +1,17 @@
+import Link from 'next/link';
+
+import { Button } from '@/components/ui/button';
+
 export default function Home() {
-  return <div>home</div>;
+  const routes = ['signup', 'mypage', 'community', 'subscription'];
+  return (
+    <div>
+      home
+      {routes.map((route) => (
+        <Button key={route}>
+          <Link href={`/${route}`}>{route}</Link>
+        </Button>
+      ))}
+    </div>
+  );
 }

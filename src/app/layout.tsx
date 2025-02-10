@@ -1,19 +1,14 @@
-import Providers from './Providers';
-
 import './globals.css';
 
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
+import Footer from '@/components/layout/footer';
+import Header from '@/components/layout/header';
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+import ReactQueryProvider from '@/providers/react-query-provider';
+
+const BMJUAFont = localFont({ src: '../assets/fonts/BMJUA.otf' });
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -26,9 +21,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>{children}</Providers>
+    <html lang="ko">
+      <body className={`${BMJUAFont.className} antialiased`}>
+        <ReactQueryProvider>
+          <Header />
+          <main className="mx-auto mt-6 max-w-screen-xl">{children}</main>
+          <Footer />
+        </ReactQueryProvider>
       </body>
     </html>
   );
