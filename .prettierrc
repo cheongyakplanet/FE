@@ -8,9 +8,24 @@
   "arrowParens": "always",
   "jsxSingleQuote": false,
   "orderedImports": true,
-  "importOrder": ["^(\\.|\\.\\.)/(.(?!.(css|scss)))*$", "\\.(css|scss)$", "^react", "<THIRD_PARTY_MODULES>", "@/.*$"],
+  "importOrder": [
+    "^(\\.|\\.\\.)/(.(?!.(css|scss)))*$",
+    "\\.(css|scss)$",
+    "^react",
+    "^next",
+    "<THIRD_PARTY_MODULES>",
+    "@/app/.*$",
+    "@/assets/.*$",
+    "@/components/.*$",
+    "@/constant/.*$",
+    "@/lib/.*$",
+    "@/providers/.*$",
+    "@/services/.*$",
+    "@/stores/.*$"
+  ],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
   "importOrderCaseInsensitive": true,
-  "plugins": ["@trivago/prettier-plugin-sort-imports"]
+  "tailwindPreserveWhitespace": false,
+  "plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"]
 }
