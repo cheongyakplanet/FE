@@ -1,3 +1,5 @@
-export default function mypage() {
-  return <div>mypage page</div>;
+import MyMenu from './components/my-menu';
+
+export default function Mypage() {
+  return <MyMenu size="lg" />;
 }
