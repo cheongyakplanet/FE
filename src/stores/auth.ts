@@ -13,14 +13,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (email, password) => {
     try {
       const response = await axiosInstance.post("/member/login", { email, password });
-      if(response.data.status == 'success') {
+      if(response.data.status == 'fail') throw new Error("Failed Login");
         const accessToken = response.data.data.accessToken;
         localStorage.setItem("token", accessToken);
-        set({ token: accessToken });
-      } else {
-        throw new Error;
-      }
-      
+        set({ token: accessToken });     
     } catch (error) {
       console.error("Failed Login", error);
       throw error;
