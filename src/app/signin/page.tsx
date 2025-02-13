@@ -69,7 +69,7 @@ export default function SignIn() {
             <FormControl>
               <Input placeholder="비밀번호를 입력해 주세요." {...field} />
             </FormControl>
-            <FormDescription>비밀번호는 대소문자와 특수문자를 포함하여 8글자 이상입니다.</FormDescription>
+            <FormDescription>비밀번호는 특수문자와 숫자를 포함하여 총 8글자 이상입니다.</FormDescription>
             <FormMessage />
           </FormItem>
         )}></FormField>
