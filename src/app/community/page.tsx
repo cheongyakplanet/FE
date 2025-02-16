@@ -1,17 +1,18 @@
 "use client";
 
 import { useAllPostStore } from "@/stores/community";
-
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 export default function community() {
   const {contents, totalPages, allPost} = useAllPostStore();
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-  allPost();
-  }, [contents])
+  allPost(page - 1);
+  }, [page])
 
   return (
     <div>
@@ -46,6 +47,33 @@ export default function community() {
       ))}
       </TableBody>
     </Table>
+
+    <Pagination>
+      <PaginationContent>
+
+        <PaginationItem>
+          <PaginationPrevious 
+            onClick={() => { if(page > 1) setPage(page - 1) }}>
+          </PaginationPrevious>
+        </PaginationItem>
+
+        {[...Array(totalPages)].map((_, index) => (
+          <PaginationItem key={index}>
+            <PaginationLink onClick={() => setPage(index+1)} isActive = {index+1 === page}>{index+1}</PaginationLink>
+          </PaginationItem>
+        ))}
+
+        {/* <PaginationItem>
+          <PaginationEllipsis />
+        </PaginationItem> */}
+
+        <PaginationItem>
+          <PaginationNext onClick={() => { if(page < totalPages) setPage(page + 1)} }></PaginationNext>
+        </PaginationItem>
+
+      </PaginationContent>
+    </Pagination>
+
     </div>
   )
 }
