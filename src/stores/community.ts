@@ -12,7 +12,7 @@ interface Content {
 interface AllPostState {
   contents: Content[],
   totalPages: number,
-  allPost: (page: number) => Promise<void>
+  allPost: (sort: string, page: number) => Promise<void>
 
 }
 
@@ -20,10 +20,11 @@ export const useAllPostStore = create<AllPostState>((set, get) => ({
   contents: [],
   totalPages: 0,
 
-  allPost: async (page) => {
+  allPost: async (sort, page) => {
     try {
       const response = await axiosInstance.get("/community/posts", {
         params: {
+          sort: sort,
           page: page
         }
       });
