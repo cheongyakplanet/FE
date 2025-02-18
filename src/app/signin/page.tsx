@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from "next/image";
-import { useAuthStore } from '@/stores/auth';
+import { useSigninStore } from '@/stores/auth';
 import kakaoLogo from '@/assets/images/kakaoLogin.png';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,13 +17,14 @@ import { signinInfo } from '@/types/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+
 const formSchema = z.object({
   userEmail: z.string(),
   userPassword: z.string()
 })
 
 export default function SignIn() {
-  const authStore = useAuthStore();
+  const signinStore = useSigninStore();
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -37,7 +38,7 @@ export default function SignIn() {
 
   const onSubmit = async (data: signinInfo) => { 
     try {
-      await authStore.login(data.userEmail, data.userPassword);
+      await signinStore.login(data.userEmail, data.userPassword);
       console.log(data);
       router.push('/');
     } catch(error){
