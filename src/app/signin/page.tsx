@@ -94,7 +94,7 @@ export default function SignIn() {
               </div>
               {errorMessage && <div className="flex justify-center">{errorMessage}</div>}
               <div className="flex justify-center">
-                <Image src={kakaoLogo} alt="카카오로고" />
+                <Image src={kakaoLogo} alt="카카오 로그인" />
               </div>
             </form>
           </Form>
