@@ -49,8 +49,8 @@ export default function SignIn() {
     <div className='flex justify-center items-center'>
     <Card className="w-1/2">
       <CardHeader>
-        <CardTitle>로그인</CardTitle>
-        <CardDescription>로그인 정보를 입력해 주세요.</CardDescription>
+        <CardTitle className='text-center'>로그인</CardTitle>
+        <CardDescription className='text-center'>로그인 정보를 입력해 주세요.</CardDescription>
       </CardHeader>
       <CardContent>
           <Form {...form}>
