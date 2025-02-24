@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import {
   Pagination,
   PaginationContent,
@@ -18,6 +20,7 @@ import { useAllPostStore } from '@/stores/community';
 export default function PostTable({ sort, searchWord }: { sort: string; searchWord: string }) {
   const { contents, totalPages, allPost } = useAllPostStore();
   const [page, setPage] = useState(1);
+  const router = useRouter();
 
   useEffect(() => {
     allPost(sort, page - 1);
@@ -30,6 +33,10 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
   const filterContents = contents.filter(
     (content) => content.title.includes(searchWord) || content.content.includes(searchWord),
   );
+
+  const goDetailPage = () => {
+    router.push('/community/detail');
+  };
 
   return (
     <div>
@@ -47,7 +54,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
 
         <TableBody>
           {filterContents.map((content, index) => (
-            <TableRow key={index}>
+            <TableRow key={index} onClick={goDetailPage}>
               <TableCell>{content.id}</TableCell>
               <TableCell>{content.title}</TableCell>
               <TableCell>{content.content}</TableCell>
