@@ -1,10 +1,11 @@
+import Comment from '../components/comment';
+
 import Link from 'next/link';
 
 import { ArrowLeft, Eye, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
 
 export default function detail() {
   return (
@@ -45,8 +46,7 @@ export default function detail() {
         <CardFooter>카드 footer</CardFooter>
       </Card>
       <div className="space-y-2">
-        <Textarea placeholder="댓글을 작성해 주세요." />
-        <Button className="w-full">댓글 달기</Button>
+        <Comment />
       </div>
     </div>
   );
