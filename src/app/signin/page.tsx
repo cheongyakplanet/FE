@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { useAuthStore } from '@/stores/auth';
+import { useSigninStore } from '@/stores/auth';
 
 const formSchema = z.object({
   userEmail: z.string(),
@@ -26,7 +26,7 @@ const formSchema = z.object({
 });
 
 export default function SignIn() {
-  const authStore = useAuthStore();
+  const signinStore = useSigninStore();
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -40,7 +40,7 @@ export default function SignIn() {
 
   const onSubmit = async (data: signinInfo) => {
     try {
-      await authStore.login(data.userEmail, data.userPassword);
+      await signinStore.login(data.userEmail, data.userPassword);
       console.log(data);
       router.push('/');
     } catch (error) {
