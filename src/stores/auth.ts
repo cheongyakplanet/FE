@@ -44,9 +44,9 @@ export const useSignupStore = create<signupState>((set) => ({
   password: '',
   name: '',
 
-  signup: async (email, password, name) => {
+  signup: async (email, password, username) => {
     try {
-      const response = await axiosInstance.post('/member/signup', { email, password, name });
+      const response = await axiosInstance.post('/member/signup', { email, password, username });
       if (response.data.status == 'fail') throw new Error('Failed Signup');
       const signupInfo = response.data.data;
       set({ email: signupInfo.email, password: signupInfo.password, name: signupInfo.username });

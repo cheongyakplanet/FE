@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { signupInfo } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,6 +18,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input';
 
 import { useSignupStore } from '@/stores/auth';
+import { useSigninStore } from '@/stores/auth';
 
 const formSchema = z.object({
   email: z.string().email({ message: '이메일이 올바르지 않아요.' }),
@@ -32,7 +34,9 @@ const formSchema = z.object({
 
 export default function SignUp() {
   const signupStore = useSignupStore();
+  const signinStore = useSigninStore();
   const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -46,6 +50,8 @@ export default function SignUp() {
   const onSubmit = async (data: signupInfo) => {
     try {
       await signupStore.signup(data.email, data.password, data.name);
+      await signinStore.login(data.email, data.password);
+      router.push('/');
     } catch (error) {
       setErrorMessage('회원가입 중 오류가 발생했습니다.');
     }
