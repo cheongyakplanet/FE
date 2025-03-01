@@ -1,25 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { signupInfo } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 import kakaoSignup from '@/assets/images/kakaoSignup.png';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
 import { usePostLogin } from '@/services/member/hooks/usePostLogin';
-
-import { useSignupStore } from '@/stores/auth-store';
+import { usePostSignup } from '@/services/member/hooks/usePostSignup';
+import { MemberSignupDto } from '@/services/member/types';
 
 const formSchema = z.object({
   email: z.string().email({ message: '이메일이 올바르지 않아요.' }),
@@ -30,33 +29,42 @@ const formSchema = z.object({
     .regex(/(?=.*\d)/, { message: '비밀번호에 숫자가 최소 1개 포함되어야 합니다.' })
     .regex(/(?=.*[@$!%*?&])/, { message: '비밀번호에 특수문자(@,$,!,%,*,?,&)가 최소 1개 포함되어야 합니다.' })
     .regex(/^[A-Za-z\d@$!%*?&]+$/, { message: '비밀번호에 허용되지 않은 문자가 포함되어 있습니다.' }),
-  name: z.string(),
+  username: z.string(),
 });
 
 export default function SignUp() {
-  const signupStore = useSignupStore();
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
   const { mutate: postLogin, isSuccess: isLoginSuccess } = usePostLogin();
+  const { mutate: postSignup, isSuccess: isSignupSuccess } = usePostSignup();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
       password: '',
-      name: '',
+      username: '',
     },
   });
 
-  const onSubmit = async (data: signupInfo) => {
+  const onSubmit = async (data: MemberSignupDto) => {
     try {
-      await signupStore.signup(data.email, data.password, data.name);
-      postLogin({ email: data.email, password: data.password });
-      router.push('/');
+      postSignup(data);
     } catch (error) {
       setErrorMessage('회원가입 중 오류가 발생했습니다.');
     }
   };
+
+  useEffect(() => {
+    if (!isSignupSuccess) return;
+
+    postLogin({ email: form.getValues('email'), password: form.getValues('password') });
+  }, [isSignupSuccess]);
+
+  useEffect(() => {
+    if (!isLoginSuccess) return;
+    router.push('/');
+  }, [isLoginSuccess]);
 
   return (
     <div className="flex items-center justify-center">
@@ -70,7 +78,7 @@ export default function SignUp() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="name"
+                name="username"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>이름</FormLabel>
