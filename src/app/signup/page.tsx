@@ -17,8 +17,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { useSignupStore } from '@/stores/auth';
-import { useSigninStore } from '@/stores/auth';
+import { usePostLogin } from '@/services/member/hooks/usePostLogin';
+
+import { useSignupStore } from '@/stores/auth-store';
 
 const formSchema = z.object({
   email: z.string().email({ message: '이메일이 올바르지 않아요.' }),
@@ -34,9 +35,9 @@ const formSchema = z.object({
 
 export default function SignUp() {
   const signupStore = useSignupStore();
-  const signinStore = useSigninStore();
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
+  const { mutate: postLogin, isSuccess: isLoginSuccess } = usePostLogin();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -50,7 +51,7 @@ export default function SignUp() {
   const onSubmit = async (data: signupInfo) => {
     try {
       await signupStore.signup(data.email, data.password, data.name);
-      await signinStore.login(data.email, data.password);
+      postLogin({ email: data.email, password: data.password });
       router.push('/');
     } catch (error) {
       setErrorMessage('회원가입 중 오류가 발생했습니다.');

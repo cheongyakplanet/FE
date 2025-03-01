@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { signinInfo } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
@@ -18,35 +17,40 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { useSigninStore } from '@/stores/auth';
+import { usePostLogin } from '@/services/member/hooks/usePostLogin';
+import { MemberLoginDto } from '@/services/member/types';
 
 const formSchema = z.object({
-  userEmail: z.string(),
-  userPassword: z.string(),
+  email: z.string(),
+  password: z.string(),
 });
 
 export default function SignIn() {
-  const signinStore = useSigninStore();
+  const { mutate: postLogin, isSuccess: isLoginSuccess } = usePostLogin();
+
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('');
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      userEmail: '',
-      userPassword: '',
+      email: '',
+      password: '',
     },
   });
 
-  const onSubmit = async (data: signinInfo) => {
+  const onSubmit = (data: MemberLoginDto) => {
     try {
-      await signinStore.login(data.userEmail, data.userPassword);
-      console.log(data);
-      router.push('/');
+      postLogin({ email: data.email, password: data.password });
     } catch (error) {
       setErrorMessage('로그인 정보가 일치하지 않습니다.');
     }
   };
+
+  useEffect(() => {
+    if (!isLoginSuccess) return;
+    router.push('/');
+  }, [isLoginSuccess]);
 
   return (
     <div className="flex items-center justify-center">
@@ -60,7 +64,7 @@ export default function SignIn() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="userEmail"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>아이디</FormLabel>
@@ -74,7 +78,7 @@ export default function SignIn() {
               ></FormField>
               <FormField
                 control={form.control}
-                name="userPassword"
+                name="password"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>비밀번호</FormLabel>
