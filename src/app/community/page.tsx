@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function community() {
   const [searchWord, setSearchWord] = useState('');
+  const [sort, setSort] = useState('time');
+
   return (
     <div>
       <div className="font-bold">커뮤니티</div>
@@ -17,7 +19,7 @@ export default function community() {
       </div>
 
       <div className="flex justify-between">
-        <Tabs defaultValue="time">
+        <Tabs value={sort} onValueChange={setSort}>
           <TabsList>
             <TabsTrigger value="time">시간순</TabsTrigger>
             <TabsTrigger value="views">조회수</TabsTrigger>
@@ -31,18 +33,7 @@ export default function community() {
           onChange={(e) => setSearchWord(e.target.value)}
         />
       </div>
-
-      <Tabs defaultValue="time">
-        <TabsContent value="time">
-          <PostTable sort="times" searchWord={searchWord} />
-        </TabsContent>
-        <TabsContent value="views">
-          <PostTable sort="views" searchWord={searchWord} />
-        </TabsContent>
-        <TabsContent value="likes">
-          <PostTable sort="likes" searchWord={searchWord} />
-        </TabsContent>
-      </Tabs>
+      <PostTable sort={sort} searchWord={searchWord} />
     </div>
   );
 }

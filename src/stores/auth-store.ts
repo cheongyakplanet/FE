@@ -24,7 +24,7 @@ export const useTokenStore = create(
       updateToken: (data) => set(data),
       logout: () => {
         set(tokenInitialState);
-        window.location.href = '/login';
+        window.location.href = '/signin';
       },
     }),
     {

@@ -15,20 +15,14 @@ import {
 } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
+import { useGetPost } from '@/services/community/hooks/useGetPost';
+
 import { useAllPostStore } from '@/stores/community';
 
 export default function PostTable({ sort, searchWord }: { sort: string; searchWord: string }) {
-  const { contents, totalPages, allPost } = useAllPostStore();
+  const { contents, totalPages } = useAllPostStore();
   const [page, setPage] = useState(1);
   const router = useRouter();
-
-  useEffect(() => {
-    allPost(sort, page - 1);
-  }, [page]);
-
-  useEffect(() => {
-    allPost(sort, page - 1);
-  }, [sort]);
 
   const filterContents = contents.filter(
     (content) => content.title.includes(searchWord) || content.content.includes(searchWord),
@@ -37,6 +31,12 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
   const goDetailPage = () => {
     router.push('/community/detail');
   };
+
+  const { mutate: getPost } = useGetPost();
+
+  useEffect(() => {
+    getPost({ sort: sort, page: page - 1 });
+  }, [sort, page]);
 
   return (
     <div>
