@@ -31,11 +31,12 @@ export default function SignIn() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('');
 
+  // TODO: 운영 시 defaultValues 롤백
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: 'test@test',
+      password: '1234',
     },
   });
 
