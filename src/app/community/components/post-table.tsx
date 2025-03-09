@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-import { useGetPost } from '@/services/community/hooks/useGetPost';
+import { useGetPost, useGetPostDetail } from '@/services/community/hooks/useGetPost';
 
 import { useAllPostStore } from '@/stores/community';
 
@@ -24,15 +24,17 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
   const [page, setPage] = useState(1);
   const router = useRouter();
 
+  const { mutate: getPost } = useGetPost();
+  const { mutate: getPostDetail } = useGetPostDetail();
+
   const filterContents = contents.filter(
     (content) => content.title.includes(searchWord) || content.content.includes(searchWord),
   );
 
-  const goDetailPage = () => {
+  const goDetailPage = (id: number) => {
+    getPostDetail(id);
     router.push('/community/detail');
   };
-
-  const { mutate: getPost } = useGetPost();
 
   useEffect(() => {
     getPost({ sort: sort, page: page - 1 });
@@ -54,7 +56,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
 
         <TableBody>
           {filterContents.map((content, index) => (
-            <TableRow key={index} onClick={goDetailPage}>
+            <TableRow key={index} onClick={() => goDetailPage(content.id)}>
               <TableCell>{content.id}</TableCell>
               <TableCell>{content.title}</TableCell>
               <TableCell>{content.content}</TableCell>
