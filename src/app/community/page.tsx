@@ -21,7 +21,7 @@ export default function community() {
       <div className="flex justify-between">
         <Tabs value={sort} onValueChange={setSort}>
           <TabsList>
-            <TabsTrigger value="time">시간순</TabsTrigger>
+            <TabsTrigger value="time">최신순</TabsTrigger>
             <TabsTrigger value="views">조회수</TabsTrigger>
             <TabsTrigger value="likes">좋아요</TabsTrigger>
           </TabsList>

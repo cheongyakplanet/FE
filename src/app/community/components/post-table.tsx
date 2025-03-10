@@ -17,18 +17,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useGetPost, useGetPostDetail } from '@/services/community/hooks/useGetPost';
 
-import { useAllPostStore } from '@/stores/community';
+interface PostDto {
+  id: number;
+  title: string;
+  content: string;
+  username: string;
+  createdAt: string;
+}
 
 export default function PostTable({ sort, searchWord }: { sort: string; searchWord: string }) {
-  const { contents, totalPages } = useAllPostStore();
   const [page, setPage] = useState(1);
   const router = useRouter();
 
-  const { mutate: getPost } = useGetPost();
+  const { data: posts } = useGetPost({ sort: sort, page: page - 1 });
   const { mutate: getPostDetail } = useGetPostDetail();
 
-  const filterContents = contents.filter(
-    (content) => content.title.includes(searchWord) || content.content.includes(searchWord),
+  const filterContents = posts?.content.filter(
+    (post: PostDto) => post.title.includes(searchWord) || post.content.includes(searchWord),
   );
 
   const goDetailPage = (id: number) => {
@@ -37,8 +42,8 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
   };
 
   useEffect(() => {
-    getPost({ sort: sort, page: page - 1 });
-  }, [sort, page]);
+    setPage(1);
+  }, [sort]);
 
   return (
     <div>
@@ -55,13 +60,13 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
         </TableHeader>
 
         <TableBody>
-          {filterContents.map((content, index) => (
-            <TableRow key={index} onClick={() => goDetailPage(content.id)}>
-              <TableCell>{content.id}</TableCell>
-              <TableCell>{content.title}</TableCell>
-              <TableCell>{content.content}</TableCell>
-              <TableCell>{content.username}</TableCell>
-              <TableCell>{content.createdAt}</TableCell>
+          {filterContents?.map((post: PostDto) => (
+            <TableRow key={post.id} onClick={() => goDetailPage(post.id)}>
+              <TableCell>{post.id}</TableCell>
+              <TableCell>{post.title}</TableCell>
+              <TableCell>{post.content}</TableCell>
+              <TableCell>{post.username}</TableCell>
+              <TableCell>{post.createdAt}</TableCell>
               <TableCell>좋아요 수</TableCell>
             </TableRow>
           ))}
@@ -78,7 +83,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
             ></PaginationPrevious>
           </PaginationItem>
 
-          {[...Array(totalPages)].map((_, index) => (
+          {[...Array(posts?.totalPages)].map((_, index) => (
             <PaginationItem key={index}>
               <PaginationLink onClick={() => setPage(index + 1)} isActive={index + 1 === page}>
                 {index + 1}
@@ -93,7 +98,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
           <PaginationItem>
             <PaginationNext
               onClick={() => {
-                if (page < totalPages) setPage(page + 1);
+                if (page < posts?.totalPages) setPage(page + 1);
               }}
             ></PaginationNext>
           </PaginationItem>

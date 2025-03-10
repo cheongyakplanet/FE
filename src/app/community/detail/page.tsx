@@ -2,6 +2,8 @@
 
 import Comment from '../components/comment';
 
+import { useState } from 'react';
+
 import Link from 'next/link';
 
 import { ArrowLeft, Eye, ThumbsDown, ThumbsUp } from 'lucide-react';
@@ -9,10 +11,23 @@ import { ArrowLeft, Eye, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
+import { usePostLike } from '@/services/community/hooks/useGetPost';
+
 import { useDetailPostStore } from '@/stores/community';
 
 export default function detail() {
   const detailPostStore = useDetailPostStore();
+
+  const { mutate: postLike } = usePostLike();
+
+  const [like, setLike] = useState(detailPostStore.likes);
+  const [isLikeClicked, setIsLikeClicked] = useState(false);
+
+  const updateLike = () => {
+    setLike(like + 1);
+    setIsLikeClicked(true);
+    postLike(detailPostStore.id);
+  };
 
   return (
     <div className="space-y-10">
@@ -36,7 +51,7 @@ export default function detail() {
               {detailPostStore.username} {detailPostStore.createdAt}
             </div>
             <div className="space-x-1">
-              <Button className="bg-red-500">
+              <Button onClick={updateLike} className="bg-red-500" disabled={isLikeClicked}>
                 <ThumbsUp />
                 좋아요 {detailPostStore.likes}
               </Button>
