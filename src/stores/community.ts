@@ -1,39 +1,45 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-import api from '@/lib/api';
-
-interface Content {
+interface DetailPost {
   id: number;
+  username: string;
   title: string;
   content: string;
-  username: string;
+  views: number;
+  likes: number;
+  comments: Comment[];
   createdAt: string;
 }
 
-interface AllPostState {
-  contents: Content[];
-  totalPages: number;
-  allPost: (sort: string, page: number) => Promise<void>;
+interface Comment {
+  content: string;
+  replies: Reply[];
 }
 
-export const useAllPostStore = create<AllPostState>((set, get) => ({
-  contents: [],
-  totalPages: 0,
+interface Reply {
+  content: string;
+}
 
-  allPost: async (sort, page) => {
-    try {
-      const response = await api.get('/community/posts', {
-        params: {
-          sort: sort,
-          page: page,
-        },
-      });
-      if (JSON.stringify(get().contents) !== JSON.stringify(response.data.content))
-        set({ contents: response.data.content, totalPages: response.data.totalPages });
-      console.log('전체 커뮤니티 게시글', response.data);
-    } catch (error) {
-      console.error('Failed Get All Post: ', error);
-      throw error;
-    }
-  },
-}));
+interface DetailPostActions {
+  updateDetailPost: (data: DetailPost) => void;
+}
+
+export const useDetailPostStore = create<DetailPost & DetailPostActions>()(
+  persist(
+    (set) => ({
+      id: 0,
+      username: '',
+      title: '',
+      content: '',
+      views: 0,
+      likes: 0,
+      comments: [],
+      createdAt: '',
+      updateDetailPost: (data) => set(data),
+    }),
+    {
+      name: 'detailPost',
+    },
+  ),
+);

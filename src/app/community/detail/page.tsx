@@ -1,4 +1,8 @@
+'use client';
+
 import Comment from '../components/comment';
+
+import { useState } from 'react';
 
 import Link from 'next/link';
 
@@ -7,7 +11,24 @@ import { ArrowLeft, Eye, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
+import { usePostLike } from '@/services/community/hooks/useGetPost';
+
+import { useDetailPostStore } from '@/stores/community';
+
 export default function detail() {
+  const detailPostStore = useDetailPostStore();
+
+  const { mutate: postLike } = usePostLike();
+
+  const [like, setLike] = useState(detailPostStore.likes);
+  const [isLikeClicked, setIsLikeClicked] = useState(false);
+
+  const updateLike = () => {
+    setLike(like + 1);
+    setIsLikeClicked(true);
+    postLike(detailPostStore.id);
+  };
+
   return (
     <div className="space-y-10">
       <Link href="/community" className="flex space-y-1 underline">
@@ -18,19 +39,21 @@ export default function detail() {
         <CardHeader>
           <div className="flex justify-between">
             <div>
-              <CardTitle>제목</CardTitle>
+              <CardTitle>{detailPostStore.title}</CardTitle>
             </div>
             <div className="flex">
               <Eye />
-              조회수
+              조회수 {detailPostStore.views}
             </div>
           </div>
           <div className="flex justify-between">
-            <div>날짜 / 시간</div>
+            <div>
+              {detailPostStore.username} {detailPostStore.createdAt}
+            </div>
             <div className="space-x-1">
-              <Button className="bg-red-500">
+              <Button onClick={updateLike} className="bg-red-500" disabled={isLikeClicked}>
                 <ThumbsUp />
-                좋아요
+                좋아요 {detailPostStore.likes}
               </Button>
               <Button className="bg-blue-500">
                 <ThumbsDown />
@@ -40,8 +63,7 @@ export default function detail() {
           </div>
         </CardHeader>
         <CardContent>
-          <div>내용</div>
-          <div>댓글,대댓글 기능</div>
+          <div>{detailPostStore.content}</div>
         </CardContent>
         <CardFooter>카드 footer</CardFooter>
       </Card>

@@ -56,21 +56,46 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-		  keyframes: {
-			'slide-top-sm': {
-			  from: { transform: 'translateY(0)' },
-			  to: { transform: 'translateY(-4px)' },
-			},
-			'slide-bottom-sm': {
-			  from: { transform: 'translateY(-4px)' },
-			  to: {transform: 'translateY(0)' }
-			},
-			
-		  },
-		  animation: {
-			'slide-top-sm': 'slide-top-sm 0.2s ease-out both',
-			'slide-bottom-sm': 'slide-bottom-sm 0.2s ease-out both',
-		  },
+  		keyframes: {
+  			'slide-top-sm': {
+  				from: {
+  					transform: 'translateY(0)'
+  				},
+  				to: {
+  					transform: 'translateY(-4px)'
+  				}
+  			},
+  			'slide-bottom-sm': {
+  				from: {
+  					transform: 'translateY(-4px)'
+  				},
+  				to: {
+  					transform: 'translateY(0)'
+  				}
+  			},
+  			'accordion-down': {
+  				from: {
+  					height: '0'
+  				},
+  				to: {
+  					height: 'var(--radix-accordion-content-height)'
+  				}
+  			},
+  			'accordion-up': {
+  				from: {
+  					height: 'var(--radix-accordion-content-height)'
+  				},
+  				to: {
+  					height: '0'
+  				}
+  			}
+  		},
+  		animation: {
+  			'slide-top-sm': 'slide-top-sm 0.2s ease-out both',
+  			'slide-bottom-sm': 'slide-bottom-sm 0.2s ease-out both',
+  			'accordion-down': 'accordion-down 0.2s ease-out',
+  			'accordion-up': 'accordion-up 0.2s ease-out'
+  		}
   	}
   },
   plugins: [require("tailwindcss-animate")],
