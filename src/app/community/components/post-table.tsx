@@ -25,6 +25,10 @@ interface PostDto {
   createdAt: string;
 }
 
+const truncateText = (text: string, maxLength: number = 10): string => {
+  return text.length > maxLength ? text.substring(0, maxLength) + '....' : text;
+};
+
 export default function PostTable({ sort, searchWord }: { sort: string; searchWord: string }) {
   const [page, setPage] = useState(1);
   const router = useRouter();
@@ -32,7 +36,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
   const { data: posts } = useGetPost({ sort: sort, page: page - 1 });
   const { mutate: getPostDetail } = useGetPostDetail();
 
-  const filterContents = posts?.content.filter(
+  const filterContents = (posts?.content || []).filter(
     (post: PostDto) => post.title.includes(searchWord) || post.content.includes(searchWord),
   );
 
@@ -63,8 +67,8 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
           {filterContents?.map((post: PostDto) => (
             <TableRow key={post.id} onClick={() => goDetailPage(post.id)}>
               <TableCell>{post.id}</TableCell>
-              <TableCell>{post.title}</TableCell>
-              <TableCell>{post.content}</TableCell>
+              <TableCell>{truncateText(post.title)}</TableCell>
+              <TableCell>{truncateText(post.content)}</TableCell>
               <TableCell>{post.username}</TableCell>
               <TableCell>{post.createdAt}</TableCell>
               <TableCell>좋아요 수</TableCell>

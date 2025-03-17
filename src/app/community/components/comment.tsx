@@ -14,18 +14,18 @@ import { useDetailPostStore } from '@/stores/community';
 
 export default function Comment() {
   const { comments, id } = useDetailPostStore();
-  const [comment, setComment] = useState('');
+  const [content, setContent] = useState('');
   const { mutate: postComment } = usePostComment();
 
-  const handleComment = (postId: number, comment: string) => {
-    postComment({ postId, comment });
-    setComment('');
+  const handleComment = (postId: number, content: string) => {
+    postComment({ postId, content });
+    setContent('');
   };
 
   return (
     <div>
-      <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="댓글을 작성해 주세요." />
-      <Button onClick={() => handleComment(id, comment)} className="w-full">
+      <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="댓글을 작성해 주세요." />
+      <Button onClick={() => handleComment(id, content)} className="w-full">
         댓글 달기
       </Button>
 
