@@ -18,7 +18,7 @@ export const useGetPostDetail = () => {
     mutationKey: [GET_postDetail.name],
     mutationFn: GET_postDetail,
     onSuccess: ({ data }) => {
-      detailPostStore.updateDetailPost(data);
+      detailPostStore.updateDetailPost(data.data);
     },
   });
 };

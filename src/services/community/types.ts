@@ -5,5 +5,5 @@ export interface PostDto {
 
 export interface PostCommentDto {
   postId: number;
-  comment: string;
+  content: string;
 }

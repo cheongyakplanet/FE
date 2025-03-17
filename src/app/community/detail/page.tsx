@@ -1,6 +1,7 @@
 'use client';
 
 import Comment from '../components/comment';
+import NewPost from '../components/newPost';
 
 import { useState } from 'react';
 
@@ -31,6 +32,7 @@ export default function detail() {
 
   return (
     <div className="space-y-10">
+      <NewPost />
       <Link href="/community" className="flex space-y-1 underline">
         <ArrowLeft />
         전체 글 보러가기
