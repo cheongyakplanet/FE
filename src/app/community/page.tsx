@@ -1,5 +1,6 @@
 'use client';
 
+import NewPost from './components/newPost';
 import PostTable from './components/post-table';
 
 import { useState } from 'react';
@@ -14,9 +15,6 @@ export default function community() {
   return (
     <div>
       <div className="font-bold">커뮤니티</div>
-      <div>
-        <p className="text-left">내가 작성한 게시글 / 등등....</p>
-      </div>
 
       <div className="flex justify-between">
         <Tabs value={sort} onValueChange={setSort}>
@@ -34,6 +32,7 @@ export default function community() {
         />
       </div>
       <PostTable sort={sort} searchWord={searchWord} />
+      <NewPost />
     </div>
   );
 }

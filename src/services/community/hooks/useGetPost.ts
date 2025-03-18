@@ -3,8 +3,6 @@ import { GET_post, GET_postDetail, POST_comment, POST_like } from '../api';
 import { useMutation } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { useDetailPostStore } from '@/stores/community';
-
 export const useGetPost = ({ sort, page }: { sort: string; page: number }) => {
   return useQuery({
     queryKey: ['posts', sort, page],
@@ -12,14 +10,13 @@ export const useGetPost = ({ sort, page }: { sort: string; page: number }) => {
   });
 };
 
-export const useGetPostDetail = () => {
-  const detailPostStore = useDetailPostStore();
-  return useMutation({
-    mutationKey: [GET_postDetail.name],
-    mutationFn: GET_postDetail,
-    onSuccess: ({ data }) => {
-      detailPostStore.updateDetailPost(data);
-    },
+export const useGetPostDetail = (id: string) => {
+  return useQuery({
+    queryKey: ['detailPost', id],
+    queryFn: () => GET_postDetail(id),
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 };
 
@@ -31,15 +28,8 @@ export const usePostComment = () => {
 };
 
 export const usePostLike = () => {
-  const detailPostStore = useDetailPostStore();
   return useMutation({
     mutationKey: [POST_like.name],
     mutationFn: POST_like,
-    onSuccess: () => {
-      detailPostStore.updateDetailPost({
-        ...detailPostStore,
-        likes: detailPostStore.likes + 1,
-      });
-    },
   });
 };

@@ -4,18 +4,18 @@ import api from '@/lib/api';
 
 export const GET_post = async ({ sort, page }: PostDto) => {
   const response = await api.get('/api/community/posts', { params: { sort: sort, page: page } });
-  return response.data;
+  return response.data.data;
 };
 
-export const GET_postDetail = async (id: number) => {
-  return await api.get(`/api/community/post/${id}`);
+export const GET_postDetail = async (id: string) => {
+  const response = await api.get(`/api/community/post/${id}`);
+  return response.data.data;
 };
 
-export const POST_comment = async ({ postId, comment }: PostCommentDto) => {
-  console.log('api', postId, comment);
-  return await api.post(`/api/community/comment/${postId}`, { comment });
+export const POST_comment = async ({ postId, content }: PostCommentDto) => {
+  return await api.post(`/api/community/comment/${postId}`, { content });
 };
 
-export const POST_like = async (id: number) => {
+export const POST_like = async (id: string) => {
   return await api.post(`api/community/post/like/${id}`);
 };
