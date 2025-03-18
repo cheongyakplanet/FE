@@ -31,7 +31,12 @@ export default function post() {
 
   return (
     <div className="animate-fade-in flex flex-col items-center">
-      <div className="mb-4 text-center">게시글을 작성해 주세요!</div>
+      <div className="mb-4 text-center text-xl font-extrabold text-gray-800">이곳에 여러분의 이야기를 남겨주세요!</div>
+      <div className="flex">
+        <div className="mb-3 text-gray-600">
+          📢 청약 정보를 나누고 소통하는 공간이에요! 예쁜 말로 서로를 배려해주세요.
+        </div>
+      </div>
       <Card className="w-3/5">
         <CardHeader>
           <div>제목</div>

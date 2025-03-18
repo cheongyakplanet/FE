@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import dayjs from 'dayjs';
+
 import {
   Pagination,
   PaginationContent,
@@ -68,7 +70,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
               <TableCell>{truncateText(post.title)}</TableCell>
               <TableCell>{truncateText(post.content)}</TableCell>
               <TableCell>{post.username}</TableCell>
-              <TableCell>{post.createdAt}</TableCell>
+              <TableCell>{dayjs(post.createdAt).format('YYYY-MM-DD')}</TableCell>
               <TableCell>좋아요 수</TableCell>
             </TableRow>
           ))}

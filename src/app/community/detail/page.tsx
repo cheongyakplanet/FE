@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
+import dayjs from 'dayjs';
 import { ArrowLeft, Eye, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -53,7 +54,7 @@ export default function detail() {
           </div>
           <div className="flex justify-between">
             <div>
-              {data?.username} {data?.createdAt}
+              {data?.username} {dayjs(data?.createdAt).format('YYYY-MM-DD')}
             </div>
             <div className="space-x-1">
               <Button onClick={() => updateLike(data?.id)} className="bg-red-500">
