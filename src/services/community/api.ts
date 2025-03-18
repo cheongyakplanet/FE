@@ -7,14 +7,15 @@ export const GET_post = async ({ sort, page }: PostDto) => {
   return response.data.data;
 };
 
-export const GET_postDetail = async (id: number) => {
-  return await api.get(`/api/community/post/${id}`);
+export const GET_postDetail = async (id: string) => {
+  const response = await api.get(`/api/community/post/${id}`);
+  return response.data.data;
 };
 
 export const POST_comment = async ({ postId, content }: PostCommentDto) => {
   return await api.post(`/api/community/comment/${postId}`, { content });
 };
 
-export const POST_like = async (id: number) => {
+export const POST_like = async (id: string) => {
   return await api.post(`api/community/post/like/${id}`);
 };

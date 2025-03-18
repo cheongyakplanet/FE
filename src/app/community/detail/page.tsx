@@ -3,32 +3,35 @@
 import Comment from '../components/comment';
 import NewPost from '../components/newPost';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 import { ArrowLeft, Eye, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { usePostLike } from '@/services/community/hooks/useGetPost';
-
-import { useDetailPostStore } from '@/stores/community';
+import { useGetPostDetail, usePostLike } from '@/services/community/hooks/useGetPost';
 
 export default function detail() {
-  const detailPostStore = useDetailPostStore();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
 
-  const { mutate: postLike } = usePostLike();
+  const { data } = useGetPostDetail(id as string);
+  const [like, setLike] = useState(data?.likes);
 
-  const [like, setLike] = useState(detailPostStore.likes);
-  const [isLikeClicked, setIsLikeClicked] = useState(false);
+  const { mutate: PostLike } = usePostLike();
 
-  const updateLike = () => {
+  const updateLike = (id: string) => {
     setLike(like + 1);
-    setIsLikeClicked(true);
-    postLike(detailPostStore.id);
+    PostLike(id);
   };
+
+  useEffect(() => {
+    setLike(data?.likes); // 최신 데이터 반영
+  }, [data]);
 
   return (
     <div className="space-y-10">
@@ -41,21 +44,21 @@ export default function detail() {
         <CardHeader>
           <div className="flex justify-between">
             <div>
-              <CardTitle>{detailPostStore.title}</CardTitle>
+              <CardTitle>{data?.title}</CardTitle>
             </div>
             <div className="flex">
               <Eye />
-              조회수 {detailPostStore.views}
+              조회수 {data?.views}
             </div>
           </div>
           <div className="flex justify-between">
             <div>
-              {detailPostStore.username} {detailPostStore.createdAt}
+              {data?.username} {data?.createdAt}
             </div>
             <div className="space-x-1">
-              <Button onClick={updateLike} className="bg-red-500" disabled={isLikeClicked}>
+              <Button onClick={() => updateLike(data?.id)} className="bg-red-500">
                 <ThumbsUp />
-                좋아요 {detailPostStore.likes}
+                좋아요 {like}
               </Button>
               <Button className="bg-blue-500">
                 <ThumbsDown />
@@ -65,12 +68,12 @@ export default function detail() {
           </div>
         </CardHeader>
         <CardContent>
-          <div>{detailPostStore.content}</div>
+          <div>{data?.content}</div>
         </CardContent>
         <CardFooter>카드 footer</CardFooter>
       </Card>
       <div className="space-y-2">
-        <Comment />
+        <Comment postId={data?.postId} comments={data?.comments} />
       </div>
     </div>
   );

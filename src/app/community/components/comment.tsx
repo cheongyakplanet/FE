@@ -10,14 +10,21 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { usePostComment } from '@/services/community/hooks/useGetPost';
 
-import { useDetailPostStore } from '@/stores/community';
+interface Comments {
+  content: string;
+  replies: Reply[];
+}
 
-export default function Comment() {
-  const { comments, id } = useDetailPostStore();
+interface Reply {
+  id: string;
+  content: string;
+}
+
+export default function Comment({ postId, comments }: { postId: string; comments: Comments[] }) {
   const [content, setContent] = useState('');
   const { mutate: postComment } = usePostComment();
 
-  const handleComment = (postId: number, content: string) => {
+  const handleComment = (postId: string, content: string) => {
     postComment({ postId, content });
     setContent('');
   };
@@ -25,18 +32,20 @@ export default function Comment() {
   return (
     <div>
       <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="댓글을 작성해 주세요." />
-      <Button onClick={() => handleComment(id, content)} className="w-full">
+      <Button onClick={() => handleComment(postId, content)} className="w-full">
         댓글 달기
       </Button>
 
       <Accordion type="multiple">
-        {comments.map((comment, index) => (
+        {comments?.map((comment: Comments, index: number) => (
           <AccordionItem key={index} value={index.toString()}>
             <AccordionTrigger className={comment.replies?.length == 0 ? 'no-arrow' : ''}>
               {comment.content}
             </AccordionTrigger>
             {comment.replies?.length > 0 &&
-              comment.replies.map((reply, index) => <AccordionContent key={index}>{reply.content}</AccordionContent>)}
+              comment.replies.map((reply: Reply, index: number) => (
+                <AccordionContent key={index}>{reply.content}</AccordionContent>
+              ))}
           </AccordionItem>
         ))}
       </Accordion>

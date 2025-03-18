@@ -34,15 +34,13 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
   const router = useRouter();
 
   const { data: posts } = useGetPost({ sort: sort, page: page - 1 });
-  const { mutate: getPostDetail } = useGetPostDetail();
 
   const filterContents = (posts?.content || []).filter(
     (post: PostDto) => post.title.includes(searchWord) || post.content.includes(searchWord),
   );
 
   const goDetailPage = (id: number) => {
-    getPostDetail(id);
-    router.push('/community/detail');
+    router.push(`/community/detail?id=${id}`);
   };
 
   useEffect(() => {
