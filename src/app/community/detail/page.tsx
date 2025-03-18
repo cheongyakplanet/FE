@@ -30,7 +30,7 @@ export default function detail() {
   };
 
   useEffect(() => {
-    setLike(data?.likes); // 최신 데이터 반영
+    setLike(data?.likes);
   }, [data]);
 
   return (
