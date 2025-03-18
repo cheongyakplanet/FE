@@ -7,3 +7,8 @@ export interface PostCommentDto {
   postId: string;
   content: string;
 }
+
+export interface NewPostDto {
+  title: string;
+  content: string;
+}

@@ -1,4 +1,4 @@
-import { GET_post, GET_postDetail, POST_comment, POST_like } from '../api';
+import { GET_post, GET_postDetail, POST_comment, POST_like, POST_post } from '../api';
 
 import { useMutation } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
@@ -33,3 +33,10 @@ export const usePostLike = () => {
     mutationFn: POST_like,
   });
 };
+
+export const useNewPost = () => {
+  return useMutation({
+    mutationKey: [POST_post.name],
+    mutationFn: POST_post,
+  })
+}
