@@ -17,7 +17,7 @@ export default function Header() {
         <div className="flex gap-5">
           {routes.map((route) => (
             <Link
-              className="animate-slide-bottom-sm cursor-pointer text-lg text-white hover:animate-slide-top-sm"
+              className="animate-slide-bottom-sm cursor-pointer text-lg font-bold text-white hover:animate-slide-top-sm"
               href={`/${route === 'home' ? '' : route}`}
               key={route}
             >
