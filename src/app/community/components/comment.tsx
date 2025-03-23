@@ -2,7 +2,7 @@
 
 import '@/assets/styles/community.css';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
@@ -20,26 +20,46 @@ interface Reply {
   content: string;
 }
 
-export default function Comment({ postId, comments }: { postId: string; comments: Comments[] }) {
+export default function Comment({ postId, comments: initComments }: { postId: string; comments: Comments[] }) {
   const [content, setContent] = useState('');
+  const [comments, setComments] = useState<Comments[]>(initComments);
   const { mutate: postComment } = usePostComment();
 
-  const handleComment = (postId: string, content: string) => {
-    postComment({ postId, content });
+  const handleComment = (content: string) => {
+    const newComment = { content, replies: [] };
+
+    setComments((prev) => [...prev, newComment]);
+
+    postComment(
+      { postId, content },
+      {
+        onError: () => {
+          setComments((prev) => prev.filter((c) => c.content !== newComment.content));
+        },
+      },
+    );
     setContent('');
   };
+
+  useEffect(() => {
+    setComments(initComments);
+  }, [initComments]);
 
   return (
     <div>
       <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="댓글을 작성해 주세요." />
-      <Button onClick={() => handleComment(postId, content)} className="w-full">
+      <Button onClick={() => handleComment(content)} className="w-full">
         댓글 달기
       </Button>
 
       <Accordion type="multiple">
         {comments?.map((comment: Comments, index: number) => (
           <AccordionItem key={index} value={index.toString()}>
-            <AccordionTrigger className={comment.replies?.length == 0 ? 'no-arrow' : ''}>
+            <AccordionTrigger
+              className={
+                comment.replies?.length == 0 ? 'no-arrow pointer-events-none cursor-default' : ''
+              }
+            >
               {comment.content}
             </AccordionTrigger>
             {comment.replies?.length > 0 &&

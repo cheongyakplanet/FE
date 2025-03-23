@@ -73,9 +73,7 @@ export default function detail() {
         </CardContent>
         <CardFooter>카드 footer</CardFooter>
       </Card>
-      <div className="space-y-2">
-        <Comment postId={data?.postId} comments={data?.comments} />
-      </div>
+      <div className="space-y-2">{data?.comments && <Comment postId={data.id} comments={data.comments} />}</div>
     </div>
   );
 }
