@@ -1,10 +1,12 @@
 import { AxiosResponse } from 'axios';
 
 export interface PageMetadata<T> {
-  data: T[];
-  totalElements: number;
-  totalPages: number;
-  status: string;
+  data: {
+    content: T[];
+    totalElements: number;
+    totalPages: number;
+    status: string;
+  };
 }
 
 export interface FilterParams {

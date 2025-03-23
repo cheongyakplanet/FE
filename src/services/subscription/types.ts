@@ -77,6 +77,8 @@ export interface SubscriptionDetailDto {
   hssplyAdres: string;
   hssplyZip: string;
   imprmnBsnsAt: string;
+  latitude: string;
+  longitude: string;
   lrsclBldlndAt: string;
   mdatTrgetAreaSecd: string;
   mdhsTelno: string;

@@ -40,13 +40,13 @@ export default function Subscription() {
   const router = useRouter();
 
   const { data: getAllSubscription } = useGetAllSubscription(parseInt(page ?? '1'), 3);
-  console.log(getAllSubscription?.data);
+  console.log(getAllSubscription?.data.content);
 
   const table = useTable({
-    data: getAllSubscription?.data,
+    data: getAllSubscription?.data.content,
     columns,
-    totalPages: getAllSubscription?.totalPages || 0,
-    totalElements: getAllSubscription?.totalElements || 0,
+    totalPages: getAllSubscription?.data.totalPages || 0,
+    totalElements: getAllSubscription?.data.totalElements || 0,
     rowId: 'id',
     defaultPageIndex: parseInt(page ?? '1'),
     defaultPagingSize: 3,
@@ -65,10 +65,8 @@ export default function Subscription() {
   const endPage = Math.min(startPage + MAX_PAGE_NUMBER, pageCount);
 
   return (
-    <div className="w-full">
-      <section>
-        <h1>맞춤 청약 리스트</h1>
-      </section>
+    <section className="w-full">
+      <h1>맞춤 청약 리스트</h1>
       <div className="grid grid-cols-3 gap-4">
         {table.getRowModel().rows?.length ? (
           table.getRowModel().rows.map((row) => (
@@ -133,6 +131,6 @@ export default function Subscription() {
           </PaginationContent>
         </Pagination>
       </div>
-    </div>
+    </section>
   );
 }
