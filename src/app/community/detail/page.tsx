@@ -35,7 +35,7 @@ export default function detail() {
   }, [data]);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-5">
       <NewPost />
       <Link href="/community" className="flex space-y-1 underline">
         <ArrowLeft />
