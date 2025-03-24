@@ -19,6 +19,7 @@ api.interceptors.request.use(
       request.url?.includes('/api/member/signup')
     )
       return request;
+    const tokenStore = useTokenStore.getState();
     const accessToken = tokenStore.accessToken;
     if (accessToken) {
       request.headers['Authorization'] = accessToken;
