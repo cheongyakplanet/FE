@@ -12,3 +12,8 @@ export interface NewPostDto {
   title: string;
   content: string;
 }
+
+export interface PostReplyDto {
+  commentId: string;
+  content: string;
+}

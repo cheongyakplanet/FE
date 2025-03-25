@@ -1,4 +1,4 @@
-import { PostCommentDto, PostDto, NewPostDto } from './types';
+import { PostCommentDto, PostDto, NewPostDto, PostReplyDto } from './types';
 
 import api from '@/lib/api';
 
@@ -22,4 +22,8 @@ export const POST_like = async (id: string) => {
 
 export const POST_post = async ({title, content}: NewPostDto) => {
   return await api.post('/api/community/posts', {title, content});
+}
+
+export const POST_reply = async({commentId, content}: PostReplyDto) => {
+  return await api.post(`/api/community/comment/comment/${commentId}`, {content});
 }
