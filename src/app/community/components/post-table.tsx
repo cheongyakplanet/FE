@@ -81,6 +81,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
+              href="#"
               onClick={() => {
                 if (page > 1) setPage(page - 1);
               }}
@@ -89,7 +90,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
 
           {[...Array(posts?.totalPages)].map((_, index) => (
             <PaginationItem key={index}>
-              <PaginationLink onClick={() => setPage(index + 1)} isActive={index + 1 === page}>
+              <PaginationLink href="#" onClick={() => setPage(index + 1)} isActive={index + 1 === page}>
                 {index + 1}
               </PaginationLink>
             </PaginationItem>
@@ -101,6 +102,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
 
           <PaginationItem>
             <PaginationNext
+              href="#"
               onClick={() => {
                 if (page < posts?.totalPages) setPage(page + 1);
               }}
