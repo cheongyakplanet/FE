@@ -17,11 +17,12 @@
     "@/app/.*$",
     "@/assets/.*$",
     "@/components/.*$",
-    "@/constant/.*$",
+    "@/hooks/.*$",
     "@/lib/.*$",
     "@/providers/.*$",
     "@/services/.*$",
-    "@/stores/.*$"
+    "@/stores/.*$",
+    "@/types/.*$"
   ],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,

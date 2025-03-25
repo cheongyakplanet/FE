@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${BMJUAFont.className} antialiased`}>
+      <body className={`antialiased`}>
         <ReactQueryProvider>
           <Header />
           <main className="mx-auto mt-12 max-w-screen-lg">{children}</main>
