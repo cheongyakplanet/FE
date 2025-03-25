@@ -5,14 +5,13 @@ import '@/assets/styles/community.css';
 import { useEffect, useState } from 'react';
 
 import Dayjs from 'dayjs';
-import { jwtDecode } from 'jwt-decode';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
-import cookieStorage from '@/lib/cookie-storage';
+import auth from '@/lib/auth';
 
 import { usePostComment, usePostReply } from '@/services/community/hooks/useGetPost';
 
@@ -20,18 +19,21 @@ interface Comments {
   id: string;
   content: string;
   createdAt: string;
-  createdBy: string;
+  createdBy: string | undefined;
   replies: Reply[];
 }
 
 interface Reply {
   id: string;
   createdAt: string;
-  createdBy: string;
+  createdBy: string | undefined;
   content: string;
 }
 
 export default function Comment({ postId, comments: initComments }: { postId: string; comments: Comments[] }) {
+  const today = new Date();
+  const memberName = auth();
+
   const [content, setContent] = useState('');
   const [reply, setReply] = useState('');
   const [comments, setComments] = useState<Comments[]>(initComments);
@@ -40,7 +42,13 @@ export default function Comment({ postId, comments: initComments }: { postId: st
   const [showReply, setShowReply] = useState<string | null>('');
 
   const handleComment = (content: string) => {
-    const newComment = { id: '', content, createdAt: '', createdBy: '', replies: [] };
+    const newComment = {
+      id: '',
+      content,
+      createdAt: Dayjs(today).format('YYYY-MM-DD'),
+      createdBy: memberName,
+      replies: [],
+    };
     setComments((prev) => [...prev, newComment]);
 
     postComment(
@@ -54,19 +62,12 @@ export default function Comment({ postId, comments: initComments }: { postId: st
     setContent('');
   };
 
-  const handleReply = async (reply: string, commentId: string) => {
-    const today = new Date();
-    const urlToken = await cookieStorage.getItem('cheongyakplanet-token');
-    let userName = '';
-    if (urlToken) {
-      const decoded = decodeURIComponent(urlToken);
-      const parsed = JSON.parse(decoded);
-      const accessToken = parsed.state.accessToken;
-      const decodeToken = jwtDecode<{ sub: string }>(accessToken);
-      userName = decodeToken.sub;
-    }
+  const toggleReply = (id: string) => {
+    setShowReply((prev) => (prev === id ? null : id));
+  };
 
-    const newReply = { id: '', createdAt: Dayjs(today).format('YYYY-MM-DD'), createdBy: userName, content: reply };
+  const handleReply = async (reply: string, commentId: string) => {
+    const newReply = { id: '', createdAt: Dayjs(today).format('YYYY-MM-DD'), createdBy: memberName, content: reply };
     const updateComments = comments.map((comment) =>
       comment.id === commentId ? { ...comment, replies: [...comment.replies, newReply] } : comment,
     );
@@ -78,10 +79,6 @@ export default function Comment({ postId, comments: initComments }: { postId: st
   useEffect(() => {
     setComments(initComments);
   }, [initComments]);
-
-  const toggleReply = (id: string) => {
-    setShowReply((prev) => (prev === id ? null : id));
-  };
 
   return (
     <div>
