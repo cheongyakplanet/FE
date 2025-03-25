@@ -1,14 +1,85 @@
+'use client';
+
+import { ChangeEvent, useState } from 'react';
+
+import { useRouter } from 'next/navigation';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
+import { useNewPost } from '@/services/community/hooks/useGetPost';
+import { NewPostDto } from '@/services/community/types';
+
 export default function post() {
+  const router = useRouter();
+  const { mutate: newPost } = useNewPost();
+  const [newPostData, setNewPostData] = useState({ title: '', content: '' });
+  const [alert, setAlert] = useState('');
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setNewPostData({
+      ...newPostData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const postNewPost = (newPostData: NewPostDto) => {
+    if (!checkTrim()) return;
+    newPost(newPostData);
+    router.push('/community');
+  };
+
+  const checkTrim = () => {
+    if (newPostData.title.trim() === '' || newPostData.content.trim() === '') {
+      setAlert('공백이 있는 글은 등록할 수 없습니다.');
+      return false;
+    } else {
+      setAlert('');
+      return true;
+    }
+  };
+
   return (
-    <div className="mx-auto mt-10 max-w-3xl rounded-lg bg-white p-6 shadow-md">
-      <h1 className="mb-4 text-2xl font-bold">새 글 작성</h1>
-      <Input className="mb-4" placeholder="제목을 입력하세요" />
-      <Textarea className="mb-4 h-40" placeholder="내용을 입력하세요..." />
-      <Button className="w-full">게시글 등록</Button>
+    <div className="flex animate-fade-in flex-col items-center">
+      <div className="mb-4 text-center text-xl font-extrabold text-gray-800">이곳에 여러분의 이야기를 남겨주세요!</div>
+      <div className="flex">
+        <div className="mb-3 text-gray-600">
+          📢 청약 정보를 나누고 소통하는 공간이에요! 예쁜 말로 서로를 배려해주세요.
+        </div>
+      </div>
+      <Card className="w-3/5">
+        <CardHeader>
+          <div>제목</div>
+          <Input name="title" value={newPostData.title} onChange={handleChange} placeholder="제목을 입력해 주세요." />
+        </CardHeader>
+        <CardContent>
+          <div>내용</div>
+          <Textarea
+            name="content"
+            value={newPostData.content}
+            onChange={handleChange}
+            placeholder="내용을 입력해 주세요."
+          />
+          {alert && <div className="mt-3 text-center text-sm text-gray-600">{alert}</div>}
+        </CardContent>
+
+        <CardFooter className="justify-center">
+          <Button
+            onClick={() => router.push('/community')}
+            className="mr-20 w-20 bg-orange-300 text-indigo-950 hover:bg-orange-400"
+          >
+            취소
+          </Button>
+          <Button
+            className="w-20 bg-orange-300 text-indigo-950 hover:bg-orange-400"
+            onClick={() => postNewPost(newPostData)}
+          >
+            등록하기
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
