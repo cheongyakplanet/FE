@@ -27,3 +27,7 @@ export const POST_post = async ({title, content}: NewPostDto) => {
 export const POST_reply = async({commentId, content}: PostReplyDto) => {
   return await api.post(`/api/community/comment/comment/${commentId}`, {content});
 }
+
+export const POST_dislike = async (id: string) => {
+  return await api.post(`api/community/post/dislike/${id}`);
+}

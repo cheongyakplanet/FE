@@ -26,7 +26,7 @@ export default function community() {
         </Tabs>
         <Input
           className="w-1/5"
-          placeholder="검색어를 입력하세요."
+          placeholder="🔍 검색어를 입력하세요."
           value={searchWord}
           onChange={(e) => setSearchWord(e.target.value)}
         />

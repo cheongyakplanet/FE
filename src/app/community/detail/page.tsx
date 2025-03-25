@@ -9,12 +9,12 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 import dayjs from 'dayjs';
-import { ArrowLeft, Eye, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { ArrowLeft, Eye, Heart, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { useGetPostDetail, usePostLike } from '@/services/community/hooks/useGetPost';
+import { useGetPostDetail, usePostDislike, usePostLike } from '@/services/community/hooks/useGetPost';
 
 export default function detail() {
   const searchParams = useSearchParams();
@@ -24,10 +24,16 @@ export default function detail() {
   const [like, setLike] = useState(data?.likes);
 
   const { mutate: PostLike } = usePostLike();
+  const { mutate: PostDislike } = usePostDislike();
 
   const updateLike = (id: string) => {
     setLike(like + 1);
     PostLike(id);
+  };
+
+  const updateDislike = (id: string) => {
+    setLike(like - 1);
+    PostDislike(id);
   };
 
   useEffect(() => {
@@ -43,35 +49,32 @@ export default function detail() {
       </Link>
       <Card>
         <CardHeader>
-          <div className="flex justify-between">
+          <div>
             <div>
               <CardTitle>{data?.title}</CardTitle>
-            </div>
-            <div className="flex">
-              <Eye />
-              조회수 {data?.views}
-            </div>
-          </div>
-          <div className="flex justify-between">
-            <div>
-              {data?.username} {dayjs(data?.createdAt).format('YYYY-MM-DD')}
-            </div>
-            <div className="space-x-1">
-              <Button onClick={() => updateLike(data?.id)} className="bg-red-500">
-                <ThumbsUp />
-                좋아요 {like}
-              </Button>
-              <Button className="bg-blue-500">
-                <ThumbsDown />
-                싫어요
-              </Button>
+              <div className="mt-3">
+                {data?.username} {dayjs(data?.createdAt).format('YYYY-MM-DD')}
+              </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div>{data?.content}</div>
-        </CardContent>
-        <CardFooter>카드 footer</CardFooter>
+        <CardContent>{data?.content}</CardContent>
+        <div className="my-4 border-t border-gray-300" />
+
+        <CardFooter>
+          <Eye />
+          조회수 {data?.views}
+          <Heart className="ml-3" />
+          좋아요 {like}
+          <div className="flex space-x-1">
+            <Button onClick={() => updateLike(data?.id)} className="ml-3 bg-red-500 hover:bg-red-600">
+              <ThumbsUp />
+            </Button>
+            <Button onClick={() => updateDislike(data?.id)} className="bg-blue-500 hover:bg-blue-600">
+              <ThumbsDown />
+            </Button>
+          </div>
+        </CardFooter>
       </Card>
       <div className="space-y-2">{data?.comments && <Comment postId={data.id} comments={data.comments} />}</div>
     </div>

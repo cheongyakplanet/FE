@@ -50,6 +50,7 @@ export default function Comment({ postId, comments: initComments }: { postId: st
       replies: [],
     };
     setComments((prev) => [...prev, newComment]);
+    setShowReply(null);
 
     postComment(
       { postId, content },

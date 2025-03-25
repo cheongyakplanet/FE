@@ -16,6 +16,7 @@ export default function post() {
   const router = useRouter();
   const { mutate: newPost } = useNewPost();
   const [newPostData, setNewPostData] = useState({ title: '', content: '' });
+  const [alert, setAlert] = useState('');
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNewPostData({
@@ -25,12 +26,23 @@ export default function post() {
   };
 
   const postNewPost = (newPostData: NewPostDto) => {
+    if (!checkTrim()) return;
     newPost(newPostData);
     router.push('/community');
   };
 
+  const checkTrim = () => {
+    if (newPostData.title.trim() === '' || newPostData.content.trim() === '') {
+      setAlert('공백이 있는 글은 등록할 수 없습니다.');
+      return false;
+    } else {
+      setAlert('');
+      return true;
+    }
+  };
+
   return (
-    <div className="animate-fade-in flex flex-col items-center">
+    <div className="flex animate-fade-in flex-col items-center">
       <div className="mb-4 text-center text-xl font-extrabold text-gray-800">이곳에 여러분의 이야기를 남겨주세요!</div>
       <div className="flex">
         <div className="mb-3 text-gray-600">
@@ -50,7 +62,9 @@ export default function post() {
             onChange={handleChange}
             placeholder="내용을 입력해 주세요."
           />
+          {alert && <div className="mt-3 text-center text-sm text-gray-600">{alert}</div>}
         </CardContent>
+
         <CardFooter className="justify-center">
           <Button
             onClick={() => router.push('/community')}
