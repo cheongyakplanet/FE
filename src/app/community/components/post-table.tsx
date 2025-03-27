@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import dayjs from 'dayjs';
+
 import {
   Pagination,
   PaginationContent,
@@ -68,7 +70,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
               <TableCell>{truncateText(post.title)}</TableCell>
               <TableCell>{truncateText(post.content)}</TableCell>
               <TableCell>{post.username}</TableCell>
-              <TableCell>{post.createdAt}</TableCell>
+              <TableCell>{dayjs(post.createdAt).format('YYYY-MM-DD')}</TableCell>
               <TableCell>좋아요 수</TableCell>
             </TableRow>
           ))}
@@ -79,6 +81,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
+              href="#"
               onClick={() => {
                 if (page > 1) setPage(page - 1);
               }}
@@ -87,7 +90,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
 
           {[...Array(posts?.totalPages)].map((_, index) => (
             <PaginationItem key={index}>
-              <PaginationLink onClick={() => setPage(index + 1)} isActive={index + 1 === page}>
+              <PaginationLink href="#" onClick={() => setPage(index + 1)} isActive={index + 1 === page}>
                 {index + 1}
               </PaginationLink>
             </PaginationItem>
@@ -99,6 +102,7 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
 
           <PaginationItem>
             <PaginationNext
+              href="#"
               onClick={() => {
                 if (page < posts?.totalPages) setPage(page + 1);
               }}

@@ -14,9 +14,9 @@ export default function community() {
 
   return (
     <div>
-      <div className="font-bold">커뮤니티</div>
+      <div className="animate-wave mb-3 text-center text-xl">함께 나누는 청약 이야기, 지금 확인해 보세요! 👀</div>
 
-      <div className="flex justify-between">
+      <div className="mb-2 flex justify-between">
         <Tabs value={sort} onValueChange={setSort}>
           <TabsList>
             <TabsTrigger value="time">최신순</TabsTrigger>
@@ -26,7 +26,7 @@ export default function community() {
         </Tabs>
         <Input
           className="w-1/5"
-          placeholder="검색어를 입력하세요."
+          placeholder="🔍 검색어를 입력하세요."
           value={searchWord}
           onChange={(e) => setSearchWord(e.target.value)}
         />
