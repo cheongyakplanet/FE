@@ -8,3 +8,15 @@ export interface MemberSignupDto {
   password: string;
   username: string;
 }
+
+export interface FindPwDto {
+  pwEmail: string;
+  name: string;
+}
+
+export interface ChangePwDto {
+  pwEmail: string;
+  name: string;
+  validCode: string;
+  newPw: string;
+}
