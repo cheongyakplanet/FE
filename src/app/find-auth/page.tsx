@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ export default function FindAuth() {
 
   const [newPw, setNewPw] = useState('');
   const [checkNewPw, setCheckNewPw] = useState('');
+  const [hasAuth, setHasAuth] = useState<boolean | null>(null);
 
   const { mutate: postFindId } = usePostFindId();
   const { mutate: postFindPw, data: findPwData } = usePostFindPw();
@@ -55,9 +57,11 @@ export default function FindAuth() {
     postFindId(email, {
       onSuccess: (data) => {
         if (data == 'success') {
-          setMessage('가입 이력이 있는 이메일이에요. 로그인해보세요!');
+          setMessage('가입 이력이 있는 이메일이에요.');
+          setHasAuth(true);
         } else {
           setMessage('해당 이메일로 가입된 계정을 찾을 수 없어요.');
+          setHasAuth(false);
         }
       },
     });
@@ -91,13 +95,13 @@ export default function FindAuth() {
 
   return (
     <Tabs defaultValue="find-id">
-      <div className="mb-3 flex justify-center text-lg font-semibold">
+      <div className="mb-5 flex justify-center text-xl font-semibold leading-relaxed text-gray-600">
         청약 준비, 다시 시작해볼까요? <br />
-        청약플래닛이 여러분의 계정 찾기를 도와드립니다.
+        청약플래닛이 여러분의 계정 찾기를 도와드릴게요.
       </div>
       <div className="flex justify-center">
         <div className="w-2/5">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-2 bg-indigo-50">
             <TabsTrigger value="find-id">아이디 찾기</TabsTrigger>
             <TabsTrigger value="find-password">비밀번호 찾기</TabsTrigger>
           </TabsList>
@@ -107,8 +111,7 @@ export default function FindAuth() {
               <CardHeader>
                 <CardTitle>아이디 찾기</CardTitle>
                 <CardDescription>
-                  <div className="font-semibold">우리 청약플래닛에서는 이메일을 아이디로 사용합니다.</div>
-                  <div className="text-xs">입력하신 이메일로 가입된 계정이 있는지 확인해 드릴게요.</div>
+                  <div className="text-sm font-semibold">입력하신 이메일로 가입된 계정이 있는지 확인해 드릴게요.</div>
                   <div className="text-xs text-gray-400">
                     가입 여부만 확인되며, 아이디(이메일)는 별도로 제공되지 않습니다.
                   </div>
@@ -119,10 +122,26 @@ export default function FindAuth() {
                 <Input value={IdEmail} onChange={checkIdEmail} placeholder="이메일을 입력해 주세요." />
               </CardContent>
               <CardFooter className="flex flex-col">
-                <Button onClick={() => findEmail(IdEmail)} disabled={!validIdEmail} className="items-center">
+                <Button
+                  onClick={() => findEmail(IdEmail)}
+                  disabled={!validIdEmail}
+                  className="items-center bg-indigo-100 text-indigo-900 hover:bg-indigo-100/80"
+                >
                   아이디 찾기
                 </Button>
-                <div className="mt-2">{message}</div>
+                <div className="mt-3 text-sm">
+                  {message}
+                  {hasAuth === true && (
+                    <Link href="/signin" className="ml-1 text-gray-500 underline hover:text-gray-700">
+                      로그인 하러 가기
+                    </Link>
+                  )}
+                  {hasAuth === false && (
+                    <Link href="/signup" className="ml-1 text-gray-500 underline hover:text-gray-700">
+                      회원가입 하러 가기
+                    </Link>
+                  )}
+                </div>
               </CardFooter>
             </Card>
           </TabsContent>
@@ -144,7 +163,11 @@ export default function FindAuth() {
               {!showCodeInput && (
                 <CardContent className="flex flex-col">
                   <div className="mb-1 text-center text-xs">이메일로 인증번호가 전송됩니다.</div>
-                  <Button onClick={() => sendCode({ pwEmail, name })} disabled={!name || !validPwEmail}>
+                  <Button
+                    onClick={() => sendCode({ pwEmail, name })}
+                    disabled={!name || !validPwEmail}
+                    className="bg-indigo-100 text-indigo-900 hover:bg-indigo-100/80"
+                  >
                     인증번호 보내기
                   </Button>
                 </CardContent>
@@ -180,7 +203,7 @@ export default function FindAuth() {
                   </div>
                   <Button
                     onClick={() => changePw({ pwEmail, name, validCode, newPw })}
-                    className="w-full"
+                    className="w-full bg-indigo-100 text-indigo-900 hover:bg-indigo-100/80"
                     disabled={!newPw || !checkNewPw}
                   >
                     비밀번호 변경하기
