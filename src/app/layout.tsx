@@ -8,7 +8,7 @@ import Header from '@/components/layout/header';
 
 import ReactQueryProvider from '@/providers/react-query-provider';
 
-const BMJUAFont = localFont({ src: '../assets/fonts/BMJUA.otf' });
+const BMJUAFont = localFont({ src: '../assets/fonts/GmarketSansMedium.otf' });
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`antialiased`}>
+      <body className={`${BMJUAFont.className} antialiased`}>
         <ReactQueryProvider>
           <Header />
           <main className="mx-auto mt-12 max-w-screen-lg">{children}</main>

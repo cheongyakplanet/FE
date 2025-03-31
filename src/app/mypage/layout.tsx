@@ -13,18 +13,22 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 
+import { useGetMypage } from '@/services/member/hooks/useGetMypage';
+
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
+  const { data: mypage } = useGetMypage();
+  console.log(mypage);
   return (
     <section className="grid grid-cols-6 gap-5">
       <div className="col-span-2 flex flex-col gap-5">
         <Card className="flex flex-col items-center gap-2 p-3">
           <Avatar className="h-[100px] w-[100px] border shadow-md">
             <AvatarImage src="https://github.com/injulme.png" alt="@injulme" />
-            <AvatarFallback>INJULME</AvatarFallback>
+            <AvatarFallback>{mypage?.data.username}</AvatarFallback>
           </Avatar>
-          <span>정효진</span>
-          <span className="text-gray-500">injulme0309@gmail.com</span>
+          <span>{mypage?.data.username}</span>
+          <span className="text-gray-500">{mypage?.data.email}</span>
         </Card>
         <Card className="border-4 border-indigo-400 shadow-indigo-950/60">
           <CardHeader>
