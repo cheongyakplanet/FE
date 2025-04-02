@@ -17,6 +17,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+          
+      - name: Create .env.local
+        run: |
+          echo "NEXT_PUBLIC_KAKAO_MAP_API=${{ secrets.NEXT_PUBLIC_KAKAO_MAP_API }}" >> .env.local
+          echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env.local
+          echo "NEXT_PUBLIC_OAUTH_KAKAO_API_URL=${{ secrets.NEXT_PUBLIC_OAUTH_KAKAO_API_URL }}" >> .env.local
+          echo "NEXT_PUBLIC_OAUTH_KAKAO_CLIENT_ID=${{ secrets.NEXT_PUBLIC_OAUTH_KAKAO_CLIENT_ID }}" >> .env.local
 
       - name: Install Dependencies
         run: npm install
