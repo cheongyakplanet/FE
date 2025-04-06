@@ -20,7 +20,7 @@ import { useGetAllSubscription } from '@/services/subscription/hooks/useGetAllSu
 import { SubscriptionListDto } from '@/services/subscription/types';
 
 const columnHelper = createColumnHelper<SubscriptionListDto>();
-export const columns = [
+const columns = [
   columnHelper.accessor('id', { id: 'id' }),
   columnHelper.accessor('region', { id: 'region' }),
   columnHelper.accessor('city', { id: 'city' }),
