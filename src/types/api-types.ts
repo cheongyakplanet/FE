@@ -19,6 +19,8 @@ export interface PaginatedResponse<T> extends AxiosResponse<PageMetadata<T>> {
 }
 
 export interface ApiResponse<T> {
-  data: T;
-  status: string;
+  data: {
+    data: T;
+    status: string;
+  };
 }

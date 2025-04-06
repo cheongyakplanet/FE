@@ -3,7 +3,7 @@
 import Comment from '../components/comment';
 import NewPost from '../components/newPost';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -17,6 +17,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { useGetPostDetail, usePostDislike, usePostLike } from '@/services/community/hooks/useGetPost';
 
 export default function detail() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DetailContent />
+    </Suspense>
+  );
+}
+
+function DetailContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 

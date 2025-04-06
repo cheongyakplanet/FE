@@ -40,6 +40,6 @@ export const POST_changePw = async ({ pwEmail, name, validCode, newPw }: ChangeP
 };
 
 /** 마이페이지 조회 */
-export const GET_mypage = async () => {
-  return await api.get<ApiResponse<MyPageDto>>('/api/member/mypage');
+export const GET_mypage = async (): Promise<ApiResponse<MyPageDto>> => {
+  return await api.get('/api/member/mypage');
 };

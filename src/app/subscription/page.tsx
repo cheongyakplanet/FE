@@ -1,5 +1,7 @@
 'use client';
 
+import { Suspense } from 'react';
+
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { createColumnHelper } from '@tanstack/react-table';
@@ -35,6 +37,14 @@ const columns = [
 ];
 
 export default function Subscription() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SubscriptionContent />
+    </Suspense>
+  );
+}
+
+function SubscriptionContent() {
   const params = useSearchParams();
   const page = params.get('page');
   const router = useRouter();
