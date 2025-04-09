@@ -36,3 +36,13 @@ export interface MyPageDto {
   numHouse: null;
   status: string;
 }
+
+export interface MyPostDto {
+  id: string;
+  title: string;
+  content: string;
+  username: string;
+  views: string;
+  likes: string;
+  createdAt: string;
+}

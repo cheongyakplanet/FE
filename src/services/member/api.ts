@@ -3,6 +3,8 @@ import { ChangePwDto, FindPwDto, MemberLoginDto, MemberSignupDto, MyPageDto } fr
 import api from '@/lib/api';
 
 import { ApiResponse } from '@/types/api-types';
+import { FilterParams, PaginatedResponse } from '@/types/api-types';
+import { MyPostDto } from './types';
 
 /** 회원가입 */
 export const POST_signup = async ({ email, password, username }: MemberSignupDto) => {
@@ -42,4 +44,9 @@ export const POST_changePw = async ({ pwEmail, name, validCode, newPw }: ChangeP
 /** 마이페이지 조회 */
 export const GET_mypage = async (): Promise<ApiResponse<MyPageDto>> => {
   return await api.get('/api/member/mypage');
+};
+
+/** 내가 작성한 글 조회 */
+export const GET_mypost = async ({params}: {params: FilterParams}) : Promise<PaginatedResponse<MyPostDto>>=> {
+  return await api.get('api/community/post/my', {params});
 };
