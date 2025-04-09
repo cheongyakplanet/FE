@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
 import { useSearchParams } from 'next/navigation';
 
 import { createColumnHelper } from '@tanstack/react-table';
+import dayjs from 'dayjs';
+import { X } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -18,6 +18,7 @@ import {
 
 import useTable from '@/hooks/useTable';
 
+import { useDeleteMypost } from '@/services/member/hooks/useDeleteMypost';
 import { useGetMypost } from '@/services/member/hooks/useGetMypost';
 import { MyPostDto } from '@/services/member/types';
 
@@ -35,7 +36,11 @@ const columns = [
 export default function Posts() {
   const params = useSearchParams();
   const page = params.get('page');
-  const { data: getMypost } = useGetMypost(0, 5);
+  const { data: getMypost } = useGetMypost(parseInt(page ?? '0'), 6);
+
+  const { mutate: deletMypost } = useDeleteMypost();
+
+  const currentPage = parseInt(page ?? '0');
 
   const card = useTable({
     data: getMypost?.content,
@@ -43,19 +48,32 @@ export default function Posts() {
     totalPages: getMypost?.totalPages || 0,
     totalElements: getMypost?.totalElements || 0,
     rowId: 'id',
-    defaultPageIndex: parseInt(page ?? '1'),
-    defaultPagingSize: 5,
+    defaultPageIndex: parseInt(page ?? '0'),
+    defaultPagingSize: 6,
   });
+
+  const deleteMypost = (id: string) => {
+    deletMypost(id);
+  };
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="mb-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {card.getRowModel().rows.map((row) => (
           <Card key={row.getValue('id')}>
             <CardHeader>
-              <CardTitle>{row.getValue('title')}</CardTitle>
-              <CardDescription>{row.getValue('username')}</CardDescription>
-              <CardDescription>{row.getValue('createdAt')}</CardDescription>
+              <div className="flex justify-between">
+                <CardTitle>{row.getValue('title')}</CardTitle>
+                <button onClick={() => deleteMypost(row.getValue('id'))}>
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="flex justify-between">
+                <CardDescription>{row.getValue('username')}</CardDescription>
+                <CardDescription className="text-xs">
+                  {dayjs(row.getValue('createdAt')).format('YYYY-MM-DD')}
+                </CardDescription>
+              </div>
             </CardHeader>
             <CardContent>{row.getValue('content')}</CardContent>
             <CardFooter>
@@ -66,29 +84,28 @@ export default function Posts() {
         ))}
       </div>
 
-      {/* 페이지네이션 */}
-      {/* <Pagination>
+      <Pagination>
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
               onClick={() => {
-                if (currentPage > 1) currentPage - 1;
+                card.previousPage();
               }}
-              href={`/mypage/posts?page=${currentPage - 1}`}
+              href={`/mypage/posts?page=${currentPage < 1 ? 0 : currentPage - 1}`}
             ></PaginationPrevious>
           </PaginationItem>
 
-          {[...Array(mypost?.totalPages)].map((_, index) => {
-            const currentPageIndex = index + 1;
+          {Array.from({ length: card.getPageCount() }).map((_, index) => {
+            const currentPageIndex = index;
 
             return (
               <PaginationItem key={index}>
                 <PaginationLink
                   href={`/mypage/posts?page=${currentPageIndex}`}
-                  onClick={() => currentPageIndex + 1}
-                  isActive={index + 1 === currentPageIndex}
+                  onClick={() => card.setPageIndex(currentPageIndex)}
+                  isActive={currentPageIndex === currentPage}
                 >
-                  {currentPageIndex}
+                  {currentPageIndex + 1}
                 </PaginationLink>
               </PaginationItem>
             );
@@ -97,13 +114,13 @@ export default function Posts() {
           <PaginationItem>
             <PaginationNext
               onClick={() => {
-                if (currentPage < (mypost?.totalPages ?? 1)) setCurrentPage(currentPage + 1);
+                card.nextPage();
               }}
-              href={`/mypage/posts?page=${currentPage}`}
+              href={`/mypage/posts?page=${currentPage < card.getPageCount() - 1 ? currentPage + 1 : currentPage}`}
             ></PaginationNext>
           </PaginationItem>
         </PaginationContent>
-      </Pagination> */}
+      </Pagination>
     </div>
   );
 }

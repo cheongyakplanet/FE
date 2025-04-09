@@ -50,3 +50,8 @@ export const GET_mypage = async (): Promise<ApiResponse<MyPageDto>> => {
 export const GET_mypost = async ({params}: {params: FilterParams}) : Promise<PaginatedResponse<MyPostDto>>=> {
   return await api.get('api/community/post/my', {params});
 };
+
+/** 내가 작성한 글 삭제 */
+export const DELETE_mypost = async (id: string) => {
+  return await api.delete(`/api/community/post/${id}`);
+}
