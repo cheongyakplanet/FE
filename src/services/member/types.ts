@@ -33,7 +33,7 @@ export interface MyPageDto {
   income: number;
   isMarried: boolean;
   numChild: number;
-  numHouse: null;
+  numHouse: number | null;
   status: string;
 }
 
