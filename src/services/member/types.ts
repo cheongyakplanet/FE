@@ -29,10 +29,10 @@ export interface MyPageDto {
   interestLocal3: string;
   interestLocal4: string;
   interestLocal5: string;
-  property: string | null;
-  income: number;
-  isMarried: boolean;
-  numChild: number;
+  property: number | null;
+  income: number | null;
+  isMarried: boolean | null;
+  numChild: number | null;
   numHouse: number | null;
   status: string;
 }
@@ -45,4 +45,14 @@ export interface MyPostDto {
   views: string;
   likes: string;
   createdAt: string;
+}
+
+export interface MyInfoDto {
+  email: string;
+  username: string;
+  property: string;
+  income: string;
+  isMarried: boolean;
+  numChild: number;
+  numHouse: number;
 }
