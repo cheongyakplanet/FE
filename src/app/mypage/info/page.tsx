@@ -13,11 +13,13 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { useGetMypage } from '@/services/member/hooks/useGetMypage';
+import { usePatchMyinfo } from '@/services/member/hooks/usePatchMyinfo';
 import { MyInfoDto } from '@/services/member/types';
 
 export default function Info() {
   const { data: data } = useGetMypage();
   const mypage = data?.data;
+  const { mutate: patchMyinfo } = usePatchMyinfo();
 
   const [activeEdit, setActiveEdit] = useState(true);
   const [editMessage, setEditMessage] = useState('수정하기');
@@ -59,8 +61,7 @@ export default function Info() {
           changedFields[key] = current as any;
         }
       });
-
-      console.log('변경된 값만 추출:', changedFields);
+      patchMyinfo(changedFields);
     }
   };
 
