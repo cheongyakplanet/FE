@@ -1,9 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import dayjs from 'dayjs';
+import { FolderOpen } from 'lucide-react';
 import { X } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -58,69 +60,87 @@ export default function Posts() {
 
   return (
     <div>
-      <div className="mb-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {card.getRowModel().rows.map((row) => (
-          <Card key={row.getValue('id')}>
-            <CardHeader>
-              <div className="flex justify-between">
-                <CardTitle>{row.getValue('title')}</CardTitle>
-                <button onClick={() => deleteMypost(row.getValue('id'))}>
-                  <X size={16} />
-                </button>
-              </div>
-              <div className="flex justify-between">
-                <CardDescription>{row.getValue('username')}</CardDescription>
-                <CardDescription className="text-xs">
-                  {dayjs(row.getValue('createdAt')).format('YYYY-MM-DD')}
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>{row.getValue('content')}</CardContent>
-            <CardFooter>
-              <div className="mr-2">조회수: {row.getValue('views') === null ? 0 : row.getValue('views')}</div>
-              <div>좋아요: {row.getValue('likes')}</div>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+      {getMypost?.content?.length! > 0 ? (
+        <div>
+          <div className="mb-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {card.getRowModel().rows.map((row) => (
+              <Card key={row.getValue('id')}>
+                <CardHeader>
+                  <div className="flex justify-between">
+                    <CardTitle>{row.getValue('title')}</CardTitle>
+                    <button onClick={() => deleteMypost(row.getValue('id'))}>
+                      <X size={16} />
+                    </button>
+                  </div>
+                  <div className="flex justify-between">
+                    <CardDescription>{row.getValue('username')}</CardDescription>
+                    <CardDescription className="text-xs">
+                      {dayjs(row.getValue('createdAt')).format('YYYY-MM-DD')}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent>{row.getValue('content')}</CardContent>
+                <CardFooter>
+                  <div className="mr-2">조회수: {row.getValue('views') === null ? 0 : row.getValue('views')}</div>
+                  <div>좋아요: {row.getValue('likes')}</div>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
 
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              onClick={() => {
-                card.previousPage();
-              }}
-              href={`/mypage/posts?page=${currentPage < 1 ? 0 : currentPage - 1}`}
-            ></PaginationPrevious>
-          </PaginationItem>
-
-          {Array.from({ length: card.getPageCount() }).map((_, index) => {
-            const currentPageIndex = index;
-
-            return (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  href={`/mypage/posts?page=${currentPageIndex}`}
-                  onClick={() => card.setPageIndex(currentPageIndex)}
-                  isActive={currentPageIndex === currentPage}
-                >
-                  {currentPageIndex + 1}
-                </PaginationLink>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => {
+                    card.previousPage();
+                  }}
+                  href={`/mypage/posts?page=${currentPage < 1 ? 0 : currentPage - 1}`}
+                ></PaginationPrevious>
               </PaginationItem>
-            );
-          })}
 
-          <PaginationItem>
-            <PaginationNext
-              onClick={() => {
-                card.nextPage();
-              }}
-              href={`/mypage/posts?page=${currentPage < card.getPageCount() - 1 ? currentPage + 1 : currentPage}`}
-            ></PaginationNext>
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+              {Array.from({ length: card.getPageCount() }).map((_, index) => {
+                const currentPageIndex = index;
+
+                return (
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      href={`/mypage/posts?page=${currentPageIndex}`}
+                      onClick={() => card.setPageIndex(currentPageIndex)}
+                      isActive={currentPageIndex === currentPage}
+                    >
+                      {currentPageIndex + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => {
+                    card.nextPage();
+                  }}
+                  href={`/mypage/posts?page=${currentPage < card.getPageCount() - 1 ? currentPage + 1 : currentPage}`}
+                ></PaginationNext>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      ) : (
+        <div>
+          <div className="flex flex-col items-center">
+            <FolderOpen size={90} className="mb-1 mt-20 text-gray-400" strokeWidth={1} />
+            <div>등록된 게시글이 없어요.</div>
+            <div className="mt-1 text-sm text-gray-500">
+              {' '}
+              <Link href="/community/post" className="mr-1 text-sm text-gray-500 underline hover:text-gray-600">
+                [게시글 작성하기]
+              </Link>
+              버튼을 눌러보세요!{' '}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
