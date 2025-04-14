@@ -3,6 +3,8 @@ import './globals.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
+import { Toaster } from 'sonner';
+
 import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/header';
 
@@ -26,6 +28,7 @@ export default function RootLayout({
         <ReactQueryProvider>
           <Header />
           <main className="mx-auto mt-12 max-w-screen-lg">{children}</main>
+          <Toaster />
           <Footer />
         </ReactQueryProvider>
       </body>

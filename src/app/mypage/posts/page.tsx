@@ -7,6 +7,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import dayjs from 'dayjs';
 import { FolderOpen } from 'lucide-react';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -68,7 +69,18 @@ export default function Posts() {
                 <CardHeader>
                   <div className="flex justify-between">
                     <CardTitle>{row.getValue('title')}</CardTitle>
-                    <button onClick={() => deleteMypost(row.getValue('id'))}>
+                    <button
+                      onClick={async () => {
+                        try {
+                          await deleteMypost(row.getValue('id'));
+                          toast.success('게시글이 성공적으로 삭제되었습니다!', {
+                            duration: 1500,
+                          });
+                        } catch (e) {
+                          toast.error('게시글 삭제에 실패했습니다. 다시 시도해 주세요!');
+                        }
+                      }}
+                    >
                       <X size={16} />
                     </button>
                   </div>
