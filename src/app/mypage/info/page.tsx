@@ -3,15 +3,32 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { useRouter } from 'next/navigation';
+
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CircleUserRound } from 'lucide-react';
+import { Pencil } from 'lucide-react';
+import { PencilOff } from 'lucide-react';
 import { z } from 'zod';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+import { useDeleteMember } from '@/services/member/hooks/useDeleteMember';
 import { useGetMypage } from '@/services/member/hooks/useGetMypage';
 import { usePatchMyinfo } from '@/services/member/hooks/usePatchMyinfo';
 import { MyInfoDto } from '@/services/member/types';
@@ -20,10 +37,13 @@ export default function Info() {
   const { data: data } = useGetMypage();
   const mypage = data?.data;
   const { mutate: patchMyinfo } = usePatchMyinfo();
+  const { mutate: deleteMember } = useDeleteMember();
 
   const [activeEdit, setActiveEdit] = useState(true);
   const [editMessage, setEditMessage] = useState('수정하기');
   const [initValues, setInitValues] = useState<Partial<MyInfoDto>>({});
+
+  const router = useRouter();
 
   const formSchema = z.object({
     username: z.string(),
@@ -65,6 +85,11 @@ export default function Info() {
     }
   };
 
+  const withdraw = () => {
+    deleteMember();
+    router.push('/');
+  };
+
   useEffect(() => {
     if (mypage) {
       const values = {
@@ -90,7 +115,10 @@ export default function Info() {
       <div className="flex w-full justify-center">
         <Card className="w-full max-w-lg">
           <CardHeader className="pb-0">
-            <CardTitle>개인 정보</CardTitle>
+            <CardTitle className="flex items-center">
+              <CircleUserRound className="mr-1" />
+              <div>개인 정보</div>
+            </CardTitle>
             <CardDescription>청약 조회에 사용됩니다.</CardDescription>
           </CardHeader>
 
@@ -98,8 +126,23 @@ export default function Info() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="flex justify-end">
-                  <Button className="" onClick={() => setActiveEdit(!activeEdit)}>
-                    {editMessage}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-gray-300 text-gray-700"
+                    onClick={() => setActiveEdit(!activeEdit)}
+                  >
+                    {activeEdit ? (
+                      <div className="flex">
+                        <Pencil className="mr-1" />
+                        수정하기
+                      </div>
+                    ) : (
+                      <div className="flex">
+                        <PencilOff className="mr-1" />
+                        수정완료
+                      </div>
+                    )}
                   </Button>
                 </div>
                 <FormField
@@ -213,7 +256,21 @@ export default function Info() {
           </CardContent>
 
           <CardFooter className="flex justify-end">
-            <button className="p-1 text-xs text-red-400 hover:underline">탈퇴하기</button>
+            <AlertDialog>
+              <AlertDialogTrigger className="p-1 text-xs text-red-400 hover:underline">탈퇴하기</AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>정말 탈퇴하시겠습니까?</AlertDialogTitle>
+                  <AlertDialogDescription>탈퇴하시면 더 이상 청약플래닛을 이용하실 수 없습니다.</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>유지할래요</AlertDialogCancel>
+                  <AlertDialogAction onClick={withdraw} className="bg-red-100 text-black hover:bg-red-200">
+                    탈퇴할게요
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </CardFooter>
         </Card>
       </div>

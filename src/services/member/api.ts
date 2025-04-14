@@ -60,3 +60,8 @@ export const DELETE_mypost = async (id: string) => {
 export const PATCH_mypage = async (changedFields: Partial<MyInfoDto>) => {
   return await api.patch('/api/member/mypage', changedFields);
 };
+
+/** 회원 탈퇴 */
+export const DELETE_member = async () => {
+  return await api.delete('/api/member/mypage');
+};
