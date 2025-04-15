@@ -1,6 +1,9 @@
 'use client';
 
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { SquareMinus } from 'lucide-react';
+import { SquarePlus } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
@@ -10,10 +13,14 @@ export default function Region() {
   const { data: getMypage } = useGetMypage();
   const mypage = getMypage?.data;
   const data = Array.isArray(mypage?.interestLocals)
-    ? mypage.interestLocals.map((local, index) => ({
-        id: index,
-        interestLocal: local,
-      }))
+    ? mypage.interestLocals.map((local, index) => {
+        const [city, district] = local.split(' ');
+        return {
+          id: index,
+          city,
+          district,
+        };
+      })
     : [];
 
   const table = useReactTable({
@@ -27,24 +34,45 @@ export default function Region() {
   });
 
   return (
-    <div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>관심지역</TableHead>
-            <TableHead>삭제</TableHead>
-          </TableRow>
-        </TableHeader>
+    <div className="flex justify-center">
+      <div className="mb-2 mt-5 flex rounded-xl border-2 border-slate-200 bg-amber-50 p-8 shadow-md">
+        <MapPin className="mr-1" />
+        <div>
+          <div>나의 관심 지역 목록</div>
+          <div className="text-xs text-gray-400">관심 지역을 기반으로 청약 추천이 제공됩니다.</div>
+          <div className="mx-auto w-[500px]">
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-1/3">시/도</TableHead>
+                  <TableHead className="w-1/3">군/구</TableHead>
+                  <TableHead className="flex w-full items-center justify-end">
+                    <button>
+                      <SquarePlus size={22} strokeWidth={1.5} />
+                    </button>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
 
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell>{row.original.interestLocal}</TableCell>
-              <TableCell>삭제</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              <TableBody>
+                {table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id} className="transition-colors hover:bg-amber-100/80">
+                    <TableCell className="w-1/3 py-2">{row.original.city}</TableCell>
+                    <TableCell className="w-1/3 py-2">{row.original.district}</TableCell>
+                    <TableCell className="w-1/3 justify-end py-2">
+                      <div className="flex w-full justify-end">
+                        <button>
+                          <SquareMinus size={22} strokeWidth={1} />
+                        </button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
