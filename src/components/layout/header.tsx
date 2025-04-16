@@ -1,16 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
+import { LogOut } from 'lucide-react';
 
 import { useTokenStore } from '@/stores/auth-store';
 
 export default function Header() {
-  const routes = ['home', 'signup', 'signin', 'mypage', 'community', 'subscription'];
-
+  const routes = ['home', 'signup', 'mypage', 'community', 'subscription', 'signin'];
   const { accessToken, logout } = useTokenStore();
   const isSignin = !!accessToken;
 
@@ -24,22 +21,24 @@ export default function Header() {
           {routes.map((route) => {
             if (route === 'signin') {
               return isSignin ? (
-                <Link
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    logout();
-                  }}
-                  key="logout"
-                  className="animate-slide-bottom-sm cursor-pointer text-lg text-white hover:animate-slide-top-sm"
-                >
-                  logout
-                </Link>
+                <div className="flex gap-2" key="logout">
+                  <Link
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      logout();
+                    }}
+                    className="flex animate-slide-bottom-sm cursor-pointer items-center gap-2 text-white hover:animate-slide-top-sm"
+                  >
+                    logout
+                    <LogOut size="16" />
+                  </Link>
+                </div>
               ) : (
                 <Link
                   href="/signin"
                   key="signin"
-                  className="animate-slide-bottom-sm cursor-pointer text-lg text-white hover:animate-slide-top-sm"
+                  className="flex animate-slide-bottom-sm cursor-pointer items-center text-white hover:animate-slide-top-sm"
                 >
                   signin
                 </Link>
@@ -47,7 +46,7 @@ export default function Header() {
             }
             return (
               <Link
-                className="animate-slide-bottom-sm cursor-pointer text-lg text-white hover:animate-slide-top-sm"
+                className="flex animate-slide-bottom-sm cursor-pointer items-center text-white hover:animate-slide-top-sm"
                 href={`/${route === 'home' ? '' : route}`}
                 key={route}
               >
