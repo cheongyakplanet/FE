@@ -4,14 +4,19 @@ import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { SquareMinus } from 'lucide-react';
 import { SquarePlus } from 'lucide-react';
 import { MapPin } from 'lucide-react';
+import { MessageCircleWarning } from 'lucide-react';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
+import { useDeleteRegion } from '@/services/member/hooks/useDeleteRegion';
 import { useGetMypage } from '@/services/member/hooks/useGetMypage';
 
 export default function Region() {
+  const { mutate: deleteRegion } = useDeleteRegion();
+
   const { data: getMypage } = useGetMypage();
   const mypage = getMypage?.data;
+
   const data = Array.isArray(mypage?.interestLocals)
     ? mypage.interestLocals.map((local, index) => {
         const [city, district] = local.split(' ');
@@ -33,6 +38,11 @@ export default function Region() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const deleteInterestRegion = (city: string, district: string) => {
+    const region = city + ' ' + district;
+    deleteRegion(region);
+  };
+
   return (
     <div className="flex justify-center">
       <div className="mb-2 mt-5 flex rounded-xl border-2 border-slate-200 bg-amber-50 p-8 shadow-md">
@@ -42,6 +52,12 @@ export default function Region() {
           <div className="text-xs text-gray-400">관심 지역을 기반으로 청약 추천이 제공됩니다.</div>
           <div className="mx-auto w-[500px]">
             <Table>
+              <TableCaption>
+                <div className="flex justify-center text-xs text-gray-400">
+                  <MessageCircleWarning size={16} />
+                  <div>최대 5개까지 등록할 수 있습니다.</div>
+                </div>
+              </TableCaption>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="w-1/3">시/도</TableHead>
@@ -61,7 +77,7 @@ export default function Region() {
                     <TableCell className="w-1/3 py-2">{row.original.district}</TableCell>
                     <TableCell className="w-1/3 justify-end py-2">
                       <div className="flex w-full justify-end">
-                        <button>
+                        <button onClick={() => deleteInterestRegion(row.original.city, row.original.district)}>
                           <SquareMinus size={22} strokeWidth={1} />
                         </button>
                       </div>

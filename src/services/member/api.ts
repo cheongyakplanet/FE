@@ -28,7 +28,6 @@ export const POST_findPw = async ({ pwEmail, name }: FindPwDto) => {
 };
 
 export const POST_changePw = async ({ pwEmail, name, validCode, newPw }: ChangePwDto) => {
-  console.log('api 전', pwEmail, name, validCode, newPw);
   return await api.post('/api/member/reset-password', null, {
     params: {
       arg0: pwEmail,
@@ -64,4 +63,9 @@ export const PATCH_mypage = async (changedFields: Partial<MyInfoDto>) => {
 /** 회원 탈퇴 */
 export const DELETE_member = async () => {
   return await api.delete('/api/member/mypage');
+};
+
+/** 관심 지역 삭제 */
+export const DELETE_region = async (region: string) => {
+  return await api.delete('api/member/location', { params: { locations: region } });
 };
