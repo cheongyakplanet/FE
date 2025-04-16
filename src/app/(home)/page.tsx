@@ -4,7 +4,11 @@ import { Map } from 'react-kakao-maps-sdk';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
+import { useGetPopularLocations } from '@/services/home/hooks/useGetPopularLocations';
+
 export default function Home() {
+  const { data: popularLocations } = useGetPopularLocations();
+  console.log(popularLocations?.data);
   return (
     <div className="grid grid-cols-2 gap-5">
       <Card className="col-span-2">
