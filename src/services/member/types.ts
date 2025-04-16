@@ -24,11 +24,12 @@ export interface ChangePwDto {
 export interface MyPageDto {
   email: string;
   username: string;
-  interestLocal1: string;
-  interestLocal2: string;
-  interestLocal3: string;
-  interestLocal4: string;
-  interestLocal5: string;
+  interestLocals: string[];
+  // interestLocal1: string;
+  // interestLocal2: string;
+  // interestLocal3: string;
+  // interestLocal4: string;
+  // interestLocal5: string;
   property: number | null;
   income: number | null;
   isMarried: boolean | null;

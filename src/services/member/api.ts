@@ -1,10 +1,10 @@
-import { ChangePwDto, FindPwDto, MemberLoginDto, MemberSignupDto, MyPageDto } from './types';
+import { ChangePwDto, FindPwDto, MemberLoginDto, MemberSignupDto, MyInfoDto, MyPageDto } from './types';
+import { MyPostDto } from './types';
 
 import api from '@/lib/api';
 
 import { ApiResponse } from '@/types/api-types';
 import { FilterParams, PaginatedResponse } from '@/types/api-types';
-import { MyPostDto } from './types';
 
 /** 회원가입 */
 export const POST_signup = async ({ email, password, username }: MemberSignupDto) => {
@@ -28,7 +28,6 @@ export const POST_findPw = async ({ pwEmail, name }: FindPwDto) => {
 };
 
 export const POST_changePw = async ({ pwEmail, name, validCode, newPw }: ChangePwDto) => {
-  console.log('api 전', pwEmail, name, validCode, newPw);
   return await api.post('/api/member/reset-password', null, {
     params: {
       arg0: pwEmail,
@@ -47,11 +46,26 @@ export const GET_mypage = async (): Promise<ApiResponse<MyPageDto>> => {
 };
 
 /** 내가 작성한 글 조회 */
-export const GET_mypost = async ({params}: {params: FilterParams}) : Promise<PaginatedResponse<MyPostDto>>=> {
-  return await api.get('api/community/post/my', {params});
+export const GET_mypost = async ({ params }: { params: FilterParams }): Promise<PaginatedResponse<MyPostDto>> => {
+  return await api.get('api/community/post/my', { params });
 };
 
 /** 내가 작성한 글 삭제 */
 export const DELETE_mypost = async (id: string) => {
   return await api.delete(`/api/community/post/${id}`);
-}
+};
+
+/** 마이페이지 수정 */
+export const PATCH_mypage = async (changedFields: Partial<MyInfoDto>) => {
+  return await api.patch('/api/member/mypage', changedFields);
+};
+
+/** 회원 탈퇴 */
+export const DELETE_member = async () => {
+  return await api.delete('/api/member/mypage');
+};
+
+/** 관심 지역 삭제 */
+export const DELETE_region = async (region: string) => {
+  return await api.delete('api/member/location', { params: { locations: region } });
+};
