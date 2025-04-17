@@ -73,49 +73,6 @@ export default function Region() {
           <div>나의 관심 지역 목록</div>
           <div className="text-xs text-gray-400">관심 지역을 기반으로 청약 추천이 제공됩니다.</div>
 
-          {/* {table.getRowModel().rows.length < 5 && (
-            <div>
-              <hr className="mb-2 mt-3 border-t border-gray-200" />
-              <div className="mb-2 flex text-xs text-gray-500">
-                <MessageCircleWarning size={16} />
-                <div>최대 5개까지 등록할 수 있습니다.</div>
-              </div>
-
-              <div className="flex justify-center">
-                <Select onValueChange={(value) => setSelectedCity(value)}>
-                  <SelectTrigger className="h-8 w-40 text-xs">
-                    <SelectValue placeholder="시/도를 선택해 주세요." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getRegion?.map((region: string, index: number) => (
-                      <SelectItem key={index} value={region}>
-                        {region}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select onValueChange={(value) => setSelectedDistrict(value)}>
-                  <SelectTrigger className="h-8 w-40 text-xs">
-                    <SelectValue placeholder="군/구를 선택해 주세요." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.isArray(getDistrict) &&
-                      getDistrict?.map((district: string, index: number) => (
-                        <SelectItem key={index} value={district}>
-                          {district}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-
-                <button onClick={addInterestRegion} className="mr-2 flex w-full items-center justify-end text-gray-600">
-                  <SquarePlus size={22} strokeWidth={1} />
-                </button>
-              </div>
-              <hr className="mt-2 border-t border-gray-200" />
-            </div>
-          )} */}
-
           <div className="mx-auto w-[500px]">
             <Table>
               <TableCaption>
