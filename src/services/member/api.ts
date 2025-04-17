@@ -69,3 +69,8 @@ export const DELETE_member = async () => {
 export const DELETE_region = async (region: string) => {
   return await api.delete('api/member/location', { params: { locations: region } });
 };
+
+/** 관심 지역 추가 */
+export const POST_region = async (location: string) => {
+  return await api.post('api/member/location', { location });
+};

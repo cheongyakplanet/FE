@@ -1,33 +1,46 @@
 'use client';
 
+import { useMemo, useState } from 'react';
+
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { SquareMinus } from 'lucide-react';
 import { SquarePlus } from 'lucide-react';
 import { MapPin } from 'lucide-react';
 import { MessageCircleWarning } from 'lucide-react';
 
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { useDeleteRegion } from '@/services/member/hooks/useDeleteRegion';
 import { useGetMypage } from '@/services/member/hooks/useGetMypage';
+import { usePostInterestRegion } from '@/services/member/hooks/usePostInterestRegion';
+import { useGetDistrict } from '@/services/region/hooks/useGetDistrict';
+import { useGetRegion } from '@/services/region/hooks/useGetRegion';
 
 export default function Region() {
+  const { mutate: postRegion } = usePostInterestRegion();
   const { mutate: deleteRegion } = useDeleteRegion();
+  const { data: getRegion } = useGetRegion();
+
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const { data: getDistrict } = useGetDistrict(selectedCity);
 
   const { data: getMypage } = useGetMypage();
   const mypage = getMypage?.data;
 
-  const data = Array.isArray(mypage?.interestLocals)
-    ? mypage.interestLocals.map((local, index) => {
-        const [city, district] = local.split(' ');
-        return {
-          id: index,
-          city,
-          district,
-        };
-      })
-    : [];
+  const data = useMemo(() => {
+    return Array.isArray(mypage?.interestLocals)
+      ? mypage.interestLocals.map((local, index) => {
+          const [city, district] = local.split(' ');
+          return {
+            id: index,
+            city,
+            district,
+          };
+        })
+      : [];
+  }, [mypage?.interestLocals]);
 
   const table = useReactTable({
     data,
@@ -42,6 +55,11 @@ export default function Region() {
   const deleteInterestRegion = (city: string, district: string) => {
     const region = city + ' ' + district;
     deleteRegion(region);
+  };
+
+  const addInterestRegion = () => {
+    const region = selectedCity + ' ' + selectedDistrict;
+    postRegion(region);
   };
 
   return (
@@ -59,22 +77,37 @@ export default function Region() {
                 <MessageCircleWarning size={16} />
                 <div>최대 5개까지 등록할 수 있습니다.</div>
               </div>
-              <div className="mb-3 flex gap-2">
-                <Select>
+
+              <div className="flex justify-center">
+                <Select onValueChange={(value) => setSelectedCity(value)}>
                   <SelectTrigger className="h-8 w-40 text-xs">
                     <SelectValue placeholder="시/도를 선택해 주세요." />
                   </SelectTrigger>
-                  <SelectContent>{/* <SelectItem></SelectItem> */}</SelectContent>
+                  <SelectContent>
+                    {getRegion?.map((region: string, index: number) => (
+                      <SelectItem key={index} value={region}>
+                        {region}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
-                <Select>
+                <Select onValueChange={(value) => setSelectedDistrict(value)}>
                   <SelectTrigger className="h-8 w-40 text-xs">
                     <SelectValue placeholder="군/구를 선택해 주세요." />
                   </SelectTrigger>
-                  <SelectContent>{/* <SelectItem></SelectItem> */}</SelectContent>
+                  <SelectContent>
+                    {Array.isArray(getDistrict) &&
+                      getDistrict?.map((district: string, index: number) => (
+                        <SelectItem key={index} value={district}>
+                          {district}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
                 </Select>
-                <div className="mr-2 flex w-full items-center justify-end text-gray-600">
+
+                <button onClick={addInterestRegion} className="mr-2 flex w-full items-center justify-end text-gray-600">
                   <SquarePlus size={22} strokeWidth={1} />
-                </div>
+                </button>
               </div>
               <hr className="mt-2 border-t border-gray-200" />
             </div>
