@@ -168,9 +168,6 @@ export default function Home() {
                 {[1, 2, 3].map((item) => (
                   <div key={item} className="flex items-center justify-between rounded-md p-2 hover:bg-gray-50">
                     <span className="font-medium">관심지역 {item}</span>
-                    <Badge variant="outline" className="border-0 bg-blue-50 text-blue-600">
-                      NEW
-                    </Badge>
                   </div>
                 ))}
                 <Button variant="outline" className="mt-2 w-full">

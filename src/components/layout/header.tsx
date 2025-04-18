@@ -9,10 +9,9 @@ import { useTokenStore } from '@/stores/auth-store';
 export default function Header() {
   const routes = [
     { name: '홈', path: '', icon: <Home size={18} /> },
-    { name: '회원가입', path: 'signup', icon: <UserPlus size={18} /> },
-    { name: '마이페이지', path: 'mypage', icon: <User size={18} /> },
-    { name: '커뮤니티', path: 'community', icon: <MessageSquare size={18} /> },
     { name: '청약 서비스', path: 'subscription', icon: <Award size={18} /> },
+    { name: '커뮤니티', path: 'community', icon: <MessageSquare size={18} /> },
+    { name: '마이페이지', path: 'mypage', icon: <User size={18} /> },
   ];
 
   const { accessToken, logout } = useTokenStore();
