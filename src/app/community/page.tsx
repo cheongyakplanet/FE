@@ -21,7 +21,7 @@ export default function community() {
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6">
         <div className="flex items-center gap-3">
-          <Home className="h-6 w-6 text-blue-500" />
+          <MessageSquare className="h-6 w-6 text-blue-500" />
           <h1 className="text-2xl font-bold text-slate-900">청약 커뮤니티</h1>
         </div>
         <div className="mt-2 flex animate-wave items-center gap-2 text-slate-600">

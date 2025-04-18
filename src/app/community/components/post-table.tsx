@@ -5,7 +5,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import dayjs from 'dayjs';
+import { Clock, Eye, MessageCircle, ThumbsUp, Users } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
 import {
   Pagination,
   PaginationContent,
@@ -27,8 +29,8 @@ interface PostDto {
   createdAt: string;
 }
 
-const truncateText = (text: string, maxLength: number = 10): string => {
-  return text.length > maxLength ? text.substring(0, maxLength) + '....' : text;
+const truncateText = (text: string, maxLength: number = 25): string => {
+  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 };
 
 export default function PostTable({ sort, searchWord }: { sort: string; searchWord: string }) {
@@ -49,67 +51,133 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
     setPage(1);
   }, [sort]);
 
+  // 임시 좋아요 수 및 댓글 수를 위한 함수
+  const getRandomLikes = (id: number) => Math.floor((id * 7) % 25);
+  const getRandomComments = (id: number) => Math.floor((id * 3) % 12);
+  const getCategory = (id: number) => {
+    const categories = ['청약정보', '후기', '질문', '정보공유', '잡담'];
+    return categories[id % categories.length];
+  };
+
   return (
-    <div>
+    <div className="w-full">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>번호</TableHead>
-            <TableHead>제목</TableHead>
-            <TableHead>글</TableHead>
-            <TableHead>작성자</TableHead>
-            <TableHead>날짜</TableHead>
-            <TableHead>좋아요 수</TableHead>
+        <TableHeader className="bg-slate-50">
+          <TableRow className="border-b">
+            <TableHead className="w-[60px] text-xs font-medium text-slate-600">번호</TableHead>
+            <TableHead className="text-xs font-medium text-slate-600">제목</TableHead>
+            <TableHead className="w-[100px] text-xs font-medium text-slate-600">작성자</TableHead>
+            <TableHead className="hidden w-[100px] text-xs font-medium text-slate-600 md:table-cell">작성일</TableHead>
+            <TableHead className="w-[100px] text-right text-xs font-medium text-slate-600">상태</TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
           {filterContents?.map((post: PostDto) => (
-            <TableRow key={post.id} onClick={() => goDetailPage(post.id)}>
-              <TableCell>{post.id}</TableCell>
-              <TableCell>{truncateText(post.title)}</TableCell>
-              <TableCell>{truncateText(post.content)}</TableCell>
-              <TableCell>{post.username}</TableCell>
-              <TableCell>{dayjs(post.createdAt).format('YYYY-MM-DD')}</TableCell>
-              <TableCell>좋아요 수</TableCell>
+            <TableRow
+              key={post.id}
+              onClick={() => goDetailPage(post.id)}
+              className="cursor-pointer border-b transition-colors hover:bg-slate-50"
+            >
+              <TableCell className="py-4 text-center text-sm text-slate-500">{post.id}</TableCell>
+              <TableCell className="py-4">
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-[10px] font-normal text-slate-600">
+                      {getCategory(post.id)}
+                    </Badge>
+                    <span className="font-medium text-slate-800">{post.title}</span>
+                    {getRandomComments(post.id) > 0 && (
+                      <span className="rounded px-1.5 py-0.5 text-[10px] text-slate-500">
+                        {getRandomComments(post.id)}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-500">{truncateText(post.content)}</p>
+                </div>
+              </TableCell>
+              <TableCell className="py-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs text-slate-600">
+                    {post.username.charAt(0)}
+                  </div>
+                  <span className="text-sm text-slate-600">{post.username}</span>
+                </div>
+              </TableCell>
+              <TableCell className="hidden py-4 text-xs text-slate-500 md:table-cell">
+                {dayjs(post.createdAt).format('YY.MM.DD')}
+              </TableCell>
+              <TableCell className="py-4 text-right">
+                <div className="flex items-center justify-end gap-3">
+                  <div className="flex items-center gap-1 text-xs text-slate-500">
+                    <Eye className="h-3 w-3" />
+                    <span>{((post.id * 3) % 100) + 5}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-slate-500">
+                    <ThumbsUp className="h-3 w-3" />
+                    <span>{getRandomLikes(post.id)}</span>
+                  </div>
+                </div>
+              </TableCell>
             </TableRow>
           ))}
+
+          {filterContents?.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={5} className="h-32 text-center">
+                <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
+                  <Users className="h-8 w-8 text-slate-200" />
+                  <p>게시글이 없습니다</p>
+                  <p className="text-xs">첫 번째 게시글을 작성해보세요</p>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
 
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              href="#"
-              onClick={() => {
-                if (page > 1) setPage(page - 1);
-              }}
-            ></PaginationPrevious>
-          </PaginationItem>
-
-          {[...Array(posts?.totalPages)].map((_, index) => (
-            <PaginationItem key={index}>
-              <PaginationLink href="#" onClick={() => setPage(index + 1)} isActive={index + 1 === page}>
-                {index + 1}
-              </PaginationLink>
+      <div className="mt-6 flex items-center justify-center">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (page > 1) setPage(page - 1);
+                }}
+                className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
+              />
             </PaginationItem>
-          ))}
 
-          {/* <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem> */}
+            {[...Array(posts?.totalPages || 0)].map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage(index + 1);
+                  }}
+                  isActive={index + 1 === page}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
 
-          <PaginationItem>
-            <PaginationNext
-              href="#"
-              onClick={() => {
-                if (page < posts?.totalPages) setPage(page + 1);
-              }}
-            ></PaginationNext>
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (page < (posts?.totalPages || 0)) setPage(page + 1);
+                }}
+                className={page >= (posts?.totalPages || 0) ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   );
 }

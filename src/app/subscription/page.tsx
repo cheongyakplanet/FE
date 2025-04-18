@@ -5,7 +5,7 @@ import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { createColumnHelper } from '@tanstack/react-table';
-import { Building, Calendar, Home, Info, ListFilter, MapPin, Tag, Users } from 'lucide-react';
+import { Award, Building, Calendar, Home, Info, ListFilter, MapPin, Tag, Users } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -118,13 +118,16 @@ function SubscriptionContent() {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="mb-2 flex items-center gap-2 text-3xl font-bold text-gray-900">
-          <ListFilter className="h-8 w-8 text-blue-500" />
-          맞춤 청약 리스트
-        </h1>
-        <p className="text-gray-600">관심 지역의 청약 정보를 확인하고 신청해보세요.</p>
+    <div className="container mx-auto px-4 py-6">
+      <div className="mb-6">
+        <div className="flex items-center gap-3">
+          <Award className="h-6 w-6 text-blue-500" />
+          <h1 className="text-2xl font-bold text-slate-900">맞춤 청약 리스트</h1>
+        </div>
+        <div className="mt-2 flex animate-wave items-center gap-2 text-slate-600">
+          <ListFilter className="h-4 w-4" />
+          <p>관심 지역의 청약 정보를 확인하고 신청해보세요!</p>
+        </div>
       </div>
 
       <div className="mb-6 rounded-lg bg-blue-50 p-4">
