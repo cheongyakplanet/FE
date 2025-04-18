@@ -2,10 +2,24 @@
 
 import { Map } from 'react-kakao-maps-sdk';
 
-import { Crown } from 'lucide-react';
+import {
+  Building,
+  Building2,
+  Crown,
+  HomeIcon,
+  LandPlot,
+  LineChart,
+  ListFilter,
+  MapPin,
+  School,
+  Search,
+} from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { useGetPopularLocations } from '@/services/home/hooks/useGetPopularLocations';
 
@@ -13,103 +27,184 @@ export default function Home() {
   const { data: popularLocations } = useGetPopularLocations();
 
   return (
-    <>
-      <div className="grid grid-cols-2 gap-16">
-        <div className="flex flex-col gap-2">
-          <Input placeholder="지역명을 입력해주세요." />
-          <Map // 지도를 표시할 Container
-            id="kakao-map"
-            center={{
-              // 지도의 중심좌표
-              lat: 37.563685889,
-              lng: 126.975584404,
-            }}
-            className="h-[400px] w-full rounded-sm border shadow-md"
-            level={8} // 지도의 확대 레벨
-          />
-        </div>
-        <div className="flex flex-col gap-6">
-          <div className="rounded border p-6 shadow-md">
-            <span className="text-lg font-medium">인기 지역</span>
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {popularLocations?.data.map((popularLocation) => {
-                return (
-                  <div
-                    className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-md bg-yellow-300/10 p-2"
-                    key={popularLocation}
-                  >
-                    <Crown size={20} className="stroke-yellow-500" />
-                    <span className="text-sm font-medium">{popularLocation}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className="rounded border p-6 shadow-md">
-            <span className="text-lg font-medium">주변 인프라</span>
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-md bg-yellow-300/10 p-2">
-                <Crown size={20} className="stroke-yellow-500" />
-                <span className="text-sm font-medium">oo학교</span>
-              </div>
-              <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-md bg-lime-300/10 p-2">
-                <Crown size={20} className="stroke-lime-500" />
-                <span className="text-sm font-medium">ㄱㄱ병원</span>
-              </div>
-              <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-md bg-rose-300/10 p-2">
-                <Crown size={20} className="stroke-rose-500" />
-                <span className="text-sm font-medium">ㅌㅌ대학교</span>
-              </div>
-            </div>
-          </div>
-          <div className="rounded border p-6 shadow-md">
-            <span className="text-lg font-medium">주변 공공시설</span>
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-md bg-yellow-300/10 p-2">
-                <Crown size={20} className="stroke-yellow-500" />
-                <span className="text-sm font-medium">aa공원</span>
-              </div>
-              <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-md bg-lime-300/10 p-2">
-                <Crown size={20} className="stroke-lime-500" />
-                <span className="text-sm font-medium">kk문화센터</span>
-              </div>
-              <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-md bg-rose-300/10 p-2">
-                <Crown size={20} className="stroke-rose-500" />
-                <span className="text-sm font-medium">ㅇㄹ병원</span>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="container mx-auto space-y-8 py-6">
+      {/* 헤더 섹션 */}
+      <div className="mb-8 text-center">
+        <h1 className="mb-2 text-3xl font-bold text-gray-900">쉽고 간편한 청약 플랫폼</h1>
+        <p className="text-gray-600">원하는 지역의 청약 정보를 한눈에 확인하세요</p>
       </div>
 
-      {/*  */}
-      <div className="grid grid-cols-2 gap-5">
-        <Card className="col-span-2">
-          <CardHeader>
-            <CardTitle as="h4">가장 인기 있는 지역</CardTitle>
+      {/* 검색 및 지도 섹션 */}
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-blue-500" />
+            지역 검색
+          </CardTitle>
+          <CardDescription>원하는, 지역명을 입력하여 청약 정보를 확인해보세요</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input className="pl-10" placeholder="지역명을 입력해주세요 (예: 강남구, 송파구)" />
+                </div>
+                <Button>검색</Button>
+              </div>
+
+              <Map
+                id="kakao-map"
+                center={{
+                  lat: 37.563685889,
+                  lng: 126.975584404,
+                }}
+                className="h-[400px] w-full rounded-md border shadow-sm"
+                level={8}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="flex items-center gap-2 text-lg font-medium">
+                <Crown className="h-5 w-5 text-yellow-500" />
+                인기 지역 TOP
+              </h3>
+
+              <div className="grid grid-cols-2 gap-3">
+                {popularLocations?.data.map((popularLocation, index) => (
+                  <Card key={popularLocation} className="cursor-pointer border-0 transition-colors hover:bg-blue-50">
+                    <CardContent className="flex items-center gap-3 p-3">
+                      <Badge
+                        variant="outline"
+                        className="flex h-8 w-8 items-center justify-center rounded-full border-0 bg-blue-100 p-0 text-blue-600"
+                      >
+                        {index + 1}
+                      </Badge>
+                      <div>
+                        <p className="font-medium">{popularLocation}</p>
+                        <p className="text-xs text-gray-500">청약 평균 경쟁률 13:1</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="pt-4">
+                <h3 className="mb-3 text-lg font-medium">지역 정보</h3>
+                <Tabs defaultValue="infrastructure">
+                  <TabsList className="mb-4 grid grid-cols-2">
+                    <TabsTrigger value="infrastructure">주변 인프라</TabsTrigger>
+                    <TabsTrigger value="public">공공시설</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="infrastructure" className="mt-0">
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-blue-50 p-3 text-center">
+                        <School className="h-6 w-6 text-blue-500" />
+                        <span className="text-sm font-medium">oo학교</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-green-50 p-3 text-center">
+                        <Building className="h-6 w-6 text-green-500" />
+                        <span className="text-sm font-medium">ㄱㄱ병원</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-purple-50 p-3 text-center">
+                        <Building2 className="h-6 w-6 text-purple-500" />
+                        <span className="text-sm font-medium">ㅌㅌ대학교</span>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="public" className="mt-0">
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-blue-50 p-3 text-center">
+                        <LandPlot className="h-6 w-6 text-blue-500" />
+                        <span className="text-sm font-medium">aa공원</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-green-50 p-3 text-center">
+                        <Building className="h-6 w-6 text-green-500" />
+                        <span className="text-sm font-medium">kk문화센터</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-purple-50 p-3 text-center">
+                        <Building className="h-6 w-6 text-purple-500" />
+                        <span className="text-sm font-medium">ㅇㄹ병원</span>
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 하단 정보 섹션 */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <Card className="border-0 shadow md:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <LineChart className="h-5 w-5 text-blue-500" />
+              청약 인기 지역 순위
+            </CardTitle>
             <CardDescription>로그인 후 원하는 지역을 찜해보세요😉</CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-5">
-            <div>graph</div>
+          <CardContent className="p-6">
+            <div className="flex h-[200px] items-center justify-center rounded-md bg-gray-50 p-10">
+              <p className="font-medium text-gray-500">청약 인기 지역 그래프가 표시됩니다</p>
+            </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle as="h4">나의 관심지역 리스트</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div>list</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle as="h4">게시판</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div>board</div>
-          </CardContent>
-        </Card>
+
+        <div className="space-y-6">
+          <Card className="border-0 shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2">
+                <HomeIcon className="h-5 w-5 text-blue-500" />
+                나의 관심지역
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {[1, 2, 3].map((item) => (
+                  <div key={item} className="flex items-center justify-between rounded-md p-2 hover:bg-gray-50">
+                    <span className="font-medium">관심지역 {item}</span>
+                    <Badge variant="outline" className="border-0 bg-blue-50 text-blue-600">
+                      NEW
+                    </Badge>
+                  </div>
+                ))}
+                <Button variant="outline" className="mt-2 w-full">
+                  더보기
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2">
+                <ListFilter className="h-5 w-5 text-blue-500" />
+                인기 게시글
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {[1, 2, 3].map((item) => (
+                  <div key={item} className="flex items-center justify-between rounded-md p-2 hover:bg-gray-50">
+                    <span className="truncate font-medium">청약 꿀팁 공유합니다 {item}</span>
+                    <Badge variant="outline" className="shrink-0 border-0 bg-red-50 text-red-600">
+                      HOT
+                    </Badge>
+                  </div>
+                ))}
+                <Button variant="outline" className="mt-2 w-full">
+                  더보기
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
