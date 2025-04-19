@@ -1,5 +1,7 @@
 'use client';
 
+import { Suspense } from 'react';
+
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
@@ -36,7 +38,7 @@ const columns = [
   columnHelper.accessor('createdAt', { id: 'createdAt' }),
 ];
 
-export default function Posts() {
+function PostContent() {
   const params = useSearchParams();
   const page = params.get('page');
   const { data: getMypost } = useGetMypost(parseInt(page ?? '0'), 6);
@@ -154,5 +156,13 @@ export default function Posts() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function Posts() {
+  return (
+    <Suspense fallback={<div>로딩 중...</div>}>
+      <PostContent />
+    </Suspense>
   );
 }
