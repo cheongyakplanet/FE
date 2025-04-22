@@ -1,6 +1,9 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Map } from 'react-kakao-maps-sdk';
+
+import { useRouter } from 'next/navigation';
 
 import {
   Building,
@@ -21,10 +24,33 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+import { useGetMyLocation } from '@/services/home/hooks/useGetMyLocations';
 import { useGetPopularLocations } from '@/services/home/hooks/useGetPopularLocations';
+import { useGetPopularPost } from '@/services/home/hooks/useGetPopularPost';
+
+import { useTokenStore } from '@/stores/auth-store';
 
 export default function Home() {
+  const router = useRouter();
   const { data: popularLocations } = useGetPopularLocations();
+  const { data: getMyLocation, refetch: GET_my_location } = useGetMyLocation();
+  const myLocations = Array.isArray(getMyLocation?.data) ? getMyLocation.data : [];
+
+  const { data: getPopularPost } = useGetPopularPost();
+  const popularPost = getPopularPost?.data ?? [];
+
+  const [showAllMyLocation, setShowAllMyLocation] = useState(false);
+  const location = showAllMyLocation ? myLocations : myLocations.slice(0, 3);
+
+  const [showAllPost, setShowAllPost] = useState(false);
+  const post = showAllPost ? popularPost : popularPost.slice(0, 3);
+
+  const { accessToken } = useTokenStore();
+  const isSignin = !!accessToken;
+
+  useEffect(() => {
+    GET_my_location();
+  }, [isSignin]);
 
   return (
     <div className="container mx-auto space-y-8 py-6">
@@ -165,14 +191,27 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {[1, 2, 3].map((item) => (
-                  <div key={item} className="flex items-center justify-between rounded-md p-2 hover:bg-gray-50">
-                    <span className="font-medium">관심지역 {item}</span>
+                {location?.map((item, index) => (
+                  <div key={item} className="flex items-center gap-2 rounded-md p-2 hover:bg-gray-50">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full border-0 bg-blue-100 p-0 text-sm font-bold text-blue-600">
+                      {index + 1}
+                    </span>
+                    <span className="font-medium">{item}</span>
                   </div>
                 ))}
-                <Button variant="outline" className="mt-2 w-full">
-                  더보기
-                </Button>
+                {myLocations?.length > 3 ? (
+                  <Button
+                    variant="outline"
+                    className="mt-2 w-full"
+                    onClick={() => setShowAllMyLocation(!showAllMyLocation)}
+                  >
+                    {showAllMyLocation ? '접기' : '더보기'}
+                  </Button>
+                ) : (
+                  <Button variant="outline" className="mt-2 w-full" onClick={() => router.push('/mypage/region')}>
+                    추가하기
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -186,16 +225,17 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {[1, 2, 3].map((item) => (
-                  <div key={item} className="flex items-center justify-between rounded-md p-2 hover:bg-gray-50">
-                    <span className="truncate font-medium">청약 꿀팁 공유합니다 {item}</span>
+                {post?.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between rounded-md p-2 hover:bg-gray-50">
+                    <span className="truncate font-medium">{item.title}</span>
                     <Badge variant="outline" className="shrink-0 border-0 bg-red-50 text-red-600">
                       HOT
                     </Badge>
                   </div>
                 ))}
-                <Button variant="outline" className="mt-2 w-full">
-                  더보기
+
+                <Button onClick={() => setShowAllPost(!showAllPost)} variant="outline" className="mt-2 w-full">
+                  {post.length < 4 ? '더보기' : '접기'}
                 </Button>
               </div>
             </CardContent>
