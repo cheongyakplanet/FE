@@ -11,3 +11,17 @@ export interface FacilitiesDto {
   longitude: number;
   latitude: number;
 }
+
+export interface SubscriptionByMyRegionDto {
+  id: string;
+  region: string;
+  city: string;
+  district: string;
+  houseManageNo: string;
+  houseNm: string;
+  bsnsMbyNm: string;
+  houseSecNm: string | null;
+  rceptBgnde: string;
+  rceptEndde: string;
+  totSuplyHshldco: string | null;
+}

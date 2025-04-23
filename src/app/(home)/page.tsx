@@ -1,5 +1,7 @@
 'use client';
 
+import SubscriptionList from './componenets/subscription-list';
+
 import { useEffect, useState } from 'react';
 import { Map } from 'react-kakao-maps-sdk';
 
@@ -21,7 +23,7 @@ import {
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -41,9 +43,12 @@ export default function Home() {
   const router = useRouter();
   const { data: popularLocations } = useGetPopularLocations();
   const [topPopularCity, topPopularDistrict] = popularLocations?.data[0].split(' ') ?? [];
+
   const { data: topPopularRegionId } = useGetSubscriptionByRegion(topPopularCity, topPopularDistrict);
   const id = topPopularRegionId?.data[0]?.id;
+
   const { data: getInfra } = useGetInfraBySubscription(id);
+
   const { data: getFacilities } = useGetFacilitiesBySubscription(id);
   const facilities = Array.isArray(getFacilities?.data) ? getFacilities.data : [];
   const facility = facilities.slice(0, 3);
@@ -222,14 +227,20 @@ export default function Home() {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
               <LineChart className="h-5 w-5 text-blue-500" />
-              청약 인기 지역 순위
+              나의 관심지역 청약
             </CardTitle>
-            <CardDescription>로그인 후 원하는 지역을 찜해보세요😉</CardDescription>
+            <CardDescription>
+              {isSignin ? '나의 관심지역 청약을 확인해보세요😉' : '로그인 후 원하는 지역을 찜해보세요😉'}
+            </CardDescription>
           </CardHeader>
-          <CardContent className="p-6">
-            <div className="flex h-[200px] items-center justify-center rounded-md bg-gray-50 p-10">
-              <p className="font-medium text-gray-500">청약 인기 지역 그래프가 표시됩니다</p>
-            </div>
+          <CardContent className="pl-16 pr-16">
+            {isSignin ? (
+              <SubscriptionList />
+            ) : (
+              <div className="flex h-[200px] items-center justify-center rounded-md bg-gray-50 p-10">
+                <p className="font-medium text-gray-500">로그인 후 이용하실 수 있습니다.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
