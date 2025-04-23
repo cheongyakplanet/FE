@@ -1,0 +1,11 @@
+import { GET_infra_by_subscription } from '../api';
+
+import { useQuery } from '@tanstack/react-query';
+
+export const useGetInfraBySubscription = (id: string) => {
+  return useQuery({
+    queryKey: [GET_infra_by_subscription.name, id],
+    queryFn: () => GET_infra_by_subscription(id),
+    select: ({ data }) => data,
+  });
+};

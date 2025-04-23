@@ -16,6 +16,7 @@ import {
   MapPin,
   School,
   Search,
+  TramFront,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -24,15 +25,58 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+import { useGetFacilitiesBySubscription } from '@/services/home/hooks/useGetFacilitiesBySubscription';
+import { useGetInfraBySubscription } from '@/services/home/hooks/useGetInfraBySubscription';
 import { useGetMyLocation } from '@/services/home/hooks/useGetMyLocations';
 import { useGetPopularLocations } from '@/services/home/hooks/useGetPopularLocations';
 import { useGetPopularPost } from '@/services/home/hooks/useGetPopularPost';
+import { useGetSubscriptionByRegion } from '@/services/home/hooks/useGetSubscriptionByRegion';
 
 import { useTokenStore } from '@/stores/auth-store';
+
+const bgColors = ['bg-blue-50', 'bg-green-50', 'bg-purple-50'];
+const iconColors = ['text-blue-500', 'text-green-500', 'text-purple-500'];
 
 export default function Home() {
   const router = useRouter();
   const { data: popularLocations } = useGetPopularLocations();
+  const [topPopularCity, topPopularDistrict] = popularLocations?.data[0].split(' ') ?? [];
+  const { data: topPopularRegionId } = useGetSubscriptionByRegion(topPopularCity, topPopularDistrict);
+  const id = topPopularRegionId?.data[0]?.id;
+  const { data: getInfra } = useGetInfraBySubscription(id);
+  const { data: getFacilities } = useGetFacilitiesBySubscription(id);
+  const facilities = Array.isArray(getFacilities?.data) ? getFacilities.data : [];
+  const facility = facilities.slice(0, 3);
+
+  const rawStations = getInfra?.data?.stations || [];
+  const rawSchools = getInfra?.data?.schools || [];
+
+  const desiredStationCount = 2;
+  const desiredSchoolCount = 1;
+  const totalLimit = 3;
+
+  const stations = rawStations.map((s: any) => ({ ...s, type: 'station' }));
+  const schools = rawSchools.map((s: any) => ({ ...s, type: 'school' }));
+
+  const selectedStations = stations.slice(0, desiredStationCount);
+  const selectedSchools = schools.slice(0, desiredSchoolCount);
+
+  let result = [...selectedStations, ...selectedSchools];
+  let remaining = totalLimit - result.length;
+
+  if (remaining > 0) {
+    if (selectedStations.length < desiredStationCount) {
+      const extraStations = stations.slice(desiredStationCount, desiredStationCount + remaining);
+      result = [...result, ...extraStations];
+      remaining -= extraStations.length;
+    }
+
+    if (remaining > 0 && selectedSchools.length < desiredSchoolCount) {
+      const extraSchools = schools.slice(desiredSchoolCount, desiredSchoolCount + remaining);
+      result = [...result, ...extraSchools];
+    }
+  }
+
   const { data: getMyLocation, refetch: GET_my_location } = useGetMyLocation();
   const myLocations = Array.isArray(getMyLocation?.data) ? getMyLocation.data : [];
 
@@ -126,35 +170,43 @@ export default function Home() {
 
                   <TabsContent value="infrastructure" className="mt-0">
                     <div className="grid grid-cols-3 gap-3">
-                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-blue-50 p-3 text-center">
-                        <School className="h-6 w-6 text-blue-500" />
-                        <span className="text-sm font-medium">oo학교</span>
-                      </div>
-                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-green-50 p-3 text-center">
-                        <Building className="h-6 w-6 text-green-500" />
-                        <span className="text-sm font-medium">ㄱㄱ병원</span>
-                      </div>
-                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-purple-50 p-3 text-center">
-                        <Building2 className="h-6 w-6 text-purple-500" />
-                        <span className="text-sm font-medium">ㅌㅌ대학교</span>
-                      </div>
+                      {result.map((item, index) =>
+                        item.type === 'station' ? (
+                          <div
+                            key={index}
+                            className="flex flex-col items-center justify-center gap-2 rounded-md bg-orange-50 p-3 text-center"
+                          >
+                            <TramFront className="h-6 w-6 text-orange-500" />
+                            <span className="text-sm font-medium">{item.name}역</span>
+                          </div>
+                        ) : (
+                          <div
+                            key={index}
+                            className="flex flex-col items-center justify-center gap-2 rounded-md bg-purple-50 p-3 text-center"
+                          >
+                            <School className="h-6 w-6 text-purple-500" />
+                            <span className="text-sm font-medium">{item.schoolName}</span>
+                          </div>
+                        ),
+                      )}
                     </div>
                   </TabsContent>
 
                   <TabsContent value="public" className="mt-0">
                     <div className="grid grid-cols-3 gap-3">
-                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-blue-50 p-3 text-center">
-                        <LandPlot className="h-6 w-6 text-blue-500" />
-                        <span className="text-sm font-medium">aa공원</span>
-                      </div>
-                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-green-50 p-3 text-center">
-                        <Building className="h-6 w-6 text-green-500" />
-                        <span className="text-sm font-medium">kk문화센터</span>
-                      </div>
-                      <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-purple-50 p-3 text-center">
-                        <Building className="h-6 w-6 text-purple-500" />
-                        <span className="text-sm font-medium">ㅇㄹ병원</span>
-                      </div>
+                      {Array.isArray(facilities) ? (
+                        facility?.map((item, index) => (
+                          <div
+                            key={index}
+                            className={`flex flex-col items-center justify-center gap-2 rounded-md ${bgColors[index]} p-3 text-center`}
+                          >
+                            <LandPlot className={`h-6 w-6 ${iconColors[index]}`} />
+                            <span className="text-sm font-medium">{item.dgmNm}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <p>주변 공공시설이 없습니다.</p>
+                      )}
                     </div>
                   </TabsContent>
                 </Tabs>
