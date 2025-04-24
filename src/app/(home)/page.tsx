@@ -4,7 +4,7 @@ import SubscriptionList from './componenets/subscription-list';
 
 import { useEffect, useState } from 'react';
 import Marquee from 'react-fast-marquee';
-import { Map } from 'react-kakao-maps-sdk';
+import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
 import { useRouter } from 'next/navigation';
 
@@ -66,6 +66,42 @@ export default function Home() {
   const { accessToken } = useTokenStore();
   const isSignin = !!accessToken;
 
+  const [searchRegion, setSearchRegion] = useState('');
+  const [position, setPosition] = useState({
+    lat: 37.563685889,
+    lng: 126.975584404,
+  });
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setPosition({ lat, lng });
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!searchRegion.trim()) return;
+
+    if (typeof window !== 'undefined' && window.kakao?.maps?.load) {
+      window.kakao.maps.load(() => {
+        const geocoder = new window.kakao.maps.services.Geocoder();
+
+        geocoder.addressSearch(searchRegion, function (result, status) {
+          if (status === window.kakao.maps.services.Status.OK) {
+            const coords = {
+              lat: parseFloat(result[0].y),
+              lng: parseFloat(result[0].x),
+            };
+            setPosition(coords);
+          }
+        });
+      });
+    }
+  }, [searchRegion]);
+
   useEffect(() => {
     GET_my_location();
   }, [isSignin]);
@@ -93,20 +129,19 @@ export default function Home() {
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input className="pl-10" placeholder="지역명을 입력해주세요 (예: 강남구, 송파구)" />
+                  <Input
+                    value={searchRegion}
+                    onChange={(e) => setSearchRegion(e.target.value)}
+                    className="pl-10"
+                    placeholder="지역명을 입력해주세요 (예: 강남구, 송파구)"
+                  />
                 </div>
                 <Button>검색</Button>
               </div>
 
-              <Map
-                id="kakao-map"
-                center={{
-                  lat: 37.563685889,
-                  lng: 126.975584404,
-                }}
-                className="h-[400px] w-full rounded-md border shadow-sm"
-                level={8}
-              />
+              <Map id="kakao-map" center={position} className="h-[400px] w-full rounded-md border shadow-sm" level={5}>
+                <MapMarker position={position} />
+              </Map>
             </div>
 
             <div className="space-y-4">
