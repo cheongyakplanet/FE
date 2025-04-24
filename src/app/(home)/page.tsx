@@ -3,27 +3,16 @@
 import SubscriptionList from './componenets/subscription-list';
 
 import { useEffect, useState } from 'react';
+import Marquee from 'react-fast-marquee';
 import { Map } from 'react-kakao-maps-sdk';
 
 import { useRouter } from 'next/navigation';
 
-import {
-  Building,
-  Building2,
-  Crown,
-  HomeIcon,
-  LandPlot,
-  LineChart,
-  ListFilter,
-  MapPin,
-  School,
-  Search,
-  TramFront,
-} from 'lucide-react';
+import { Crown, HomeIcon, LandPlot, LineChart, ListFilter, MapPin, School, Search, TramFront } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -36,8 +25,16 @@ import { useGetSubscriptionByRegion } from '@/services/home/hooks/useGetSubscrip
 
 import { useTokenStore } from '@/stores/auth-store';
 
-const bgColors = ['bg-blue-50', 'bg-green-50', 'bg-purple-50'];
-const iconColors = ['text-blue-500', 'text-green-500', 'text-purple-500'];
+const bgColors = ['bg-blue-50', 'bg-red-50', 'bg-green-50', 'bg-purple-50', 'bg-orange-50', 'bg-pink-50'];
+const iconColors = [
+  'text-blue-500',
+  'text-red-500',
+  'text-green-500',
+  'text-purple-500',
+
+  'text-orange-500',
+  'text-pink-500',
+];
 
 export default function Home() {
   const router = useRouter();
@@ -48,39 +45,11 @@ export default function Home() {
   const id = topPopularRegionId?.data[0]?.id;
 
   const { data: getInfra } = useGetInfraBySubscription(id);
+  const stations = getInfra?.data?.stations ?? [];
+  const schools = getInfra?.data?.schools ?? [];
 
   const { data: getFacilities } = useGetFacilitiesBySubscription(id);
   const facilities = Array.isArray(getFacilities?.data) ? getFacilities.data : [];
-  const facility = facilities.slice(0, 3);
-
-  const rawStations = getInfra?.data?.stations || [];
-  const rawSchools = getInfra?.data?.schools || [];
-
-  const desiredStationCount = 2;
-  const desiredSchoolCount = 1;
-  const totalLimit = 3;
-
-  const stations = rawStations.map((s: any) => ({ ...s, type: 'station' }));
-  const schools = rawSchools.map((s: any) => ({ ...s, type: 'school' }));
-
-  const selectedStations = stations.slice(0, desiredStationCount);
-  const selectedSchools = schools.slice(0, desiredSchoolCount);
-
-  let result = [...selectedStations, ...selectedSchools];
-  let remaining = totalLimit - result.length;
-
-  if (remaining > 0) {
-    if (selectedStations.length < desiredStationCount) {
-      const extraStations = stations.slice(desiredStationCount, desiredStationCount + remaining);
-      result = [...result, ...extraStations];
-      remaining -= extraStations.length;
-    }
-
-    if (remaining > 0 && selectedSchools.length < desiredSchoolCount) {
-      const extraSchools = schools.slice(desiredSchoolCount, desiredSchoolCount + remaining);
-      result = [...result, ...extraSchools];
-    }
-  }
 
   const { data: getMyLocation, refetch: GET_my_location } = useGetMyLocation();
   const myLocations = Array.isArray(getMyLocation?.data) ? getMyLocation.data : [];
@@ -174,43 +143,50 @@ export default function Home() {
                   </TabsList>
 
                   <TabsContent value="infrastructure" className="mt-0">
-                    <div className="grid grid-cols-3 gap-3">
-                      {result.map((item, index) =>
-                        item.type === 'station' ? (
-                          <div
-                            key={index}
-                            className="flex flex-col items-center justify-center gap-2 rounded-md bg-orange-50 p-3 text-center"
-                          >
-                            <TramFront className="h-6 w-6 text-orange-500" />
-                            <span className="text-sm font-medium">{item.name}역</span>
-                          </div>
-                        ) : (
-                          <div
-                            key={index}
-                            className="flex flex-col items-center justify-center gap-2 rounded-md bg-purple-50 p-3 text-center"
-                          >
-                            <School className="h-6 w-6 text-purple-500" />
-                            <span className="text-sm font-medium">{item.schoolName}</span>
-                          </div>
-                        ),
+                    <div className="flex justify-center">
+                      {stations.length === 0 && schools.length === 0 ? (
+                        <p className="text-xs">주변 인프라 정보가 없습니다.</p>
+                      ) : (
+                        <Marquee pauseOnHover gradient={false} speed={30}>
+                          {stations.map((item, index) => (
+                            <div
+                              key={index}
+                              className="mr-3 flex w-[160px] flex-col items-center justify-center gap-2 rounded-md bg-orange-50 p-3 text-center"
+                            >
+                              <TramFront className="h-6 w-6 text-orange-500" />
+                              <span className="text-sm font-medium">{item.name}역</span>
+                            </div>
+                          ))}
+                          {schools.map((item, index) => (
+                            <div
+                              key={index}
+                              className="mr-3 flex w-[160px] flex-col items-center justify-center gap-2 rounded-md bg-purple-50 p-3 text-center"
+                            >
+                              <School className="h-6 w-6 text-purple-500" />
+                              <span className="text-sm font-medium">{item.schoolName}</span>
+                            </div>
+                          ))}
+                        </Marquee>
                       )}
                     </div>
                   </TabsContent>
 
                   <TabsContent value="public" className="mt-0">
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="flex justify-center">
                       {Array.isArray(facilities) ? (
-                        facility?.map((item, index) => (
-                          <div
-                            key={index}
-                            className={`flex flex-col items-center justify-center gap-2 rounded-md ${bgColors[index]} p-3 text-center`}
-                          >
-                            <LandPlot className={`h-6 w-6 ${iconColors[index]}`} />
-                            <span className="text-sm font-medium">{item.dgmNm}</span>
-                          </div>
-                        ))
+                        <Marquee pauseOnHover gradient={false} speed={30}>
+                          {facilities?.map((item, index) => (
+                            <div
+                              key={index}
+                              className={`mr-3 flex w-[160px] flex-col items-center justify-center gap-2 rounded-md ${bgColors[index % 6]} p-3 text-center`}
+                            >
+                              <LandPlot className={`h-6 w-6 ${iconColors[index % 6]}`} />
+                              <span className="text-sm font-medium">{item.dgmNm}</span>
+                            </div>
+                          ))}
+                        </Marquee>
                       ) : (
-                        <p>주변 공공시설이 없습니다.</p>
+                        <p className="text-xs">주변 공공시설 정보가 없습니다.</p>
                       )}
                     </div>
                   </TabsContent>

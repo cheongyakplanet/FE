@@ -25,3 +25,30 @@ export interface SubscriptionByMyRegionDto {
   rceptEndde: string;
   totSuplyHshldco: string | null;
 }
+
+export interface InfraDto {
+  stations: Station[];
+  schools: School[];
+}
+
+export interface Station {
+  number: string;
+  name: string;
+  lilne: string;
+  operator: string;
+  latitude: number;
+  longitude: number;
+  distance: number;
+  transger: boolean;
+}
+
+export interface School {
+  schoolId: string;
+  schoolName: string;
+  category: string;
+  type: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  distance: number;
+}

@@ -1,4 +1,4 @@
-import { FacilitiesDto, PopularPostDto, SubscriptionByMyRegionDto } from './types';
+import { FacilitiesDto, InfraDto, PopularPostDto, SubscriptionByMyRegionDto } from './types';
 
 import api from '@/lib/api';
 
@@ -25,7 +25,7 @@ export const GET_subscription_by_region = async (city: string, district: string)
 };
 
 /** 청약 물건의 주변 인프라 */
-export const GET_infra_by_subscription = async (id: string) => {
+export const GET_infra_by_subscription = async (id: string) : Promise<ApiResponse<InfraDto>>=> {
   return await api.get(`/api/info/subscription/${id}/detail/infra`, { params: { id: id } });
 };
 
