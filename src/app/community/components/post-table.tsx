@@ -27,6 +27,8 @@ interface PostDto {
   content: string;
   username: string;
   createdAt: string;
+  views: number;
+  likes: number;
 }
 
 const truncateText = (text: string, maxLength: number = 25): string => {
@@ -52,8 +54,6 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
   }, [sort]);
 
   // 임시 좋아요 수 및 댓글 수를 위한 함수
-  const getRandomLikes = (id: number) => Math.floor((id * 7) % 25);
-  const getRandomComments = (id: number) => Math.floor((id * 3) % 12);
   const getCategory = (id: number) => {
     const categories = ['청약정보', '후기', '질문', '정보공유', '잡담'];
     return categories[id % categories.length];
@@ -87,11 +87,6 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
                       {getCategory(post.id)}
                     </Badge>
                     <span className="font-medium text-slate-800">{post.title}</span>
-                    {getRandomComments(post.id) > 0 && (
-                      <span className="rounded px-1.5 py-0.5 text-[10px] text-slate-500">
-                        {getRandomComments(post.id)}
-                      </span>
-                    )}
                   </div>
                   <p className="text-xs text-slate-500">{truncateText(post.content)}</p>
                 </div>
@@ -111,11 +106,11 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
                 <div className="flex items-center justify-end gap-3">
                   <div className="flex items-center gap-1 text-xs text-slate-500">
                     <Eye className="h-3 w-3" />
-                    <span>{((post.id * 3) % 100) + 5}</span>
+                    <span>{post.views}</span>
                   </div>
                   <div className="flex items-center gap-1 text-xs text-slate-500">
                     <ThumbsUp className="h-3 w-3" />
-                    <span>{getRandomLikes(post.id)}</span>
+                    <span>{post.likes}</span>
                   </div>
                 </div>
               </TableCell>
