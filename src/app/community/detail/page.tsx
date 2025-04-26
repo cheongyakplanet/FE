@@ -57,6 +57,8 @@ function DetailContent() {
 
   const { data } = useGetPostDetail(id as string);
   const [like, setLike] = useState(data?.likes);
+  const [dislike, setDislike] = useState(data?.dislikes);
+  const [isAction, setIsAction] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [showCommentForm, setShowCommentForm] = useState(false);
   const commentFormRef = useRef<HTMLDivElement>(null);
@@ -68,11 +70,13 @@ function DetailContent() {
   const updateLike = (id: string) => {
     setLike(like + 1);
     PostLike(id);
+    setIsAction(true);
   };
 
   const updateDislike = (id: string) => {
-    setLike(like - 1);
+    setDislike(dislike + 1);
     PostDislike(id);
+    setIsAction(true);
   };
 
   const handleComment = (content: string) => {
@@ -101,6 +105,11 @@ function DetailContent() {
 
   useEffect(() => {
     setLike(data?.likes);
+    setDislike(data?.dislikes);
+
+    if (data?.myReaction) {
+      setIsAction(true);
+    }
   }, [data]);
 
   if (!data) {
@@ -172,28 +181,36 @@ function DetailContent() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm">
-              <ThumbsUp className="h-4 w-4 text-slate-500" />
-              <span className="font-medium text-slate-700">{like}</span>
-            </div>
-
             <div className="flex gap-1">
-              <Button
-                onClick={() => updateLike(data.id)}
-                size="sm"
-                variant="outline"
-                className="h-8 w-8 rounded-md p-0 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              >
-                <ThumbsUp className="h-4 w-4" />
-              </Button>
-              <Button
-                onClick={() => updateDislike(data.id)}
-                size="sm"
-                variant="outline"
-                className="h-8 w-8 rounded-md p-0 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              >
-                <ThumbsDown className="h-4 w-4" />
-              </Button>
+              <div>
+                <Button
+                  onClick={() => updateLike(data.id)}
+                  size="sm"
+                  variant="outline"
+                  className="rounded-md p-0 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  disabled={isAction}
+                >
+                  <div className="flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm">
+                    <ThumbsUp className="text-slate-500" />
+                    <span className="font-medium text-slate-700">{like}</span>
+                  </div>
+                </Button>
+              </div>
+
+              <div>
+                <Button
+                  onClick={() => updateDislike(data.id)}
+                  size="sm"
+                  variant="outline"
+                  className="rounded-md p-0 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  disabled={isAction}
+                >
+                  <div className="flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm">
+                    <ThumbsDown className="text-slate-500" />
+                    <span className="font-medium text-slate-700">{dislike}</span>
+                  </div>
+                </Button>
+              </div>
             </div>
           </div>
         </CardFooter>
