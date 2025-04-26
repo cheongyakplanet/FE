@@ -41,9 +41,6 @@ export default function MyPage() {
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-xl font-bold">내 프로필</CardTitle>
-              <Button variant="ghost" size="icon">
-                <Settings className="h-5 w-5 text-slate-500" />
-              </Button>
             </div>
             <CardDescription>내 계정 정보와 청약 자격을 관리하세요</CardDescription>
           </CardHeader>
@@ -63,52 +60,12 @@ export default function MyPage() {
                   </Badge>
                 </div>
                 <p className="text-sm text-slate-600">{me?.data.email}</p>
-
-                <div className="mt-2 flex items-center gap-1.5">
-                  <Badge variant="secondary" className="bg-slate-100 px-2 py-1 text-xs text-slate-600">
-                    <BellRing className="mr-1 h-3 w-3" />
-                    알림 5
-                  </Badge>
-
-                  <Badge variant="secondary" className="bg-slate-100 px-2 py-1 text-xs text-slate-600">
-                    <ListChecks className="mr-1 h-3 w-3" />
-                    자격검증
-                  </Badge>
-                </div>
               </div>
             </div>
 
             <Separator className="my-4" />
-
-            <div className="space-y-3">
-              <div>
-                <div className="mb-1 flex items-center justify-between">
-                  <p className="text-sm font-medium">청약 자격 완성도</p>
-                  <span className="text-xs font-medium text-blue-600">62%</span>
-                </div>
-                <Progress value={62} className="h-2 bg-slate-100" />
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">
-                  <CheckCircle className="mr-1 h-3 w-3" /> 무주택자
-                </Badge>
-                <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-700">
-                  청약통장
-                </Badge>
-                <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-700">
-                  소득증빙
-                </Badge>
-              </div>
-            </div>
           </CardContent>
-          <CardFooter className="space-x-2 border-t border-slate-100 pt-4">
-            <Button
-              variant="outline"
-              className="w-full border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
-            >
-              내 청약 자격 업데이트
-            </Button>
+          <CardFooter className="space-x-2">
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="w-full bg-blue-500 hover:bg-blue-600">정보 연동하기</Button>
@@ -153,81 +110,80 @@ export default function MyPage() {
             </Dialog>
           </CardFooter>
         </Card>
-
-        {/* 청약 정보 카드 */}
-        <Card className="border-blue-100 shadow-sm">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xl font-bold">청약 현황</CardTitle>
-              <Button variant="ghost" size="icon">
-                <Home className="h-5 w-5 text-slate-500" />
-              </Button>
-            </div>
-            <CardDescription>내가 관심있는 청약 정보를 확인하세요</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-600">관심 청약</span>
-                  <Badge>3</Badge>
-                </div>
-                <p className="mt-2 text-2xl font-bold text-blue-600">3</p>
-                <p className="mt-1 text-xs text-slate-500">최근 추가: 2023.09.15</p>
-              </div>
-
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-600">청약 알림</span>
-                  <Badge variant="destructive">2</Badge>
-                </div>
-                <p className="mt-2 text-2xl font-bold text-red-500">2</p>
-                <p className="mt-1 text-xs text-slate-500">마감 임박: 2건</p>
-              </div>
-
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-600">관심 지역</span>
-                </div>
-                <p className="mt-2 text-2xl font-bold text-slate-700">4</p>
-                <p className="mt-1 text-xs text-slate-500">서울, 경기 외 2곳</p>
-              </div>
-
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-600">게시글</span>
-                </div>
-                <p className="mt-2 text-2xl font-bold text-slate-700">5</p>
-                <p className="mt-1 text-xs text-slate-500">댓글: 12</p>
-              </div>
-            </div>
-
-            <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
-              <div className="flex items-start gap-3">
-                <Building className="mt-0.5 h-5 w-5 text-blue-600" />
-                <div>
-                  <h4 className="font-medium text-blue-900">다음 청약 일정</h4>
-                  <p className="mt-1 text-sm text-blue-700">서울 강남 헤리티지 아파트</p>
-                  <p className="text-xs text-blue-600">청약 시작: 2023.10.15</p>
-                  <Button size="sm" className="mt-2 h-8 bg-blue-600 hover:bg-blue-700">
-                    청약 상세 보기
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="border-t border-slate-100 pt-4">
-            <Button
-              variant="outline"
-              className="w-full border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
-            >
-              모든 청약 정보 보기
-            </Button>
-          </CardFooter>
-        </Card>
+        <MyMenu />
       </div>
 
-      <MyMenu />
+      {/* 청약 정보 카드 */}
+      <Card className="border-blue-100 shadow-sm">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl font-bold">청약 현황</CardTitle>
+            <Button variant="ghost" size="icon">
+              <Home className="h-5 w-5 text-slate-500" />
+            </Button>
+          </div>
+          <CardDescription>내가 관심있는 청약 정보를 확인하세요</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-600">관심 청약</span>
+                <Badge>3</Badge>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-blue-600">3</p>
+              <p className="mt-1 text-xs text-slate-500">최근 추가: 2023.09.15</p>
+            </div>
+
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-600">청약 알림</span>
+                <Badge variant="destructive">2</Badge>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-red-500">2</p>
+              <p className="mt-1 text-xs text-slate-500">마감 임박: 2건</p>
+            </div>
+
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-600">관심 지역</span>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-slate-700">4</p>
+              <p className="mt-1 text-xs text-slate-500">서울, 경기 외 2곳</p>
+            </div>
+
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-600">게시글</span>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-slate-700">5</p>
+              <p className="mt-1 text-xs text-slate-500">댓글: 12</p>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
+            <div className="flex items-start gap-3">
+              <Building className="mt-0.5 h-5 w-5 text-blue-600" />
+              <div>
+                <h4 className="font-medium text-blue-900">다음 청약 일정</h4>
+                <p className="mt-1 text-sm text-blue-700">서울 강남 헤리티지 아파트</p>
+                <p className="text-xs text-blue-600">청약 시작: 2023.10.15</p>
+                <Button size="sm" className="mt-2 h-8 bg-blue-600 hover:bg-blue-700">
+                  청약 상세 보기
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="border-t border-slate-100 pt-4">
+          <Button
+            variant="outline"
+            className="w-full border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+          >
+            모든 청약 정보 보기
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
