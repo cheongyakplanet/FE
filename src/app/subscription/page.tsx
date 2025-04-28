@@ -147,7 +147,7 @@ function SubscriptionContent() {
               <Card
                 className="relative flex h-full cursor-pointer flex-col border-0 transition-all hover:shadow-lg"
                 key={row.id}
-                onClick={() => router.push(`/subscription/${row.id}`)}
+                onClick={() => router.push(`/subscription/${row.getValue('id')}`)}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
