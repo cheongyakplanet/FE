@@ -9,7 +9,6 @@ import { useTokenStore } from '@/stores/auth-store';
 export default function Header() {
   const routes = [
     { name: '홈', path: '', icon: <Home size={18} /> },
-    { name: '청약캘린더', path: 'subscription/calender', icon: <Calendar size={18} /> },
     { name: '청약 서비스', path: 'subscription', icon: <Award size={18} /> },
     { name: '커뮤니티', path: 'community', icon: <MessageSquare size={18} /> },
     { name: '마이페이지', path: 'mypage', icon: <User size={18} /> },
@@ -27,11 +26,6 @@ export default function Header() {
               <span className="text-indigo-300">청약</span>플래닛
             </h1>
           </Link>
-          <div className="scrollbar-hide flex overflow-x-auto px-10 py-1 text-indigo-200 md:text-sm">
-            <Link href="/subscription/guide" className="whitespace-nowrap text-xs hover:text-white">
-              초보자 가이드
-            </Link>
-          </div>
         </div>
 
         <nav className="flex items-center gap-1 md:gap-3">
@@ -67,6 +61,20 @@ export default function Header() {
             </Link>
           )}
         </nav>
+      </div>
+
+      <div className="mx-auto max-w-screen-lg">
+        <div className="scrollbar-hide flex overflow-x-auto px-4 py-2 text-xs text-indigo-200 md:text-sm">
+          <Link href="/subscription/guide" className="mr-4 whitespace-nowrap hover:text-white">
+            초보자 가이드
+          </Link>
+          <Link href="/subscription/calendar" className="mr-4 whitespace-nowrap hover:text-white">
+            청약 캘린더
+          </Link>
+          <Link href="/subscription/calculator" className="mr-4 whitespace-nowrap hover:text-white">
+            가점 계산기
+          </Link>
+        </div>
       </div>
     </header>
   );
