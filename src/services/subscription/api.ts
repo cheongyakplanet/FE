@@ -1,4 +1,4 @@
-import { SubscriptionDetailDto, SubscriptionListDto } from './types';
+import { LikeSubscriptionDto, SubscriptionDetailDto, SubscriptionListDto } from './types';
 
 import api from '@/lib/api';
 
@@ -15,4 +15,14 @@ export const GET_all_subscription = async ({
 /** id로 1건의 청약 물건 조회 */
 export const GET_subscription_by_id = async (id: string): Promise<ApiResponse<SubscriptionDetailDto>> => {
   return await api.get(`/api/info/subscription/${id}`);
+};
+
+/** 관심 청약_1주일 이내 시작 */
+export const GET_upcoming_subscription = async (): Promise<ApiResponse<LikeSubscriptionDto[]>> => {
+  return await api.get('/api/info/subscription/like/upcoming');
+};
+
+/** 관심 청약_1주일 이내 종료  */
+export const GET_closing_subscription = async (): Promise<ApiResponse<LikeSubscriptionDto[]>> => {
+  return await api.get('/api/info/subscription/like/closing');
 };

@@ -2,8 +2,10 @@
 
 import MyMenu from './components/my-menu';
 
-import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import { redirect, useRouter } from 'next/navigation';
 
+import dayjs from 'dayjs';
 import { BellRing, Building, CheckCircle, Home, Info, ListChecks, Settings, UserCircle } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +17,8 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 
 import { useGetMypage } from '@/services/member/hooks/useGetMypage';
+import { useGetClosingSubscription } from '@/services/subscription/hooks/useGetClosingSubscription';
+import { useGetUpcomingSubscription } from '@/services/subscription/hooks/useGetUpcomingSubscription';
 
 import { useTokenStore } from '@/stores/auth-store';
 
@@ -26,8 +30,15 @@ import { useTokenStore } from '@/stores/auth-store';
 export default function MyPage() {
   const token = useTokenStore((state) => state);
 
+  const router = useRouter();
+
   const { data: me } = useGetMypage();
-  console.log(me?.data);
+
+  const { data: upcomingSubscription } = useGetUpcomingSubscription();
+  const upcomingSub = upcomingSubscription?.data;
+
+  const { data: closingSubscription } = useGetClosingSubscription();
+  const closingSub = closingSubscription?.data;
 
   if (!token.accessToken) {
     redirect('/signin');
@@ -118,9 +129,6 @@ export default function MyPage() {
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-bold">청약 현황</CardTitle>
-            <Button variant="ghost" size="icon">
-              <Home className="h-5 w-5 text-slate-500" />
-            </Button>
           </div>
           <CardDescription>내가 관심있는 청약 정보를 확인하세요</CardDescription>
         </CardHeader>
@@ -128,55 +136,36 @@ export default function MyPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-600">관심 청약</span>
-                <Badge>3</Badge>
+                <span className="text-sm font-medium text-slate-600">청약 알림</span>
+                <Badge className="bg-blue-600 hover:bg-blue-500">{upcomingSub?.length}</Badge>
               </div>
-              <p className="mt-2 text-2xl font-bold text-blue-600">3</p>
-              <p className="mt-1 text-xs text-slate-500">최근 추가: 2023.09.15</p>
+              <button
+                onClick={() => router.push('/mypage/subscription/upcoming')}
+                className="mt-2 text-2xl font-bold text-blue-600"
+              >
+                {upcomingSub?.length}
+              </button>
+              <p className="mt-1 text-xs text-slate-500">시작 임박: {upcomingSub?.length}건</p>
             </div>
 
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-slate-600">청약 알림</span>
-                <Badge variant="destructive">2</Badge>
+                <Badge variant="destructive">{closingSub?.length}</Badge>
               </div>
-              <p className="mt-2 text-2xl font-bold text-red-500">2</p>
-              <p className="mt-1 text-xs text-slate-500">마감 임박: 2건</p>
-            </div>
-
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-600">관심 지역</span>
-              </div>
-              <p className="mt-2 text-2xl font-bold text-slate-700">4</p>
-              <p className="mt-1 text-xs text-slate-500">서울, 경기 외 2곳</p>
-            </div>
-
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-600">게시글</span>
-              </div>
-              <p className="mt-2 text-2xl font-bold text-slate-700">5</p>
-              <p className="mt-1 text-xs text-slate-500">댓글: 12</p>
-            </div>
-          </div>
-
-          <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
-            <div className="flex items-start gap-3">
-              <Building className="mt-0.5 h-5 w-5 text-blue-600" />
-              <div>
-                <h4 className="font-medium text-blue-900">다음 청약 일정</h4>
-                <p className="mt-1 text-sm text-blue-700">서울 강남 헤리티지 아파트</p>
-                <p className="text-xs text-blue-600">청약 시작: 2023.10.15</p>
-                <Button size="sm" className="mt-2 h-8 bg-blue-600 hover:bg-blue-700">
-                  청약 상세 보기
-                </Button>
-              </div>
+              <button
+                onClick={() => router.push('/mypage/subscription/closing')}
+                className="mt-2 text-2xl font-bold text-red-500"
+              >
+                {closingSub?.length}
+              </button>
+              <p className="mt-1 text-xs text-slate-500">마감 임박: {closingSub?.length}건</p>
             </div>
           </div>
         </CardContent>
         <CardFooter className="border-t border-slate-100 pt-4">
           <Button
+            onClick={() => router.push('/subscription')}
             variant="outline"
             className="w-full border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
           >

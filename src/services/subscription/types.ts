@@ -113,3 +113,18 @@ export interface SubscriptionDetailDto {
   specialSupplyTarget: SpecialSupplyTargetDto[];
   supplyTarget: SupplyTargetDto[];
 }
+
+export interface LikeSubscriptionDto {
+  id: string;
+  subscriptionId: string;
+  houseNm: string;
+  hssplyAdres: string;
+  region: string;
+  city: string;
+  district: string;
+  detail: string;
+  rceptBgnde: string;
+  rceptEndde: string;
+  userEmail: string;
+  createdAt: string;
+}
