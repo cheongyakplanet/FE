@@ -5,9 +5,9 @@ import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { createColumnHelper } from '@tanstack/react-table';
-import { Award, Building, Calendar, Home, Info, ListFilter, MapPin, Tag, Users } from 'lucide-react';
+import dayjs from 'dayjs';
+import { Award, Calendar, Home, Info, ListFilter, MapPin, Pickaxe, Tag, Users } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -34,6 +34,7 @@ const columns = [
   columnHelper.accessor('houseNm', { id: 'houseNm' }),
   columnHelper.accessor('bsnsMbyNm', { id: 'bsnsMbyNm' }),
   columnHelper.accessor('houseSecdNm', { id: 'houseSecdNm' }),
+  columnHelper.accessor('rentSecdNm', { id: 'rentSecdNm' }),
   columnHelper.accessor('rceptBgnde', { id: 'rceptBgnde' }),
   columnHelper.accessor('rceptEndde', { id: 'rceptEndde' }),
   columnHelper.accessor('totSuplyHshldco', { id: 'totSuplyHshldco' }),
@@ -87,34 +88,7 @@ function SubscriptionContent() {
 
   // 날짜 포맷 함수
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
-  };
-
-  // 주택 유형에 따른 색상 및 아이콘 결정 함수
-  const getHouseTypeInfo = (houseType: string) => {
-    const types: Record<string, { color: string; icon: React.ReactNode }> = {
-      공공분양: { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: <Building className="mr-1 h-3.5 w-3.5" /> },
-      민간분양: {
-        color: 'bg-green-100 text-green-800 border-green-200',
-        icon: <Building className="mr-1 h-3.5 w-3.5" />,
-      },
-      임대주택: {
-        color: 'bg-purple-100 text-purple-800 border-purple-200',
-        icon: <Home className="mr-1 h-3.5 w-3.5" />,
-      },
-      행복주택: {
-        color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-        icon: <Home className="mr-1 h-3.5 w-3.5" />,
-      },
-    };
-
-    return (
-      types[houseType] || {
-        color: 'bg-gray-100 text-gray-800 border-gray-200',
-        icon: <Tag className="mr-1 h-3.5 w-3.5" />,
-      }
-    );
+    return dateString ? dayjs(dateString).format('YYYY.MM.DD') : '';
   };
 
   return (
@@ -140,9 +114,6 @@ function SubscriptionContent() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {table.getRowModel().rows?.length ? (
           table.getRowModel().rows.map((row) => {
-            const houseType = row.getValue('houseSecdNm') as string;
-            const typeInfo = getHouseTypeInfo(houseType);
-
             return (
               <Card
                 className="relative flex h-full cursor-pointer flex-col border-0 transition-all hover:shadow-lg"
@@ -159,14 +130,14 @@ function SubscriptionContent() {
 
                   <div className="mt-2 flex flex-wrap gap-2">
                     <div
-                      className={`flex items-center rounded-full border px-3 py-1 text-xs font-medium ${typeInfo.color}`}
+                      className={`flex items-center truncate rounded-full border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800`}
                     >
-                      {typeInfo.icon}
-                      {houseType}
+                      <Tag className="mr-1 h-3.5 w-3.5" />
+                      {row.getValue('rentSecdNm')}
                     </div>
                     <div className="flex items-center rounded-full border bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800">
                       <Users className="mr-1 h-3.5 w-3.5" />
-                      {row.getValue('totSuplyHshldco')}세대
+                      {row.getValue('totSuplyHshldco') || 0}세대
                     </div>
                   </div>
 
@@ -180,15 +151,15 @@ function SubscriptionContent() {
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-500" />
-                      <span className="font-medium">접수기간:</span>
+                      <span className="text-xs font-medium">접수기간:</span>
                       <span>
                         {formatDate(row.getValue('rceptBgnde'))} ~ {formatDate(row.getValue('rceptEndde'))}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Building className="h-4 w-4 text-gray-500" />
-                      <span className="font-medium">시행사:</span>
+                      <Pickaxe className="h-4 w-4 text-gray-500" />
+                      <span className="text-xs font-medium">시행사:</span>
                       <span className="line-clamp-1">{row.getValue('bsnsMbyNm')}</span>
                     </div>
                   </div>

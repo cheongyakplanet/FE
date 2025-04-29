@@ -8,6 +8,7 @@ export interface SubscriptionListDto {
   houseNm: string;
   bsnsMbyNm: string;
   houseSecdNm: string | null;
+  rentSecdNm: string | null;
   rceptBgnde: string;
   rceptEndde: string;
   totSuplyHshldco: string | null;
@@ -77,8 +78,6 @@ export interface SubscriptionDetailDto {
   hssplyAdres: string;
   hssplyZip: string;
   imprmnBsnsAt: string;
-  latitude: string;
-  longitude: string;
   lrsclBldlndAt: string;
   mdatTrgetAreaSecd: string;
   mdhsTelno: string;
@@ -105,6 +104,11 @@ export interface SubscriptionDetailDto {
   city: string;
   district: string;
   detail: string;
+  latitude: string;
+  longitude: string;
+  totalSupplyCountNormal: number;
+  totalSupplyCountSpecial: number;
+  totalSupplyCountTotal: number;
   priceInfo: PriceInfoDto[];
   specialSupplyTarget: SpecialSupplyTargetDto[];
   supplyTarget: SupplyTargetDto[];
