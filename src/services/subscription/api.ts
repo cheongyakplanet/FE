@@ -1,4 +1,4 @@
-import { LikeSubscriptionDto, SubscriptionDetailDto, SubscriptionListDto } from './types';
+import { LikeSubscriptionDto, SubscriptionByMonthDto, SubscriptionDetailDto, SubscriptionListDto } from './types';
 
 import api from '@/lib/api';
 
@@ -25,4 +25,11 @@ export const GET_upcoming_subscription = async (): Promise<ApiResponse<LikeSubsc
 /** 관심 청약_1주일 이내 종료  */
 export const GET_closing_subscription = async (): Promise<ApiResponse<LikeSubscriptionDto[]>> => {
   return await api.get('/api/info/subscription/like/closing');
+};
+
+export const GET_subscription_by_month = async (
+  year: string,
+  month: string,
+): Promise<ApiResponse<SubscriptionByMonthDto[]>> => {
+  return await api.get('/api/info/subscription/bymonth', { params: { year: year, month: month } });
 };

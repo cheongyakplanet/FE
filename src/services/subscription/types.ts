@@ -124,3 +124,9 @@ export interface LikeSubscriptionDto {
   userEmail: string;
   createdAt: string;
 }
+
+export interface SubscriptionByMonthDto {
+  houseNm: string;
+  rceptBgnde: string;
+  rceptEndde: string;
+}
