@@ -130,6 +130,7 @@ export interface LikeSubscriptionDto {
 }
 
 export interface SubscriptionByMonthDto {
+  id: string;
   houseNm: string;
   rceptBgnde: string;
   rceptEndde: string;
