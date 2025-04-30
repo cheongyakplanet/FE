@@ -124,6 +124,9 @@ export default function Calendar() {
             nav_button_next: 'absolute right-10 top-1/2 -translate-y-1/2 border-none shadow-none  hover:bg-transparent',
           }}
         />
+        <div className="ml-16 mt-5 text-xs text-gray-400">
+          달력의 숫자는 해당 날짜에 시작되는 청약 건수를 의미합니다.
+        </div>
       </div>
 
       <div className="mb-8 ml-6 max-w-md md:mb-0 md:ml-3">
