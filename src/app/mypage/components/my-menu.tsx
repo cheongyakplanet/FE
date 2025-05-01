@@ -10,36 +10,39 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { cn } from '@/lib/utils';
 
-const myMenu = [
-  {
-    icon: <UserCircle className="h-5 w-5" />,
-    title: '내 정보',
-    url: '/mypage/info',
-    description: '프로필 및 계정 설정',
-  },
-  {
-    icon: <Heart className="h-5 w-5" />,
-    title: '관심 청약',
-    url: '/mypage/like',
-    description: '저장한 청약 목록',
-    badge: '3',
-  },
-  {
-    icon: <FilePenLine className="h-5 w-5" />,
-    title: '내 게시글',
-    url: '/mypage/posts',
-    description: '작성한 게시글 관리',
-  },
-  {
-    icon: <Map className="h-5 w-5" />,
-    title: '관심 지역',
-    url: '/mypage/region',
-    description: '즐겨찾는 지역 설정',
-  },
-];
+import { useGetLikeSubscriptionAll } from '@/services/subscription/hooks/useGetLikeSubscriptionAll';
 
 export default function MyMenu({ size = 'lg' }: { size?: 'lg' | 'md' | 'sm' }) {
   const pathname = usePathname();
+  const { data: likeSubscription } = useGetLikeSubscriptionAll();
+
+  const myMenu = [
+    {
+      icon: <UserCircle className="h-5 w-5" />,
+      title: '내 정보',
+      url: '/mypage/info',
+      description: '프로필 및 계정 설정',
+    },
+    {
+      icon: <Heart className="h-5 w-5" />,
+      title: '관심 청약',
+      url: '/mypage/like',
+      description: '저장한 청약 목록',
+      badge: likeSubscription?.data.length || 0,
+    },
+    {
+      icon: <FilePenLine className="h-5 w-5" />,
+      title: '내 게시글',
+      url: '/mypage/posts',
+      description: '작성한 게시글 관리',
+    },
+    {
+      icon: <Map className="h-5 w-5" />,
+      title: '관심 지역',
+      url: '/mypage/region',
+      description: '즐겨찾는 지역 설정',
+    },
+  ];
 
   return (
     <Card className="border border-slate-200 shadow-sm">

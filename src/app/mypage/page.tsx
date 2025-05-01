@@ -26,7 +26,6 @@ import { useTokenStore } from '@/stores/auth-store';
 
 export default function MyPage() {
   const token = useTokenStore((state) => state);
-
   const router = useRouter();
 
   const { data: me } = useGetMypage();
@@ -37,7 +36,7 @@ export default function MyPage() {
   const { data: closingSubscription } = useGetClosingSubscription();
   const closingSub = closingSubscription?.data;
 
-  if (!token.accessToken) {
+  if (me?.status === 'fail') {
     redirect('/signin');
   }
 
@@ -67,8 +66,6 @@ export default function MyPage() {
                 <p className="text-sm text-slate-600">{me?.data.email}</p>
               </div>
             </div>
-
-            <Separator className="my-4" />
           </CardContent>
           <CardFooter className="space-x-2">
             <Dialog>
