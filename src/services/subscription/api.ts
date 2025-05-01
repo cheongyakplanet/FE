@@ -1,4 +1,10 @@
-import { LikeSubscriptionDto, SubscriptionByMonthDto, SubscriptionDetailDto, SubscriptionListDto } from './types';
+import {
+  LikeSubscriptionDto,
+  LikeSubscriptionListDto,
+  SubscriptionByMonthDto,
+  SubscriptionDetailDto,
+  SubscriptionListDto,
+} from './types';
 
 import api from '@/lib/api';
 
@@ -49,7 +55,7 @@ export const DELETE_like_subscription = async (subscriptionId: string) => {
   return await api.delete(`/api/info/subscription/like/${subscriptionId}`);
 };
 
-// /** 관심 청약 조회   */
-// export const GET_like_subscription = async (subscriptionId: string) => {
-//   return await api.get(`/api/info/subscription/like/${subscriptionId}`);
-// };
+/** 관심 청약 조회   */
+export const GET_like_subscription_all = async (): Promise<ApiResponse<LikeSubscriptionListDto[]>> => {
+  return await api.get(`/api/info/subscription/like`);
+};
