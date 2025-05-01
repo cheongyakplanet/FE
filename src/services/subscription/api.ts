@@ -1,4 +1,10 @@
-import { LikeSubscriptionDto, SubscriptionByMonthDto, SubscriptionDetailDto, SubscriptionListDto } from './types';
+import {
+  LikeSubscriptionDto,
+  LikeSubscriptionListDto,
+  SubscriptionByMonthDto,
+  SubscriptionDetailDto,
+  SubscriptionListDto,
+} from './types';
 
 import api from '@/lib/api';
 
@@ -32,4 +38,24 @@ export const GET_subscription_by_month = async (
   month: string,
 ): Promise<ApiResponse<SubscriptionByMonthDto[]>> => {
   return await api.get('/api/info/subscription/bymonth', { params: { year: year, month: month } });
+};
+
+/** 관심 청약 여부 */
+export const GET_like_subscription_by_id = async (subscriptionId: string) => {
+  return await api.get(`/api/info/subscription/islike?id=${subscriptionId}`);
+};
+
+/** 관심 청약 추가 */
+export const POST_like_subscription = async (subscriptionId: string) => {
+  return await api.post(`/api/info/subscription/like/${subscriptionId}`);
+};
+
+/** 관심 청약 삭제 */
+export const DELETE_like_subscription = async (subscriptionId: string) => {
+  return await api.delete(`/api/info/subscription/like/${subscriptionId}`);
+};
+
+/** 관심 청약 조회   */
+export const GET_like_subscription_all = async (): Promise<ApiResponse<LikeSubscriptionListDto[]>> => {
+  return await api.get(`/api/info/subscription/like`);
 };

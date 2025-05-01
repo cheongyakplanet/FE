@@ -26,7 +26,6 @@ import { useTokenStore } from '@/stores/auth-store';
 
 export default function MyPage() {
   const token = useTokenStore((state) => state);
-
   const router = useRouter();
 
   const { data: me } = useGetMypage();
@@ -37,7 +36,7 @@ export default function MyPage() {
   const { data: closingSubscription } = useGetClosingSubscription();
   const closingSub = closingSubscription?.data;
 
-  if (!token.accessToken) {
+  if (me?.status === 'fail') {
     redirect('/signin');
   }
 
@@ -63,15 +62,10 @@ export default function MyPage() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <h3 className="text-lg font-semibold">{me?.data.username || '사용자'}</h3>
-                  <Badge variant="outline" className="border-blue-200 bg-blue-50 text-xs text-blue-700">
-                    일반회원
-                  </Badge>
                 </div>
                 <p className="text-sm text-slate-600">{me?.data.email}</p>
               </div>
             </div>
-
-            <Separator className="my-4" />
           </CardContent>
           <CardFooter className="space-x-2">
             <Dialog>

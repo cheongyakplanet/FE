@@ -30,7 +30,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { cn } from '@/lib/utils';
 
+import { useDeleteLikeSubscription } from '@/services/subscription/hooks/useDeleteLikeSubscription';
+import { useGetLikeSubscriptionById } from '@/services/subscription/hooks/useGetLikeSubscriptionById';
 import { useGetSubscriptionById } from '@/services/subscription/hooks/useGetSubscriptionById';
+import { usePostLikeSubscription } from '@/services/subscription/hooks/usePostLikeSubscription';
 import { PriceInfoDto } from '@/services/subscription/types';
 
 export default function SubscriptionDetail() {
@@ -38,6 +41,9 @@ export default function SubscriptionDetail() {
   const params = useParams();
   const { id } = params;
   const { data: getSubscriptionById } = useGetSubscriptionById(id as string);
+  const { mutate: createLike } = usePostLikeSubscription(id as string);
+  const { mutate: deleteLike } = useDeleteLikeSubscription(id as string);
+  const { data: getIsLike } = useGetLikeSubscriptionById(id as string);
 
   const [tab, setTab] = useState<'common' | 'price' | 'special' | 'schedule'>('common');
 
@@ -172,6 +178,8 @@ export default function SubscriptionDetail() {
     },
   ];
 
+  console.log(getIsLike);
+
   return (
     <div className="container mx-auto px-4 py-6">
       {/* 뒤로가기 버튼 */}
@@ -197,16 +205,21 @@ export default function SubscriptionDetail() {
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" className="gap-1">
-            <Eye className="h-4 w-4" />
-            <span>찜하기</span>
-          </Button>
-          <Button variant="outline" size="sm" className="gap-1">
             <Share2 className="h-4 w-4" />
             <span>공유하기</span>
           </Button>
-          <Button className="gap-1 bg-blue-500 hover:bg-blue-600">
+          <Button
+            className="gap-1 bg-blue-500 hover:bg-blue-600"
+            onClick={() => {
+              if (getIsLike.data) {
+                deleteLike();
+              } else {
+                createLike();
+              }
+            }}
+          >
             <BookmarkPlus className="h-4 w-4" />
-            <span>관심 청약 등록</span>
+            <span>{getIsLike.data ? '관심 청약 해제' : '관심 청약 등록'}</span>
           </Button>
         </div>
       </div>

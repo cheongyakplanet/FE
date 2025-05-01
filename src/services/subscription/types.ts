@@ -135,3 +135,18 @@ export interface SubscriptionByMonthDto {
   rceptBgnde: string;
   rceptEndde: string;
 }
+
+export interface LikeSubscriptionListDto {
+  id: string;
+  subscriptionId: string;
+  houseNm: string;
+  hssplyAdres: string;
+  region: string;
+  city: string;
+  district: string;
+  detail: string;
+  rceptBgnde: string;
+  rceptEndde: string;
+  userEmail: string;
+  createdAt: string;
+}
