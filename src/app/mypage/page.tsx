@@ -2,18 +2,15 @@
 
 import MyMenu from './components/my-menu';
 
-import Link from 'next/link';
 import { redirect, useRouter } from 'next/navigation';
 
-import dayjs from 'dayjs';
-import { BellRing, Building, CheckCircle, Home, Info, ListChecks, Settings, UserCircle } from 'lucide-react';
+import { Info, UserCircle } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 
 import { useGetMypage } from '@/services/member/hooks/useGetMypage';
