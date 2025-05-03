@@ -19,7 +19,9 @@ export const metadata: Metadata = {
     icon: '/cheongyakplanet.png',
   },
   verification: {
-    naver: '658bff1761a0d5eb60069ef4331ab51643304b65',
+    other: {
+      'naver-site-verification': '658bff1761a0d5eb60069ef4331ab51643304b65',
+    },
   },
 };
 
