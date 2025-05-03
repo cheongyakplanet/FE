@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   icons: {
     icon: '/cheongyakplanet.png',
   },
+  verification: {
+    naver: '658bff1761a0d5eb60069ef4331ab51643304b65',
+  },
 };
 
 export default function RootLayout({
