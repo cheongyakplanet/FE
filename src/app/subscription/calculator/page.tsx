@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import dayjs from 'dayjs';
+import minMax from 'dayjs/plugin/minMax';
 import { Calculator as CalculatorIcon, Check, CircleHelp, Info } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -11,19 +13,41 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+dayjs.extend(minMax);
+
 export default function Calculator() {
+  const [homelessPeriod, setHomelessPeriod] = useState<number | string>('');
+
   const [isMarried, setIsMarried] = useState(false);
-  const [homelessPeriod, setHomelessPeriod] = useState<Number | string>('');
-  const [spouseAccountPeriod, setSpouseAccountPeriod] = useState<Number | string>('');
-  const [myAncestor, setMyAncestor] = useState<Number | string>('');
-  const [spouseAncestor, setSpouseAncestor] = useState<Number | string>('');
-  const [descendant, setDescendant] = useState<Number | string>('');
+  const [myAncestor, setMyAncestor] = useState<number | string>('');
+  const [spouseAncestor, setSpouseAncestor] = useState<number | string>('');
+  const [descendant, setDescendant] = useState<number | string>('');
+
+  const [spouseAccountPeriod, setSpouseAccountPeriod] = useState<number | string>('');
+
+  const [showResult, setShowResult] = useState(false);
+  const [familyCount, setFamilyCount] = useState(0);
+  const [familyCountScore, setFamilyCountScore] = useState(0);
 
   const result = () => {
-    console.log('myAncestor', myAncestor);
-    console.log('spouseAncestor', spouseAncestor);
-    console.log('descendant', descendant);
+    setShowResult(true);
+
+    if (isMarried) {
+      setFamilyCount(Number(myAncestor) + Number(descendant));
+    } else {
+      setFamilyCount(Number(myAncestor) + Number(spouseAncestor) + Number(descendant) + 1);
+    }
+
+    accountCalculate();
   };
+
+  useEffect(() => {
+    if (familyCount < 6) {
+      setFamilyCountScore(5 * (familyCount + 1));
+    } else {
+      setFamilyCountScore(35);
+    }
+  }, [familyCount]);
 
   const reset = () => {
     setIsMarried(false);
@@ -36,16 +60,13 @@ export default function Calculator() {
     setAccountDate('');
   };
 
+  // 배우자 없음 선택 시 배우자 관련 기입한 거 초기화되게,,,,,,,,
   // useEffect(() => {
   //   if (!isMarried) {
   //     setSpouseAccountPeriod(0);
   //   }
   //   console.log('spouseAccountPeriod', spouseAccountPeriod);
   // }, [isMarried]);
-
-  // useEffect(() => {
-  //   console.log('spouseAccountPeriod', spouseAccountPeriod);
-  // }, [spouseAccountPeriod]);
 
   const [birthday, setBirthday] = useState('');
   const [accountDate, setAccountDate] = useState('');
@@ -72,6 +93,30 @@ export default function Calculator() {
     }
   };
 
+  const [totalYear, setTotalYear] = useState(0);
+
+  const accountCalculate = () => {
+    const birth = dayjs(birthday);
+    const adultYear = birth.add(19, 'year');
+    const account = dayjs(accountDate);
+    const now = dayjs();
+
+    let juniorMonth = 0;
+    if (account.isBefore(adultYear)) {
+      const end = dayjs.min(adultYear, now);
+      juniorMonth = end.diff(account, 'month');
+      juniorMonth = Math.min(juniorMonth, 60);
+    }
+
+    let adultMonth = 0;
+    if (now.isAfter(adultYear)) {
+      adultMonth = now.diff(adultYear, 'month');
+    }
+
+    const totalMonth = juniorMonth + adultMonth;
+    setTotalYear(Math.floor(totalMonth / 12));
+  };
+
   return (
     <div>
       <div className="mb-6">
@@ -91,12 +136,12 @@ export default function Calculator() {
         </div>
       </div>
 
-      <div className="flex">
+      <div className="flex flex-col justify-between md:flex-row">
         <Card className="w-[480px]">
-          <CardHeader>
+          <CardHeader className="border-b border-slate-100">
             <CardTitle>청약가점 계산기</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 pt-4">
             <div>
               <div className="flex">
                 <Check size={20} color="red" />
@@ -223,7 +268,7 @@ export default function Calculator() {
                 <p className="ml-1">청약통장 순위기산일을 입력해주세요.</p>
               </div>
               <Input
-                className="ml-5 mt-2 h-8 w-[300px]"
+                className="ml-5 mt-2 h-8 w-[300px] text-sm"
                 placeholder="예) 19990101"
                 onChange={formatAccountDate}
                 value={accountDate}
@@ -236,7 +281,7 @@ export default function Calculator() {
                 <p className="ml-1">생년월일을 입력해주세요.</p>
               </div>
               <Input
-                className="ml-5 mt-2 h-8 w-[300px]"
+                className="ml-5 mt-2 h-8 w-[300px] text-sm"
                 placeholder="예) 20000101"
                 onChange={formatBirthday}
                 value={birthday}
@@ -277,13 +322,60 @@ export default function Calculator() {
               </p>
             </div>
           </CardContent>
-          <CardFooter className="flex justify-between">
+          <CardFooter className="flex justify-between border-t border-slate-100 pt-4">
             <Button onClick={reset}>초기화</Button>
             <Button onClick={result}>결과보기</Button>
           </CardFooter>
         </Card>
 
-        <div>결과보기</div>
+        <div className="w-[480px]">
+          <p className="text-xl font-bold">청약가점 계산 결과를 확인해보세요</p>
+          {showResult && (
+            <div>
+              <div className="mt-5 flex justify-between">
+                <div className="space-y-5">
+                  <p className="flex">
+                    <Check size={20} color="green" className="mr-1" />
+                    무주택 기간{' '}
+                  </p>
+                  <p className="flex">
+                    <Check size={20} color="green" className="mr-1" />
+                    부양가족수{' '}
+                  </p>
+                  <p className="flex">
+                    <Check size={20} color="green" className="mr-1" />
+                    청약통장 순위기산일
+                  </p>
+                  <p className="flex">
+                    <Check size={20} color="green" className="mr-1" />
+                    배우자의 청약통장 가입 기간{' '}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end space-y-5">
+                  <div className="flex">
+                    <span className="mr-1 text-lg font-bold">{homelessPeriod}</span>
+                    <span className="flex items-end">점</span>
+                  </div>
+                  <div className="flex">
+                    <span className="mr-1 text-lg font-bold">{familyCountScore}</span>
+                    <span className="flex items-end">점</span>
+                  </div>
+                  <div className="flex">
+                    <span className="mr-1 text-lg font-bold">{totalYear}</span>
+                    <span className="flex items-end">점</span>
+                  </div>
+
+                  <div className="flex">
+                    <span className="mr-1 text-lg font-bold">{spouseAccountPeriod}</span>
+                    <span className="flex items-end">점</span>
+                  </div>
+                </div>
+              </div>
+              <p className="mt-3 border-t" />
+              <div className="mt-3 flex justify-end text-xl font-semibold">총 점</div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
