@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import minMax from 'dayjs/plugin/minMax';
 import { Calculator as CalculatorIcon, Check, CircleHelp, Info } from 'lucide-react';
+import { ArrowBigRight, RotateCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,6 +50,13 @@ export default function Calculator() {
     }
   }, [familyCount]);
 
+  useEffect(() => {
+    setSpouseAccountPeriod('');
+    setMyAncestor('');
+    setSpouseAncestor('');
+    setDescendant('');
+  }, [isMarried]);
+
   const reset = () => {
     setIsMarried(false);
     setHomelessPeriod('');
@@ -59,14 +67,6 @@ export default function Calculator() {
     setBirthday('');
     setAccountDate('');
   };
-
-  // 배우자 없음 선택 시 배우자 관련 기입한 거 초기화되게,,,,,,,,
-  // useEffect(() => {
-  //   if (!isMarried) {
-  //     setSpouseAccountPeriod(0);
-  //   }
-  //   console.log('spouseAccountPeriod', spouseAccountPeriod);
-  // }, [isMarried]);
 
   const [birthday, setBirthday] = useState('');
   const [accountDate, setAccountDate] = useState('');
@@ -94,6 +94,7 @@ export default function Calculator() {
   };
 
   const [totalYear, setTotalYear] = useState(0);
+  const [totalAccountYear, setTotalAccountYear] = useState(0);
 
   const accountCalculate = () => {
     const birth = dayjs(birthday);
@@ -110,12 +111,25 @@ export default function Calculator() {
 
     let adultMonth = 0;
     if (now.isAfter(adultYear)) {
-      adultMonth = now.diff(adultYear, 'month');
+      adultMonth = now.diff(account, 'month');
     }
 
     const totalMonth = juniorMonth + adultMonth;
-    setTotalYear(Math.floor(totalMonth / 12));
+    const year = Math.floor(totalMonth / 12);
+    setTotalYear(year);
+
+    if (totalMonth < 6) {
+      setTotalAccountYear(1);
+    } else if (year < 1) {
+      setTotalAccountYear(2);
+    } else if (year < 15) {
+      setTotalAccountYear(year + 2);
+    } else {
+      setTotalAccountYear(17);
+    }
   };
+
+  const total = Number(homelessPeriod) + Number(familyCountScore) + totalYear + Number(spouseAccountPeriod);
 
   return (
     <div>
@@ -137,7 +151,7 @@ export default function Calculator() {
       </div>
 
       <div className="flex flex-col justify-between md:flex-row">
-        <Card className="w-[480px]">
+        <Card className="mb-10 ml-5 w-[480px]">
           <CardHeader className="border-b border-slate-100">
             <CardTitle>청약가점 계산기</CardTitle>
           </CardHeader>
@@ -307,7 +321,7 @@ export default function Calculator() {
                 onValueChange={(val) => setSpouseAccountPeriod(Number(val))}
               >
                 <SelectTrigger className="ml-5 mt-2 h-8 w-[300px]">
-                  <SelectValue placeholder="선택해주세요." />
+                  <SelectValue placeholder="기간 선택" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="1">1년 미만 (1점)</SelectItem>
@@ -323,15 +337,21 @@ export default function Calculator() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-between border-t border-slate-100 pt-4">
-            <Button onClick={reset}>초기화</Button>
-            <Button onClick={result}>결과보기</Button>
+            <Button onClick={reset} className="bg-indigo-500 hover:bg-indigo-400">
+              <RotateCcw /> 초기화
+            </Button>
+            <Button onClick={result} className="bg-indigo-500 hover:bg-indigo-400">
+              결과보기
+              <ArrowBigRight />
+            </Button>
           </CardFooter>
         </Card>
 
-        <div className="w-[480px]">
-          <p className="text-xl font-bold">청약가점 계산 결과를 확인해보세요</p>
+        <div className="mb-5 ml-5 w-[480px]">
           {showResult && (
-            <div>
+            <div className="flex flex-col rounded-md border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+              <p className="text-xl font-bold">청약가점 계산 결과를 확인해보세요</p>
+
               <div className="mt-5 flex justify-between">
                 <div className="space-y-5">
                   <p className="flex">
@@ -353,7 +373,7 @@ export default function Calculator() {
                 </div>
                 <div className="flex flex-col items-end space-y-5">
                   <div className="flex">
-                    <span className="mr-1 text-lg font-bold">{homelessPeriod}</span>
+                    <span className="mr-1 text-lg font-bold">{homelessPeriod === '' ? 0 : homelessPeriod}</span>
                     <span className="flex items-end">점</span>
                   </div>
                   <div className="flex">
@@ -361,18 +381,31 @@ export default function Calculator() {
                     <span className="flex items-end">점</span>
                   </div>
                   <div className="flex">
-                    <span className="mr-1 text-lg font-bold">{totalYear}</span>
+                    <span className="mr-1 text-lg font-bold">{totalAccountYear}</span>
                     <span className="flex items-end">점</span>
                   </div>
 
                   <div className="flex">
-                    <span className="mr-1 text-lg font-bold">{spouseAccountPeriod}</span>
+                    <span className="mr-1 text-lg font-bold">
+                      {spouseAccountPeriod === '' ? 0 : spouseAccountPeriod}
+                    </span>
                     <span className="flex items-end">점</span>
                   </div>
                 </div>
               </div>
               <p className="mt-3 border-t" />
-              <div className="mt-3 flex justify-end text-xl font-semibold">총 점</div>
+              <span className="mt-3 flex items-end justify-end text-lg font-semibold">
+                총<span className="ml-2 mr-1 text-xl text-indigo-500">{total}</span>점
+              </span>
+            </div>
+          )}
+          {!showResult && (
+            <div className="flex flex-col rounded-md border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+              <p className="mb-2 text-lg font-semibold text-slate-600">아직 가점 계산기를 사용하지 않으셨네요!</p>
+              <p className="text-sm text-slate-500">
+                왼쪽 항목을 모두 입력하신 후 <br />
+                <span className="font-medium text-indigo-600">청약 가점 계산 결과</span>를 확인해보세요.
+              </p>
             </div>
           )}
         </div>
