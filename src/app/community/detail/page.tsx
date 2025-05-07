@@ -9,28 +9,18 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import dayjs from 'dayjs';
-import {
-  ArrowLeft,
-  Calendar,
-  ChevronDown,
-  ChevronUp,
-  Eye,
-  MessageCircle,
-  Send,
-  ThumbsDown,
-  ThumbsUp,
-  User,
-} from 'lucide-react';
+import { ArrowLeft, Calendar, Eye, MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
 
 import auth from '@/lib/auth';
 
 import { useGetPostDetail, usePostComment, usePostDislike, usePostLike } from '@/services/community/hooks/useGetPost';
+
+import { useTokenStore } from '@/stores/auth-store';
 
 export default function detail() {
   return (
@@ -50,6 +40,9 @@ export default function detail() {
 }
 
 function DetailContent() {
+  const { accessToken } = useTokenStore();
+  const isSignin = !!accessToken;
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
@@ -116,6 +109,20 @@ function DetailContent() {
     return (
       <div className="flex h-48 items-center justify-center">
         <p className="text-slate-500">게시글이 존재하지 않습니다.</p>
+      </div>
+    );
+  }
+
+  if (!isSignin) {
+    return (
+      <div className="flex w-full items-center justify-center">
+        <div className="mb-20 flex flex-col items-center justify-center rounded-md border border-indigo-300 bg-indigo-50 px-6 py-5 text-indigo-900 shadow-md">
+          <p className="text-lg font-semibold">🔐 로그인 후 이용 가능한 서비스입니다.</p>
+          <p className="mt-2 text-sm">지금 로그인하고 더 많은 기능을 이용해보세요!</p>
+          <Link href="/signin" className="pt-2 text-xs text-indigo-500 hover:underline">
+            로그인하러 가기
+          </Link>
+        </div>
       </div>
     );
   }
