@@ -22,16 +22,19 @@ import {
   Share2,
   Users,
 } from 'lucide-react';
+import { Bar, BarChart, CartesianGrid, ComposedChart, Line, XAxis } from 'recharts';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { cn } from '@/lib/utils';
 
 import { useDeleteLikeSubscription } from '@/services/subscription/hooks/useDeleteLikeSubscription';
 import { useGetLikeSubscriptionById } from '@/services/subscription/hooks/useGetLikeSubscriptionById';
+import { useGetPriceSummary } from '@/services/subscription/hooks/useGetPriceSummary';
 import { useGetSubscriptionById } from '@/services/subscription/hooks/useGetSubscriptionById';
 import { usePostLikeSubscription } from '@/services/subscription/hooks/usePostLikeSubscription';
 import { PriceInfoDto } from '@/services/subscription/types';
@@ -44,10 +47,26 @@ export default function SubscriptionDetail() {
   const { mutate: createLike } = usePostLikeSubscription(id as string);
   const { mutate: deleteLike } = useDeleteLikeSubscription(id as string);
   const { data: getIsLike } = useGetLikeSubscriptionById(id as string);
-
-  const [tab, setTab] = useState<'common' | 'price' | 'special' | 'schedule'>('common');
-
   const subscription = getSubscriptionById?.data;
+  const { data: getPriceSummary } = useGetPriceSummary(
+    subscription?.region.trim() ?? '',
+    subscription?.city.trim() ?? '',
+    subscription?.district.trim() ?? '',
+  );
+  const chartConfig = {
+    dealCount: {
+      label: '거래건 수',
+      color: '#2563eb',
+      unit: '건',
+    },
+    pricePerAr: {
+      label: '평당 가격',
+      color: '#60a5fa',
+      unit: '만원',
+    },
+  };
+
+  const [tab, setTab] = useState<'common' | 'price' | 'chart' | 'special' | 'schedule'>('common');
 
   const STATUS_MAP = {
     PENDING: '대기',
@@ -177,8 +196,6 @@ export default function SubscriptionDetail() {
       count: specialSupplyCount.supplyCountOther,
     },
   ];
-
-  console.log(getIsLike);
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -333,9 +350,10 @@ export default function SubscriptionDetail() {
 
       {/* 탭 컨텐츠 */}
       <Tabs defaultValue="common" className="mt-6" onValueChange={(value) => setTab(value as any)}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="common">기본정보</TabsTrigger>
           <TabsTrigger value="price">가격정보</TabsTrigger>
+          <TabsTrigger value="chart">실거래가 차트</TabsTrigger>
           <TabsTrigger value="special">특별공급</TabsTrigger>
           <TabsTrigger value="schedule">전체일정</TabsTrigger>
         </TabsList>
@@ -440,6 +458,61 @@ export default function SubscriptionDetail() {
                   })}
                 </div>
               ) : null}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="chart">
+          <Card>
+            <CardHeader>
+              <CardTitle>실거래가 차트</CardTitle>
+              <CardDescription>청약 건물 주변 실거래가 차트</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig} className="h-[200px] w-full">
+                <ComposedChart accessibilityLayer data={getPriceSummary?.data}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="dealMonth"
+                    tickFormatter={(value) => dayjs('2025' + value).format('2025.MM')}
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent
+                        labelKey="dealMonth"
+                        indicator="line"
+                        formatter={(value, name, item, index) => {
+                          return (
+                            <>
+                              <div
+                                className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[--color-bg]"
+                                style={
+                                  {
+                                    '--color-bg': `var(--color-${name})`,
+                                  } as React.CSSProperties
+                                }
+                              />
+                              {chartConfig[name as keyof typeof chartConfig]?.label || name}
+                              <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
+                                {value}
+                                <span className="font-normal text-muted-foreground">
+                                  {chartConfig[name as keyof typeof chartConfig]?.unit || ''}
+                                </span>
+                              </div>
+                            </>
+                          );
+                        }}
+                      />
+                    }
+                  />
+                  <Bar dataKey="dealCount" fill="var(--color-dealCount)" radius={4} />
+                  <Line dataKey="pricePerAr" fill="var(--color-pricePerAr)" />
+                </ComposedChart>
+              </ChartContainer>
             </CardContent>
           </Card>
         </TabsContent>

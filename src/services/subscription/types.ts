@@ -150,3 +150,10 @@ export interface LikeSubscriptionListDto {
   userEmail: string;
   createdAt: string;
 }
+
+export interface PriceSummaryDto {
+  dealYear: number;
+  dealMonth: number;
+  dealCount: number;
+  pricePerAr: number;
+}
