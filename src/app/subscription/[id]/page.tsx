@@ -227,8 +227,10 @@ export default function SubscriptionDetail() {
           </Button>
           <Button
             className="gap-1 bg-blue-500 hover:bg-blue-600"
+            size="sm"
             onClick={() => {
-              if (getIsLike.data) {
+              // TODO: 로그인 여부 확인 및 예외처리
+              if (getIsLike?.data) {
                 deleteLike();
               } else {
                 createLike();
