@@ -236,7 +236,7 @@ export default function SubscriptionDetail() {
             }}
           >
             <BookmarkPlus className="h-4 w-4" />
-            <span>{getIsLike.data ? '관심 청약 해제' : '관심 청약 등록'}</span>
+            <span>{getIsLike?.data ? '관심 청약 해제' : '관심 청약 등록'}</span>
           </Button>
         </div>
       </div>
