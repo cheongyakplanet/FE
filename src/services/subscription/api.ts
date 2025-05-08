@@ -1,4 +1,5 @@
 import {
+  InfraDto,
   LikeSubscriptionDto,
   LikeSubscriptionListDto,
   PriceSummaryDto,
@@ -72,4 +73,9 @@ export const GET_price_summary = async ({
   umdNm: string;
 }): Promise<ApiResponse<PriceSummaryDto[]>> => {
   return await api.get(`/api/info/subscription/PriceSummary`, { params: { region, city, umdNm } });
+};
+
+/** 청약 물건의 주변 인프라 */
+export const GET_infra_by_subscription = async (subscriptionId: string): Promise<ApiResponse<InfraDto>> => {
+  return await api.get(`/api/info/subscription/${subscriptionId}/detail/infra`);
 };
