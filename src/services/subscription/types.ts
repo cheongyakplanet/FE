@@ -157,3 +157,26 @@ export interface PriceSummaryDto {
   dealCount: number;
   pricePerAr: number;
 }
+
+export interface InfraDto {
+  stations: {
+    number: string;
+    name: string;
+    line: string;
+    operator: string;
+    latitude: number;
+    longitude: number;
+    distance: number;
+    transfer: boolean;
+  }[];
+  schools: {
+    schoolId: string;
+    schoolName: string;
+    category: string;
+    type: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    distance: number;
+  }[];
+}

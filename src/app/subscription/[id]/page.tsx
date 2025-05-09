@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Map } from 'react-kakao-maps-sdk';
+import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -18,8 +18,11 @@ import {
   Eye,
   Home,
   MapPin,
+  MapPinHouse,
   Pickaxe,
+  School,
   Share2,
+  TramFront,
   Users,
 } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, ComposedChart, Line, XAxis } from 'recharts';
@@ -33,6 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
 import { useDeleteLikeSubscription } from '@/services/subscription/hooks/useDeleteLikeSubscription';
+import { useGetInfraBySubscription } from '@/services/subscription/hooks/useGetInfraBySubscription';
 import { useGetLikeSubscriptionById } from '@/services/subscription/hooks/useGetLikeSubscriptionById';
 import { useGetPriceSummary } from '@/services/subscription/hooks/useGetPriceSummary';
 import { useGetSubscriptionById } from '@/services/subscription/hooks/useGetSubscriptionById';
@@ -53,6 +57,9 @@ export default function SubscriptionDetail() {
     subscription?.city.trim() ?? '',
     subscription?.district.trim() ?? '',
   );
+
+  const { data: getInfraBySubscription } = useGetInfraBySubscription(id as string);
+  const infra = getInfraBySubscription?.data;
   const chartConfig = {
     dealCount: {
       label: '거래건 수',
@@ -253,8 +260,54 @@ export default function SubscriptionDetail() {
               lng: Number(subscription.longitude),
             }}
             className="h-full w-full rounded-xl border shadow"
-            level={2}
-          />
+            level={4}
+          >
+            <MapMarker
+              position={{
+                lat: Number(subscription.latitude),
+                lng: Number(subscription.longitude),
+              }}
+              image={{
+                src: '/map-pin-house.svg',
+                size: {
+                  width: 32,
+                  height: 32,
+                },
+              }}
+            />
+            {infra?.schools?.map((school, index) => (
+              <MapMarker
+                key={`school-${index}`}
+                position={{
+                  lat: Number(school.latitude),
+                  lng: Number(school.longitude),
+                }}
+                image={{
+                  src: '/school.svg',
+                  size: {
+                    width: 24,
+                    height: 24,
+                  },
+                }}
+              />
+            ))}
+            {infra?.stations?.map((station, index) => (
+              <MapMarker
+                key={`station-${index}`}
+                position={{
+                  lat: Number(station.latitude),
+                  lng: Number(station.longitude),
+                }}
+                image={{
+                  src: '/tram-front.svg',
+                  size: {
+                    width: 24,
+                    height: 24,
+                  },
+                }}
+              />
+            ))}
+          </Map>
         </div>
 
         <div className="flex flex-col gap-4">
@@ -313,7 +366,10 @@ export default function SubscriptionDetail() {
                   <Home className="h-4 w-4 text-slate-500" />
                   <span className="text-sm text-slate-600">공급 유형</span>
                 </div>
-                <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">{subscription.rentSecdNm}</Badge>
+                <div className="flex gap-1">
+                  <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">{subscription.rentSecdNm}</Badge>
+                  <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">{subscription.houseDtlSecdNm}</Badge>
+                </div>
               </div>
 
               <div className="flex items-center justify-between">
@@ -364,32 +420,10 @@ export default function SubscriptionDetail() {
           <Card>
             <CardHeader>
               <CardTitle>기본정보</CardTitle>
-              <CardDescription>사업 정보 및 공급 개요</CardDescription>
+              <CardDescription>공급 개요 및 주변 인프라</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div className="space-y-4">
-                  <div className="rounded-lg border p-4">
-                    <h3 className="mb-3 font-medium text-slate-900">사업정보</h3>
-                    <div className="space-y-3 text-sm">
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-slate-600">주택 구분</span>
-                        <span className="font-medium">{subscription.houseDtlSecdNm}</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-slate-600">공급 위치</span>
-                        <span className="font-medium">{subscription.hssplyAdres}</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-slate-600">시행사 / 시공사</span>
-                        <span className="font-medium">
-                          {subscription.bsnsMbyNm} / {subscription.cnstrctEntrpsNm}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <div className="space-y-4">
                   <div className="rounded-lg border p-4">
                     <h3 className="mb-3 font-medium text-slate-900">공급 개요</h3>
@@ -405,6 +439,51 @@ export default function SubscriptionDetail() {
                       <div className="flex justify-between">
                         <span className="text-slate-600">특별 공급</span>
                         <span className="font-medium">{subscription.totalSupplyCountSpecial || 0} 세대</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="rounded-lg border p-4">
+                    <h3 className="mb-3 flex items-center gap-2 font-medium text-slate-900">
+                      <School className="h-4 w-4 text-slate-900" />
+                      주변 학교
+                    </h3>
+                    <div className="flex flex-col gap-2 text-sm">
+                      <div className="flex flex-col gap-2">
+                        {infra?.schools?.map((school, index) => (
+                          <div key={`school-${index}`}>
+                            <Badge
+                              className={cn(
+                                school.type === '공립' && 'bg-blue-100 text-blue-800',
+                                school.type === '사립' && 'bg-orange-100 text-orange-800',
+                              )}
+                            >
+                              {school.type}
+                            </Badge>{' '}
+                            {school.schoolName} <span className="text-xs text-slate-500">({school.distance}m)</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="rounded-lg border p-4">
+                    <h3 className="mb-3 flex items-center gap-2 font-medium text-slate-900">
+                      <TramFront className="h-4 w-4 text-slate-900" />
+                      주변 역
+                    </h3>
+                    <div className="flex flex-col gap-2 text-sm">
+                      <div className="flex flex-col gap-2">
+                        {infra?.stations?.map((station, index) => (
+                          <div key={`station-${index}`}>
+                            <Badge className={cn('bg-blue-100 text-blue-800')}>{station.line}</Badge> {station.name}{' '}
+                            <span className="text-xs text-slate-500">({station.distance}m)</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
