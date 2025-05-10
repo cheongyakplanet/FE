@@ -21,6 +21,8 @@ import { Input } from '@/components/ui/input';
 import { usePostLogin } from '@/services/member/hooks/usePostLogin';
 import { MemberLoginDto } from '@/services/member/types';
 
+const KAKAO_LOGIN_URL = `${process.env.NEXT_PUBLIC_OAUTH_KAKAO_API_URL}?client_id=${process.env.NEXT_PUBLIC_OAUTH_KAKAO_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_OAUTH_KAKAO_REDIRECT_URL}&response_type=code&prompt=login`;
+
 const formSchema = z.object({
   email: z.string(),
   password: z.string(),
@@ -47,6 +49,10 @@ export default function SignIn() {
     } catch (error) {
       setErrorMessage('로그인 정보가 일치하지 않습니다.');
     }
+  };
+
+  const kakaoLogin = () => {
+    window.location.href = KAKAO_LOGIN_URL;
   };
 
   useEffect(() => {
@@ -117,10 +123,13 @@ export default function SignIn() {
                 </div>
               )}
 
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-3">
                 <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
                   로그인
                 </Button>
+                <Link href="/find-auth" className="flex w-full justify-center text-xs text-gray-500 hover:underline">
+                  아이디/비밀번호 찾기
+                </Link>
 
                 <div className="relative flex items-center py-2">
                   <div className="flex-grow border-t border-gray-200"></div>
@@ -131,7 +140,8 @@ export default function SignIn() {
                 <Button
                   type="button"
                   variant="ghost"
-                  className="bg-kakao flex w-full items-center justify-center gap-8 hover:bg-yellow-300"
+                  className="flex w-full items-center justify-center gap-8 bg-kakao hover:bg-yellow-300"
+                  onClick={kakaoLogin}
                 >
                   <Image src={kakaoLogo} alt="카카오 로그인" width={24} height={24} />
                   <span>카카오 로그인</span>

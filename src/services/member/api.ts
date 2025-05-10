@@ -74,3 +74,8 @@ export const DELETE_region = async (region: string) => {
 export const POST_region = async (location: string) => {
   return await api.post('api/member/location', { location });
 };
+
+/** 소셜 로그인 상태코드로 토큰 교환 */
+export const GET_kakao_exchange = async (state: string) => {
+  return await api.get('/api/member/kakao/exchange', { params: { state: state } });
+};
