@@ -7,6 +7,7 @@ import Marquee from 'react-fast-marquee';
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 import { Crown, HomeIcon, LandPlot, LineChart, ListFilter, MapPin, School, Search, TramFront } from 'lucide-react';
 
@@ -22,6 +23,7 @@ import { useGetMyLocation } from '@/services/home/hooks/useGetMyLocations';
 import { useGetPopularLocations } from '@/services/home/hooks/useGetPopularLocations';
 import { useGetPopularPost } from '@/services/home/hooks/useGetPopularPost';
 import { useGetSubscriptionByRegion } from '@/services/home/hooks/useGetSubscriptionByRegion';
+import { useGetKakaoExchange } from '@/services/member/hooks/useGetKakaoExchange';
 
 import { useTokenStore } from '@/stores/auth-store';
 
@@ -31,13 +33,16 @@ const iconColors = [
   'text-red-500',
   'text-green-500',
   'text-purple-500',
-
   'text-orange-500',
   'text-pink-500',
 ];
 
 export default function Home() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const state = searchParams.get('state') ?? '';
+  const { data: token } = useGetKakaoExchange(state);
+
   const { data: popularLocations } = useGetPopularLocations();
   const [topPopularCity, topPopularDistrict] = popularLocations?.data[0].split(' ') ?? [];
 
@@ -63,8 +68,14 @@ export default function Home() {
   const [showAllPost, setShowAllPost] = useState(false);
   const post = showAllPost ? popularPost : popularPost.slice(0, 3);
 
+  const updateToken = useTokenStore((state) => state.updateToken);
+
   const { accessToken } = useTokenStore();
   const isSignin = !!accessToken;
+
+  useEffect(() => {
+    updateToken({ ...token?.data });
+  }, [token]);
 
   const [searchRegion, setSearchRegion] = useState('');
   const [position, setPosition] = useState({
@@ -300,7 +311,11 @@ export default function Home() {
             <CardContent>
               <div className="space-y-2">
                 {post?.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between rounded-md p-2 hover:bg-gray-50">
+                  <div
+                    onClick={() => router.push(`/community/detail?id=${item.id}`)}
+                    key={item.id}
+                    className="flex items-center justify-between rounded-md p-2 hover:bg-gray-50"
+                  >
                     <span className="truncate font-medium">{item.title}</span>
                     <Badge variant="outline" className="shrink-0 border-0 bg-red-50 text-red-600">
                       HOT
