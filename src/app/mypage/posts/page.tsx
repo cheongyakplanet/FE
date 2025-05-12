@@ -7,11 +7,20 @@ import { useSearchParams } from 'next/navigation';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import dayjs from 'dayjs';
-import { FolderOpen } from 'lucide-react';
-import { X } from 'lucide-react';
+import { FolderOpen, Pencil, X } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import {
   Pagination,
   PaginationContent,
@@ -57,7 +66,7 @@ function PostContent() {
     defaultPagingSize: 6,
   });
 
-  const deleteMypost = (id: string) => {
+  const deletePost = (id: string) => {
     deletMypost(id);
   };
 
@@ -71,20 +80,66 @@ function PostContent() {
                 <CardHeader>
                   <div className="flex justify-between">
                     <CardTitle>{row.getValue('title')}</CardTitle>
-                    <button
-                      onClick={async () => {
-                        try {
-                          await deleteMypost(row.getValue('id'));
-                          toast.success('게시글이 성공적으로 삭제되었습니다!', {
-                            duration: 1500,
-                          });
-                        } catch (e) {
-                          toast.error('게시글 삭제에 실패했습니다. 다시 시도해 주세요!');
-                        }
-                      }}
-                    >
-                      <X size={16} />
-                    </button>
+
+                    <div className="space-x-2">
+                      <Dialog>
+                        <DialogTrigger>
+                          <Pencil className="text-gray-500 hover:text-indigo-800" size={16} />
+                        </DialogTrigger>
+
+                        <DialogContent className="rounded-xl">
+                          <DialogHeader className="mb-4">
+                            <DialogTitle className="flex space-x-1 text-lg font-semibold">
+                              <Pencil />
+                              <p>게시글 수정</p>
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-gray-500">
+                              {dayjs(row.getValue('createdAt')).format('YYYY-MM-DD')}
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="space-y-4">
+                            <div>
+                              <label className="text-sm font-medium text-gray-700">제목</label>
+                              <input
+                                defaultValue={row.getValue('title')}
+                                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="text-sm font-medium text-gray-700">내용</label>
+                              <textarea
+                                defaultValue={row.getValue('content')}
+                                rows={4}
+                                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              />
+                            </div>
+                          </div>
+
+                          <DialogFooter className="mt-6 flex justify-end gap-2">
+                            <Button className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                              완료
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+
+                      <button
+                        onClick={() => {
+                          try {
+                            deletePost(row.getValue('id'));
+                            toast.success('게시글이 성공적으로 삭제되었습니다!', {
+                              duration: 1500,
+                            });
+                          } catch (e) {
+                            toast.error('게시글 삭제에 실패했습니다. 다시 시도해 주세요!');
+                          }
+                        }}
+                      >
+                        <X className="text-gray-500 hover:text-indigo-800" size={16} />
+                      </button>
+                    </div>
                   </div>
                   <div className="flex justify-between">
                     <CardDescription>{row.getValue('username')}</CardDescription>
