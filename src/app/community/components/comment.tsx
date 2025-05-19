@@ -50,7 +50,7 @@ export default function Comment({ postId, comments: initComments }: { postId: st
       id: '',
       content,
       createdAt: Dayjs(today).format('YYYY-MM-DD'),
-      createdBy: memberName,
+      createdBy: memberName ?? '',
       replies: [],
     };
     setComments((prev) => [...prev, newComment]);
@@ -74,7 +74,12 @@ export default function Comment({ postId, comments: initComments }: { postId: st
   const handleReply = async (reply: string, commentId: string) => {
     if (!reply.trim()) return;
 
-    const newReply = { id: '', createdAt: Dayjs(today).format('YYYY-MM-DD'), createdBy: memberName, content: reply };
+    const newReply = {
+      id: '',
+      createdAt: Dayjs(today).format('YYYY-MM-DD'),
+      createdBy: memberName ?? '',
+      content: reply,
+    };
     const updateComments = comments.map((comment) =>
       comment.id === commentId ? { ...comment, replies: [...comment.replies, newReply] } : comment,
     );
