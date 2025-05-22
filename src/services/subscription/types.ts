@@ -152,8 +152,7 @@ export interface LikeSubscriptionListDto {
 }
 
 export interface PriceSummaryDto {
-  dealYear: number;
-  dealMonth: number;
+  dealYearMonth: number;
   dealCount: number;
   pricePerAr: number;
 }
