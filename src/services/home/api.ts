@@ -1,4 +1,4 @@
-import { FacilitiesDto, InfraDto, PopularPostDto, SubscriptionByMyRegionDto } from './types';
+import { FacilitiesDto, InfraDto, PopularPostDto, SubscriptionByMyRegionDto, SubscriptionDetailDto } from './types';
 
 import api from '@/lib/api';
 
@@ -25,7 +25,7 @@ export const GET_subscription_by_region = async (city: string, district: string)
 };
 
 /** 청약 물건의 주변 인프라 */
-export const GET_infra_by_subscription = async (id: string) : Promise<ApiResponse<InfraDto>>=> {
+export const GET_infra_by_subscription = async (id: string): Promise<ApiResponse<InfraDto>> => {
   return await api.get(`/api/info/subscription/${id}/detail/infra`, { params: { id: id } });
 };
 
@@ -38,3 +38,11 @@ export const GET_facilities_by_subscription = async (id: string): Promise<ApiRes
 export const GET_subscription_by_my_region = async (): Promise<ApiResponse<SubscriptionByMyRegionDto[]>> => {
   return await api.get('api/info/subscription/mysubscriptions');
 };
+
+/** 가장 인기 청약 물건 ID */
+export const GET_popular_subscription = async (): Promise<ApiResponse<number>> =>
+  api.get('/api/info/subscription/popular');
+
+/** 청약 물건 상세 (위도·경도 포함) */
+export const GET_subscription_detail = async (id: string | number): Promise<ApiResponse<SubscriptionDetailDto>> =>
+  api.get(`/api/info/subscription/${id}`);

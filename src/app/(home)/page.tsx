@@ -2,14 +2,25 @@
 
 import SubscriptionList from './componenets/subscription-list';
 
-import { useEffect, useState, Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Marquee from 'react-fast-marquee';
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 
-import { Crown, HomeIcon, LandPlot, LineChart, ListFilter, MapPin, School, Search, TramFront } from 'lucide-react';
+import {
+  Building2,
+  Crown,
+  HomeIcon,
+  LandPlot,
+  LineChart,
+  ListFilter,
+  MapPin,
+  School,
+  Search,
+  TramFront,
+} from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,7 +33,9 @@ import { useGetInfraBySubscription } from '@/services/home/hooks/useGetInfraBySu
 import { useGetMyLocation } from '@/services/home/hooks/useGetMyLocations';
 import { useGetPopularLocations } from '@/services/home/hooks/useGetPopularLocations';
 import { useGetPopularPost } from '@/services/home/hooks/useGetPopularPost';
+import { useGetPopularSubscription } from '@/services/home/hooks/useGetPopularSubscription';
 import { useGetSubscriptionByRegion } from '@/services/home/hooks/useGetSubscriptionByRegion';
+import { useGetSubscriptionDetail } from '@/services/home/hooks/useGetSubscriptionDetail';
 import { useGetKakaoExchange } from '@/services/member/hooks/useGetKakaoExchange';
 
 import { useTokenStore } from '@/stores/auth-store';
@@ -41,30 +54,34 @@ const iconColors = [
 function SearchParamsComponent({ onStateReceived }: { onStateReceived: (state: string) => void }) {
   const searchParams = useSearchParams();
   const state = searchParams.get('state') ?? '';
-  
+
   useEffect(() => {
     onStateReceived(state);
   }, [state, onStateReceived]);
-  
+
   return null;
 }
 
 export default function Home() {
   const router = useRouter();
+
+  const { data: popularSubRes } = useGetPopularSubscription();
+  const popularSubId = popularSubRes?.data;
+
+  const { data: subDetailRes } = useGetSubscriptionDetail(popularSubId);
+  const subDetail = subDetailRes?.data;
+
   const [state, setState] = useState('');
   const { data: token } = useGetKakaoExchange(state);
 
   const { data: popularLocations } = useGetPopularLocations();
-  const [topPopularCity, topPopularDistrict] = popularLocations?.data[0].split(' ') ?? [];
 
-  const { data: topPopularRegionId } = useGetSubscriptionByRegion(topPopularCity, topPopularDistrict);
-  const id = topPopularRegionId?.data[0]?.id;
-
-  const { data: getInfra } = useGetInfraBySubscription(id);
+  const idString = popularSubId ? String(popularSubId) : '';
+  const { data: getInfra } = useGetInfraBySubscription(idString);
   const stations = getInfra?.data?.stations ?? [];
   const schools = getInfra?.data?.schools ?? [];
 
-  const { data: getFacilities } = useGetFacilitiesBySubscription(id);
+  const { data: getFacilities } = useGetFacilitiesBySubscription(idString);
   const facilities = Array.isArray(getFacilities?.data) ? getFacilities.data : [];
 
   const { data: getMyLocation, refetch: GET_my_location } = useGetMyLocation();
@@ -95,6 +112,8 @@ export default function Home() {
   });
 
   useEffect(() => {
+    if (subDetail) return;
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((pos) => {
         const lat = pos.coords.latitude;
@@ -102,7 +121,7 @@ export default function Home() {
         setPosition({ lat, lng });
       });
     }
-  }, []);
+  }, [subDetail]);
 
   useEffect(() => {
     if (!searchRegion.trim()) return;
@@ -125,6 +144,15 @@ export default function Home() {
   }, [searchRegion]);
 
   useEffect(() => {
+    if (subDetail) {
+      setPosition({
+        lat: parseFloat(subDetail.latitude),
+        lng: parseFloat(subDetail.longitude),
+      });
+    }
+  }, [subDetail]);
+
+  useEffect(() => {
     GET_my_location();
   }, [isSignin]);
 
@@ -134,26 +162,58 @@ export default function Home() {
       <Suspense fallback={null}>
         <SearchParamsComponent onStateReceived={setState} />
       </Suspense>
-      
+
       {/* 헤더 섹션 */}
       <div className="mb-8 text-center">
         <h1 className="mb-2 text-3xl font-bold text-gray-900">쉽고 간편한 청약 플랫폼</h1>
         <p className="text-gray-600">원하는 지역의 청약 정보를 한눈에 확인하세요</p>
       </div>
 
-      {/* 검색 및 지도 섹션 */}
+      {/* 인기 지역 TOP 섹션 */}
       <Card className="border-0 shadow-lg">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-blue-500" />
-            지역 검색
+            <Crown className="h-5 w-5 text-yellow-500" />
+            인기 지역 TOP
           </CardTitle>
-          <CardDescription>원하는, 지역명을 입력하여 청약 정보를 확인해보세요</CardDescription>
+          <CardDescription>사용자들이 가장 관심있게 찾는 인기 지역을 확인해보세요</CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+            {popularLocations?.data.map((popularLocation, index) => (
+              <Card key={popularLocation} className="cursor-pointer border-0 transition-colors hover:bg-blue-50">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <Badge
+                    variant="outline"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border-0 bg-blue-100 p-0 text-blue-600"
+                  >
+                    {index + 1}
+                  </Badge>
+                  <div className="flex-1">
+                    <p className="font-medium">{popularLocation}</p>
+                    {/* <p className="text-xs text-gray-500">청약 평균 경쟁률 13:1</p> */}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 지역 검색 및 인기 청약 정보 섹션 */}
+      <Card className="border-0 shadow-lg">
+        {/* <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-blue-500" />
+            지역 검색 및 청약 정보
+          </CardTitle>
+          <CardDescription>원하는 지역명을 입력하여 청약 정보를 확인해보세요</CardDescription>
+        </CardHeader> */}
+        <CardContent>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {/* 좌측: 검색 및 지도 */}
             <div className="space-y-4">
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
@@ -164,96 +224,96 @@ export default function Home() {
                   />
                 </div>
                 <Button>검색</Button>
-              </div>
+              </div> */}
 
               <Map id="kakao-map" center={position} className="h-[400px] w-full rounded-md border shadow-sm" level={5}>
                 <MapMarker position={position} />
               </Map>
             </div>
 
+            {/* 우측: 인기 청약 물건 정보 */}
             <div className="space-y-4">
-              <h3 className="flex items-center gap-2 text-lg font-medium">
-                <Crown className="h-5 w-5 text-yellow-500" />
-                인기 지역 TOP
-              </h3>
+              {subDetail ? (
+                <>
+                  <div className="mb-4">
+                    <h3 className="mb-3 flex items-center gap-2 text-lg font-medium">
+                      <Building2 className="h-5 w-5 text-green-500" />
+                      인기 청약 물건 정보
+                    </h3>
+                    <div className="rounded-lg bg-gray-50 p-4">
+                      <h4 className="mb-2 text-lg font-semibold">{subDetail.houseNm}</h4>
+                      <p className="mb-1 text-gray-600">{subDetail.hssplyAdres}</p>
+                      <p className="text-sm text-gray-500">사업주체: {subDetail.bsnsMbyNm}</p>
+                    </div>
+                  </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                {popularLocations?.data.map((popularLocation, index) => (
-                  <Card key={popularLocation} className="cursor-pointer border-0 transition-colors hover:bg-blue-50">
-                    <CardContent className="flex items-center gap-3 p-3">
-                      <Badge
-                        variant="outline"
-                        className="flex h-8 w-8 items-center justify-center rounded-full border-0 bg-blue-100 p-0 text-blue-600"
-                      >
-                        {index + 1}
-                      </Badge>
-                      <div>
-                        <p className="font-medium">{popularLocation}</p>
-                        <p className="text-xs text-gray-500">청약 평균 경쟁률 13:1</p>
+                  <Tabs defaultValue="infrastructure">
+                    <TabsList className="mb-4 grid grid-cols-2">
+                      <TabsTrigger value="infrastructure">주변 인프라</TabsTrigger>
+                      <TabsTrigger value="public">공공시설</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="infrastructure" className="mt-0">
+                      <div className="flex justify-center">
+                        {stations.length === 0 && schools.length === 0 ? (
+                          <p className="text-xs text-gray-500">주변 인프라 정보가 없습니다.</p>
+                        ) : (
+                          <Marquee pauseOnHover gradient={false} speed={30}>
+                            {stations.map((item, index) => (
+                              <div
+                                key={`station-${index}`}
+                                className="mr-3 flex w-[160px] flex-col items-center justify-center gap-2 rounded-md bg-orange-50 p-3 text-center"
+                              >
+                                <TramFront className="h-6 w-6 text-orange-500" />
+                                <span className="text-sm font-medium">{item.name}역</span>
+                                <span className="text-xs text-gray-500">{item.line}</span>
+                              </div>
+                            ))}
+                            {schools.map((item, index) => (
+                              <div
+                                key={`school-${index}`}
+                                className="mr-3 flex w-[160px] flex-col items-center justify-center gap-2 rounded-md bg-purple-50 p-3 text-center"
+                              >
+                                <School className="h-6 w-6 text-purple-500" />
+                                <span className="text-sm font-medium">{item.schoolName}</span>
+                                <span className="text-xs text-gray-500">{item.category}</span>
+                              </div>
+                            ))}
+                          </Marquee>
+                        )}
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                    </TabsContent>
 
-              <div className="pt-4">
-                <h3 className="mb-3 text-lg font-medium">지역 정보</h3>
-                <Tabs defaultValue="infrastructure">
-                  <TabsList className="mb-4 grid grid-cols-2">
-                    <TabsTrigger value="infrastructure">주변 인프라</TabsTrigger>
-                    <TabsTrigger value="public">공공시설</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="infrastructure" className="mt-0">
-                    <div className="flex justify-center">
-                      {stations.length === 0 && schools.length === 0 ? (
-                        <p className="text-xs">주변 인프라 정보가 없습니다.</p>
-                      ) : (
-                        <Marquee pauseOnHover gradient={false} speed={30}>
-                          {stations.map((item, index) => (
-                            <div
-                              key={index}
-                              className="mr-3 flex w-[160px] flex-col items-center justify-center gap-2 rounded-md bg-orange-50 p-3 text-center"
-                            >
-                              <TramFront className="h-6 w-6 text-orange-500" />
-                              <span className="text-sm font-medium">{item.name}역</span>
-                            </div>
-                          ))}
-                          {schools.map((item, index) => (
-                            <div
-                              key={index}
-                              className="mr-3 flex w-[160px] flex-col items-center justify-center gap-2 rounded-md bg-purple-50 p-3 text-center"
-                            >
-                              <School className="h-6 w-6 text-purple-500" />
-                              <span className="text-sm font-medium">{item.schoolName}</span>
-                            </div>
-                          ))}
-                        </Marquee>
-                      )}
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="public" className="mt-0">
-                    <div className="flex justify-center">
-                      {Array.isArray(facilities) ? (
-                        <Marquee pauseOnHover gradient={false} speed={30}>
-                          {facilities?.map((item, index) => (
-                            <div
-                              key={index}
-                              className={`mr-3 flex w-[160px] flex-col items-center justify-center gap-2 rounded-md ${bgColors[index % 6]} p-3 text-center`}
-                            >
-                              <LandPlot className={`h-6 w-6 ${iconColors[index % 6]}`} />
-                              <span className="text-sm font-medium">{item.dgmNm}</span>
-                            </div>
-                          ))}
-                        </Marquee>
-                      ) : (
-                        <p className="text-xs">주변 공공시설 정보가 없습니다.</p>
-                      )}
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </div>
+                    <TabsContent value="public" className="mt-0">
+                      <div className="flex justify-center">
+                        {Array.isArray(facilities) && facilities.length > 0 ? (
+                          <Marquee pauseOnHover gradient={false} speed={30}>
+                            {facilities.map((item, index) => (
+                              <div
+                                key={`facility-${index}`}
+                                className={`mr-3 flex w-[160px] flex-col items-center justify-center gap-2 rounded-md ${bgColors[index % 6]} p-3 text-center`}
+                              >
+                                <LandPlot className={`h-6 w-6 ${iconColors[index % 6]}`} />
+                                <span className="text-sm font-medium">{item.dgmNm}</span>
+                              </div>
+                            ))}
+                          </Marquee>
+                        ) : (
+                          <p className="text-xs text-gray-500">주변 공공시설 정보가 없습니다.</p>
+                        )}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </>
+              ) : (
+                <div className="flex h-full items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <Building2 className="mx-auto mb-3 h-12 w-12 text-gray-300" />
+                    <p className="font-medium">청약 정보를 불러오는 중...</p>
+                    <p className="text-sm">잠시만 기다려주세요</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </CardContent>
@@ -330,7 +390,7 @@ export default function Home() {
                   <div
                     onClick={() => router.push(`/community/detail?id=${item.id}`)}
                     key={item.id}
-                    className="flex items-center justify-between rounded-md p-2 hover:bg-gray-50"
+                    className="flex cursor-pointer items-center justify-between rounded-md p-2 hover:bg-gray-50"
                   >
                     <span className="truncate font-medium">{item.title}</span>
                     <Badge variant="outline" className="shrink-0 border-0 bg-red-50 text-red-600">

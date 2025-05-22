@@ -34,7 +34,7 @@ export interface InfraDto {
 export interface Station {
   number: string;
   name: string;
-  lilne: string;
+  line: string;
   operator: string;
   latitude: number;
   longitude: number;
@@ -51,4 +51,22 @@ export interface School {
   latitude: number;
   longitude: number;
   distance: number;
+}
+
+export interface SubscriptionDetailDto {
+  id: number;
+  bsnsMbyNm: string;
+  cnstrctEntrpsNm: string;
+  cntrctCnclsBgnde: string;
+  cntrctCnclsEndde: string;
+  hssplyAdres: string;
+  hssplyZip: string;
+  houseManageNo: string;
+  houseNm: string;
+  region: string;
+  city: string;
+  district: string;
+  detail: string;
+  latitude: string;
+  longitude: string;
 }
