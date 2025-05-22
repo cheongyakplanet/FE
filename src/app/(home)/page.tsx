@@ -2,7 +2,7 @@
 
 import SubscriptionList from './componenets/subscription-list';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Marquee from 'react-fast-marquee';
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
@@ -37,10 +37,21 @@ const iconColors = [
   'text-pink-500',
 ];
 
-export default function Home() {
-  const router = useRouter();
+// SearchParamsComponent를 생성하여 useSearchParams를 사용하는 부분 분리
+function SearchParamsComponent({ onStateReceived }: { onStateReceived: (state: string) => void }) {
   const searchParams = useSearchParams();
   const state = searchParams.get('state') ?? '';
+  
+  useEffect(() => {
+    onStateReceived(state);
+  }, [state, onStateReceived]);
+  
+  return null;
+}
+
+export default function Home() {
+  const router = useRouter();
+  const [state, setState] = useState('');
   const { data: token } = useGetKakaoExchange(state);
 
   const { data: popularLocations } = useGetPopularLocations();
@@ -119,6 +130,11 @@ export default function Home() {
 
   return (
     <div className="container mx-auto space-y-8 py-6">
+      {/* useSearchParams를 사용하는 컴포넌트를 Suspense로 감싸기 */}
+      <Suspense fallback={null}>
+        <SearchParamsComponent onStateReceived={setState} />
+      </Suspense>
+      
       {/* 헤더 섹션 */}
       <div className="mb-8 text-center">
         <h1 className="mb-2 text-3xl font-bold text-gray-900">쉽고 간편한 청약 플랫폼</h1>
