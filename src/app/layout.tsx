@@ -23,7 +23,11 @@ export const metadata: Metadata = {
   verification: {
     other: {
       'naver-site-verification': '658bff1761a0d5eb60069ef4331ab51643304b65',
+      'google-adsense-account': 'ca-pub-7334667748813914',
     },
+  },
+  other: {
+    'google-adsense-account': 'ca-pub-7334667748813914',
   },
 };
 
@@ -34,15 +38,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <head>
-        {/* AdSense 스크립트를 head에 추가 */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7334667748813914"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-      </head>
       <body className={`${BMJUAFont.className} antialiased`}>
         <ReactQueryProvider>
           <Header />
