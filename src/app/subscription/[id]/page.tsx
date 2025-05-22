@@ -25,7 +25,7 @@ import {
   TramFront,
   Users,
 } from 'lucide-react';
-import { Bar, BarChart, CartesianGrid, ComposedChart, Line, XAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from 'recharts';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -551,20 +551,31 @@ export default function SubscriptionDetail() {
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig} className="h-[200px] w-full">
-                <ComposedChart accessibilityLayer data={getPriceSummary?.data}>
+                <ComposedChart
+                  accessibilityLayer
+                  data={[...(getPriceSummary?.data || [])].sort((a, b) => a.dealYearMonth - b.dealYearMonth)}
+                >
                   <CartesianGrid vertical={false} />
                   <XAxis
-                    dataKey="dealMonth"
-                    tickFormatter={(value) => dayjs('2025' + value).format('2025.MM')}
+                    dataKey="dealYearMonth"
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
+                    tickFormatter={(ym) => String(ym).slice(-2) + '월'}
+                  />
+                  {/* 왼쪽 축: 거래 건수 */}
+                  <YAxis yAxisId="left" label={{ value: '건수', angle: -90, position: 'insideLeft' }} />
+                  {/* 오른쪽 축: ㎡당 가격 */}
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    label={{ value: '가격(만원)', angle: 90, position: 'insideRight' }}
                   />
                   <ChartTooltip
                     cursor={false}
                     content={
                       <ChartTooltipContent
-                        labelKey="dealMonth"
+                        labelKey="dealYearMonth"
                         indicator="line"
                         formatter={(value, name, item, index) => {
                           return (
@@ -590,8 +601,10 @@ export default function SubscriptionDetail() {
                       />
                     }
                   />
-                  <Bar dataKey="dealCount" fill="var(--color-dealCount)" radius={4} />
-                  <Line dataKey="pricePerAr" fill="var(--color-pricePerAr)" />
+                  {/* 막대: 거래 건수 (왼쪽 축) */}
+                  <Bar yAxisId="left" dataKey="dealCount" fill="var(--color-dealCount)" radius={4} />
+                  {/* 선: ㎡당 가격 (오른쪽 축) */}
+                  <Line yAxisId="right" dataKey="pricePerAr" stroke="var(--color-pricePerAr)" />
                 </ComposedChart>
               </ChartContainer>
             </CardContent>
