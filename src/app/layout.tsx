@@ -38,7 +38,57 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        {/* Google Tag Manager */}
+        <Script
+          id="gtm-script"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','GTM-TM3TJS54');
+            `,
+          }}
+        />
+      </head>
       <body className={`${BMJUAFont.className} antialiased`}>
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-TM3TJS54"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+
+        {/* AdSense Script */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7334667748813914"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+
+        {/* 네이버 애널리틱스 */}
+        <Script src="//wcs.naver.net/wcslog.js" strategy="afterInteractive" />
+        <Script
+          id="naver-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              if(!wcs_add) var wcs_add = {};
+              wcs_add["wa"] = "11e2c56047b4300";
+              if(window.wcs) {
+                wcs_do();
+              }
+            `,
+          }}
+        />
+
         <ReactQueryProvider>
           <Header />
           <main className="mx-auto mt-12 max-w-screen-lg">{children}</main>
