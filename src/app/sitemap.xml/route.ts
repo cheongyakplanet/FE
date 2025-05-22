@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 // API를 직접 호출하기 위한 서버 측 함수
 async function fetchSubscriptions() {
   try {
-    const response = await fetch('https://api.cheongyakplanet.site/api/info/subscription?page=0&size=10');
+    const response = await fetch('http://run.blu2print.site:8082/api/info/subscription?page=0&size=10');
     return await response.json();
   } catch (error) {
     console.error('Error fetching subscriptions:', error);
@@ -13,7 +13,7 @@ async function fetchSubscriptions() {
 
 async function fetchCommunityPosts() {
   try {
-    const response = await fetch('https://api.cheongyakplanet.site/api/community/posts?sort=time&page=0');
+    const response = await fetch('http://run.blu2print.site:8082/api/community/posts?sort=time&page=0&size=10');
     return await response.json();
   } catch (error) {
     console.error('Error fetching community posts:', error);
