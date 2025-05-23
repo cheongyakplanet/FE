@@ -13,9 +13,11 @@ import {
 } from '@heroicons/react/24/outline';
 
 export default function Guide() {
-  const [expandedSection, setExpandedSection] = useState(null);
+  type SectionId = 'intro' | 'signup' | 'mypage' | 'subscription' | 'community' | 'terms' | 'tips';
 
-  const toggleSection = (sectionId) => {
+  const [expandedSection, setExpandedSection] = useState<SectionId | null>(null);
+
+  const toggleSection = (sectionId: SectionId) => {
     setExpandedSection(expandedSection === sectionId ? null : sectionId);
   };
 
@@ -273,7 +275,7 @@ export default function Guide() {
           return (
             <div key={section.id} className="overflow-hidden rounded-lg border border-gray-200">
               <button
-                onClick={() => toggleSection(section.id)}
+                onClick={() => toggleSection(section.id as SectionId)}
                 className="flex w-full items-center justify-between bg-gray-50 px-6 py-4 text-left transition-colors duration-200 hover:bg-gray-100"
               >
                 <div className="flex items-center space-x-3">
