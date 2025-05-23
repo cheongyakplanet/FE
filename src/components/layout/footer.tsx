@@ -12,7 +12,7 @@ export default function Footer() {
             이용하는 경우 저작권법 등에 따라 법적 책임을 질 수 있습니다.
           </p>
           <div className="text-xs text-gray-500">
-            <p className="mb-2">대표: 김지수</p>
+            {/* <p className="mb-2">대표: 김지수</p> */}
             <p>
               문의:{' '}
               <a href="mailto:cheongyakplanet@gmail.com" className="hover:text-teal-600">
