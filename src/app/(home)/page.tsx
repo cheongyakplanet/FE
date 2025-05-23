@@ -304,6 +304,12 @@ export default function Home() {
                       </div>
                     </TabsContent>
                   </Tabs>
+                  {/* 상세 조회 버튼 추가 */}
+                  <div className="mt-4 flex justify-end">
+                    <Button variant="outline" onClick={() => router.push(`/subscription/${subDetail.id}`)}>
+                      상세 조회
+                    </Button>
+                  </div>
                 </>
               ) : (
                 <div className="flex h-full items-center justify-center">
