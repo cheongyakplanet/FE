@@ -181,7 +181,14 @@ export default function Home() {
         <CardContent>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
             {popularLocations?.data.map((popularLocation, index) => (
-              <Card key={popularLocation} className="cursor-pointer border-0 transition-colors hover:bg-blue-50">
+              <Card
+                key={popularLocation}
+                className="cursor-pointer border-0 transition-colors hover:bg-blue-50"
+                onClick={() => {
+                  const [region, city] = popularLocation.split(' ');
+                  router.push(`/subscription?region=${encodeURIComponent(region)}&city=${encodeURIComponent(city)}`);
+                }}
+              >
                 <CardContent className="flex items-center gap-3 p-4">
                   <Badge
                     variant="outline"
