@@ -15,8 +15,8 @@ export default function Footer() {
             <p className="mb-2">대표: 김지수</p>
             <p>
               문의:{' '}
-              <a href="mailto:jisu0259@naver.com" className="hover:text-teal-600">
-                jisu0259@naver.com
+              <a href="mailto:cheongyakplanet@gmail.com" className="hover:text-teal-600">
+                cheongyakplanet@gmail.com
               </a>
             </p>
           </div>
