@@ -114,13 +114,13 @@ export default function Home() {
   useEffect(() => {
     if (subDetail) return;
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        setPosition({ lat, lng });
-      });
-    }
+    // if (navigator.geolocation) {
+    //   navigator.geolocation.getCurrentPosition((pos) => {
+    //     const lat = pos.coords.latitude;
+    //     const lng = pos.coords.longitude;
+    //     setPosition({ lat, lng });
+    //   });
+    // }
   }, [subDetail]);
 
   useEffect(() => {
