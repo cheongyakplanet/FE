@@ -79,3 +79,28 @@ export const GET_price_summary = async ({
 export const GET_infra_by_subscription = async (subscriptionId: string): Promise<ApiResponse<InfraDto>> => {
   return await api.get(`/api/info/subscription/${subscriptionId}/detail/infra`);
 };
+
+/** 지역별 청약 검색 */
+export const GET_subscription_by_region = async ({
+  region,
+  city,
+}: {
+  region: string;
+  city: string;
+}): Promise<ApiResponse<SubscriptionListDto[]>> => {
+  return await api.get('/api/info/subscription/list', {
+    params: { region, city },
+  });
+};
+
+/** 지역 리스트 조회 (시/도) */
+export const GET_region_list = async (): Promise<ApiResponse<string[]>> => {
+  return await api.get('/api/info/subscription/regionlist');
+};
+
+/** 시/군/구 리스트 조회 */
+export const GET_city_list = async (region: string): Promise<ApiResponse<string[]>> => {
+  return await api.get('/api/info/subscription/citylist', {
+    params: { region },
+  });
+};
