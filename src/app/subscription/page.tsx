@@ -62,7 +62,7 @@ function SubscriptionContent() {
   const page = params.get('page');
   const router = useRouter();
 
-  const { data: getAllSubscription } = useGetAllSubscription(parseInt(page ?? '1'), 6);
+  const { data: getAllSubscription } = useGetAllSubscription(parseInt(page ?? '0'), 6);
 
   const table = useTable({
     data: getAllSubscription?.data.content,
