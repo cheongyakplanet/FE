@@ -80,11 +80,11 @@ export default function RootLayout({
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
-              if(!wcs_add) var wcs_add = {};
-              wcs_add["wa"] = "11e2c56047b4300";
-              if(window.wcs) {
-                wcs_do();
-              }
+            window.wcs_add = window.wcs_add || {};
+            window.wcs_add["wa"] = "11e2c56047b4300";
+            if (typeof wcs !== "undefined") {
+            wcs_do();
+            }
             `,
           }}
         />
