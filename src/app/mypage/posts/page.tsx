@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -56,6 +56,9 @@ function PostContent() {
 
   const currentPage = parseInt(page ?? '0');
 
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
+
   const card = useTable({
     data: getMypost?.content,
     columns,
@@ -70,6 +73,8 @@ function PostContent() {
     deletMypost(id);
   };
 
+  const editPost = () => {};
+
   return (
     <div>
       {getMypost?.content?.length! > 0 ? (
@@ -83,7 +88,12 @@ function PostContent() {
 
                     <div className="space-x-2">
                       <Dialog>
-                        <DialogTrigger>
+                        <DialogTrigger
+                          onClick={() => {
+                            setEditTitle(row.getValue('title'));
+                            setEditContent(row.getValue('content'));
+                          }}
+                        >
                           <Pencil className="text-gray-500 hover:text-indigo-800" size={16} />
                         </DialogTrigger>
 
@@ -102,7 +112,8 @@ function PostContent() {
                             <div>
                               <label className="text-sm font-medium text-gray-700">제목</label>
                               <input
-                                defaultValue={row.getValue('title')}
+                                value={editTitle}
+                                onChange={(e) => setEditTitle(e.target.value)}
                                 className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                               />
                             </div>
@@ -110,7 +121,8 @@ function PostContent() {
                             <div>
                               <label className="text-sm font-medium text-gray-700">내용</label>
                               <textarea
-                                defaultValue={row.getValue('content')}
+                                value={editContent}
+                                onChange={(e) => setEditContent(e.target.value)}
                                 rows={4}
                                 className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                               />
@@ -118,7 +130,10 @@ function PostContent() {
                           </div>
 
                           <DialogFooter className="mt-6 flex justify-end gap-2">
-                            <Button className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                            <Button
+                              onClick={editPost}
+                              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                            >
                               완료
                             </Button>
                           </DialogFooter>
