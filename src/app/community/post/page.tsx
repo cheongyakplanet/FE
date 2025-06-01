@@ -5,13 +5,12 @@ import { ChangeEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 import { useNewPost } from '@/services/community/hooks/useGetPost';
-import { NewPostDto } from '@/services/community/types';
 
 const categories = [
   { value: 'REVIEW', label: '후기' },
@@ -26,7 +25,7 @@ export default function post() {
   const { mutate: newPost } = useNewPost();
   const [newPostData, setNewPostData] = useState({ title: '', content: '' });
   const [alert, setAlert] = useState('');
-  const [category, setCategory] = useState('');
+  const [postCategory, setPostCategory] = useState('');
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNewPostData({
@@ -35,9 +34,9 @@ export default function post() {
     });
   };
 
-  const postNewPost = (newPostData: NewPostDto) => {
+  const postNewPost = () => {
     if (!checkTrim()) return;
-    newPost(newPostData);
+    newPost({ ...newPostData, postCategory });
     router.push('/community');
   };
 
@@ -78,8 +77,8 @@ export default function post() {
             <ToggleGroup
               type="single"
               variant="outline"
-              value={category}
-              onValueChange={(val) => setCategory(val)}
+              value={postCategory}
+              onValueChange={(val) => setPostCategory(val)}
               className="flex flex-wrap gap-3"
             >
               {categories.map((item) => (
@@ -114,8 +113,8 @@ export default function post() {
           </Button>
           <Button
             className="bg-orange-300 text-white hover:bg-orange-400"
-            disabled={!category || !newPostData.content || !newPostData.title}
-            onClick={() => postNewPost(newPostData)}
+            disabled={!postCategory || !newPostData.content || !newPostData.title}
+            onClick={postNewPost}
           >
             등록하기
           </Button>

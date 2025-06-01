@@ -38,19 +38,19 @@ export const useNewPost = () => {
   return useMutation({
     mutationKey: [POST_post.name],
     mutationFn: POST_post,
-  })
-}
+  });
+};
 
 export const usePostReply = () => {
   return useMutation({
     mutationKey: [POST_reply.name],
     mutationFn: POST_reply,
-  })
-}
+  });
+};
 
 export const usePostDislike = () => {
   return useMutation({
     mutationKey: [POST_dislike.name],
     mutationFn: POST_dislike,
-  })
-}
+  });
+};
