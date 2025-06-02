@@ -79,6 +79,12 @@ export default function Calendar() {
           selected={date}
           onSelect={setDate}
           locale={ko}
+          onMonthChange={(month) => {
+            setDate((prev) => {
+              if (!prev) return month;
+              return new Date(month.getFullYear(), month.getMonth(), prev.getDate());
+            });
+          }}
           components={{
             CaptionLabel: ({ displayMonth }) => (
               <div className="text-md font-semibold text-indigo-900">
