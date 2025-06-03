@@ -6,6 +6,7 @@ import Script from 'next/script';
 
 import { Toaster } from 'sonner';
 
+import Chatbot from '@/components/layout/chatbot';
 import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/header';
 
@@ -93,6 +94,7 @@ export default function RootLayout({
           <Header />
           <main className="mx-auto mt-12 max-w-screen-lg">{children}</main>
           <Toaster />
+          <Chatbot />
           <Footer />
         </ReactQueryProvider>
       </body>
