@@ -11,6 +11,7 @@ export interface PostCommentDto {
 export interface NewPostDto {
   title: string;
   content: string;
+  postCategory: string;
 }
 
 export interface PostReplyDto {
