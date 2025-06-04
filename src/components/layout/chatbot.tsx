@@ -28,7 +28,7 @@ const Chatbot = () => {
     if (!accessToken) return;
     const cleanToken = accessToken.replace(/^Bearer\s/, '');
 
-    ws.current = new WebSocket(`ws://run.blu2print.site:8082/ws/chat?token=${cleanToken}`);
+    ws.current = new WebSocket(`wss://run.blu2print.site:8082/ws/chat?token=${cleanToken}`);
 
     ws.current.onmessage = (event) => {
       const reply = event.data;
