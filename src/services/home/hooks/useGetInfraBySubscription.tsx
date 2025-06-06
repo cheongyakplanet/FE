@@ -7,5 +7,6 @@ export const useGetInfraBySubscription = (id: string) => {
     queryKey: [GET_infra_by_subscription.name, id],
     queryFn: () => GET_infra_by_subscription(id),
     select: ({ data }) => data,
+    enabled: Boolean(id),
   });
 };
