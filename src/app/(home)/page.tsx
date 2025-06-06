@@ -6,11 +6,10 @@ import { Suspense, useEffect, useState } from 'react';
 import Marquee from 'react-fast-marquee';
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
+import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import Script from 'next/script';
-import Head from 'next/head'
-import GoogleAd from '@/components/GoogleAd'
 
 import {
   Building2,
@@ -58,7 +57,7 @@ function GoogleAd() {
   useEffect(() => {
     // 스크립트가 이미 로드된 상태에서 adsbygoogle 오브젝트가 존재하므로, push()만 한 번 호출
     try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
     } catch (err) {
       console.error('AdSense push error:', err);
     }
