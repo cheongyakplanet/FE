@@ -6,7 +6,6 @@ import { Suspense, useEffect, useState } from 'react';
 import Marquee from 'react-fast-marquee';
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
-import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import Script from 'next/script';
@@ -197,13 +196,6 @@ export default function Home() {
 
   return (
     <>
-      {/* 구글 애드센스 스크립트 */}
-      <Script
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7334667748813914"
-        strategy="afterInteractive"
-        crossOrigin="anonymous"
-      />
-
       <div className="container mx-auto space-y-8 py-6">
         {/* useSearchParams를 사용하는 컴포넌트를 Suspense로 감싸기 */}
         <Suspense fallback={null}>
