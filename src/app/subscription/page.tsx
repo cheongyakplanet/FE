@@ -29,7 +29,7 @@ import { useGetRegionList } from '@/services/subscription/hooks/useGetRegionList
 import { useGetSubscriptionByRegion } from '@/services/subscription/hooks/useGetSubscriptionByRegion';
 import { SubscriptionListDto } from '@/services/subscription/types';
 
-let hasPushedAd = false;
+//let hasPushedAd = false;
 const columnHelper = createColumnHelper<SubscriptionListDto>();
 const columns = [
   columnHelper.accessor('id', { id: 'id' }),
@@ -65,10 +65,10 @@ export default function Subscription() {
 
 function SubscriptionContent() {
   const params = useSearchParams();
-  const pageParam = params.get('page');
   const router = useRouter();
+  const pageParam = params.get('page');
 
-  const [page, setPage] = useState(Number(pageParam ?? '1'));
+  //const [page, setPage] = useState(Number(pageParam ?? '1'));
 
   // 지역 검색 상태
   const [selectedRegion, setSelectedRegion] = useState<string>('');
@@ -78,10 +78,12 @@ function SubscriptionContent() {
   // 지역 데이터 조회
   const { data: regionList } = useGetRegionList();
   const { data: cityList } = useGetCityList(selectedRegion);
-  const pageNumber = page >= 1 ? page : 1;
+
+  const pageNumber = Number(pageParam ?? '1'); // 1-based
   const pageSize = 6;
+  const pageIndex = pageNumber - 1;
   // 청약 데이터 조회 (전체 또는 지역별)
-  const { data: getAllSubscription, isLoading: isLoadingAll } = useGetAllSubscription(pageNumber, pageSize);
+  const { data: getAllSubscription, isLoading: isLoadingAll } = useGetAllSubscription(pageIndex, pageSize);
   const { data: regionSubscription, isLoading: isLoadingRegion } = useGetSubscriptionByRegion(
     selectedRegion,
     selectedCity,
@@ -107,7 +109,7 @@ function SubscriptionContent() {
     totalPages: getAllSubscription?.data.totalPages || 0,
     totalElements: getAllSubscription?.data.totalElements || 0,
     rowId: 'id',
-    defaultPageIndex: pageNumber - 1,
+    defaultPageIndex: pageIndex,
     defaultPagingSize: pageSize,
   });
 
@@ -340,45 +342,39 @@ function SubscriptionContent() {
               {/* ─── 6 번째 카드 뒤(idx === 2)에 광고 삽입 ─── */}
               {idx === 5 && (
                 <div className="col-span-full flex justify-center">
-                  <div>
-                    {/* 
-                      AdSense 스크립트: 페이지 한 번만 로드 
-                      (네 번째 카드 뒤에 처음 등장할 때 실행됨)
-                    */}
-                    <Script
-                      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7334667748813914"
-                      strategy="afterInteractive"
-                      crossOrigin="anonymous"
-                    />
-                    <div className="mx-auto w-full max-w-[356px]">
-                      <ins
-                        className="adsbygoogle"
-                        style={{ display: 'block', width: '100%', height: '258px' }}
-                        data-ad-client="ca-pub-7334667748813914"
-                        data-ad-slot="8328709240"
-                        data-ad-format="auto"
-                      />
-                    </div>
-                    {/* 
-                      adsbygoogle.push() 호출은 화면이 충분히 렌더링된 후 한 번만 실행 
-                      (push() 자체를 새 컴포넌트로 분리하지 않고 여기서 직접 호출)
-                    */}
-                    <script
-                      dangerouslySetInnerHTML={{
-                        __html: `
-                        (function() {
-                          if (!window.hasPushedAd && window.adsbygoogle) {
-                            try {
-                              (adsbygoogle = window.adsbygoogle || []).push({});
-                              window.hasPushedAd = true;
-                            } catch (e) {
-                              console.error(e);
-                            }
-                          }
-                        })();`,
+                  {/* ① AdSense 라이브러리 로드 */}
+                  <Script
+                    id="adsense-lib"
+                    strategy="afterInteractive"
+                    src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-7334667748813914"
+                    crossOrigin="anonymous"
+                  />
+
+                  {/* ② 광고 인젝션 영역: 최소 250px 너비 보장 */}
+                  <div className="mx-auto w-full min-w-[250px] max-w-[356px]">
+                    <ins
+                      className="adsbygoogle"
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        minWidth: '250px', // fluid 광고 최소 너비
+                        height: '258px',
                       }}
+                      data-ad-client="ca-pub-7334667748813914"
+                      data-ad-slot="8328709240"
+                      data-ad-format="fluid"
+                      data-ad-layout-key="-6s+ef+2g-1o-55"
                     />
                   </div>
+
+                  {/* ③ adsbygoogle.push() 실행 */}
+                  <Script
+                    id="adsense-init"
+                    strategy="afterInteractive"
+                    dangerouslySetInnerHTML={{
+                      __html: `(adsbygoogle = window.adsbygoogle || []).push({});`,
+                    }}
+                  />
                 </div>
               )}
             </Fragment>

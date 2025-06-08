@@ -53,25 +53,39 @@ const iconColors = [
 ];
 
 // 구글 애드센스 컴포넌트
-function GoogleAd() {
-  useEffect(() => {
-    // 스크립트가 이미 로드된 상태에서 adsbygoogle 오브젝트가 존재하므로, push()만 한 번 호출
-    try {
-      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-    } catch (err) {
-      console.error('AdSense push error:', err);
-    }
-  }, []);
-
+export function GoogleAd() {
   return (
-    <ins
-      className="adsbygoogle"
-      style={{ display: 'block' }}
-      data-ad-client="ca-pub-7334667748813914"
-      data-ad-slot="6707376512"
-      data-ad-format="auto"
-      data-full-width-responsive="true"
-    />
+    <>
+      {/* ① AdSense 라이브러리 로드 (한 번만) */}
+      <Script
+        id="adsense-lib"
+        strategy="afterInteractive"
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-7334667748813914"
+        crossOrigin="anonymous"
+      />
+
+      {/* ② 광고 삽입 지점 */}
+      <ins
+        className="adsbygoogle"
+        style={{ display: 'block' }}
+        data-ad-client="ca-pub-7334667748813914"
+        data-ad-slot="6707376512"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+
+      {/* ③ adsbygoogle.push() 한 번만 실행 */}
+      <Script
+        id="adsense-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          `,
+        }}
+      />
+    </>
   );
 }
 
