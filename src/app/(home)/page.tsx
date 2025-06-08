@@ -71,8 +71,6 @@ function GoogleAd() {
       data-ad-slot="6707376512"
       data-ad-format="auto"
       data-full-width-responsive="true"
-      // 개발 중에는 테스트 모드 켜기
-      data-adtest="on"
     />
   );
 }
