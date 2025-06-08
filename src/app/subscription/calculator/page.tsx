@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import Script from 'next/script';
+
 import dayjs from 'dayjs';
 import minMax from 'dayjs/plugin/minMax';
 import { Calculator as CalculatorIcon, Check, CircleHelp, Info } from 'lucide-react';
@@ -18,38 +20,43 @@ dayjs.extend(minMax);
 
 export default function Calculator() {
   const [homelessPeriod, setHomelessPeriod] = useState<number | string>('');
-
   const [isMarried, setIsMarried] = useState(false);
   const [myAncestor, setMyAncestor] = useState<number | string>('');
   const [spouseAncestor, setSpouseAncestor] = useState<number | string>('');
   const [descendant, setDescendant] = useState<number | string>('');
-
   const [spouseAccountPeriod, setSpouseAccountPeriod] = useState<number | string>('');
 
   const [showResult, setShowResult] = useState(false);
   const [familyCount, setFamilyCount] = useState(0);
   const [familyCountScore, setFamilyCountScore] = useState(0);
 
+  const [birthday, setBirthday] = useState('');
+  const [accountDate, setAccountDate] = useState('');
+
+  const [totalYear, setTotalYear] = useState(0);
+  const [totalAccountYear, setTotalAccountYear] = useState(0);
+
+  // —————— 광고 로딩 플래그 ——————
+  const [adLoaded, setAdLoaded] = useState(false);
+
+  // 결과 버튼 클릭 시 가계산
   const result = () => {
     setShowResult(true);
-
     if (isMarried) {
       setFamilyCount(Number(myAncestor) + Number(descendant));
     } else {
       setFamilyCount(Number(myAncestor) + Number(spouseAncestor) + Number(descendant) + 1);
     }
-
     accountCalculate();
   };
 
+  // 부양가족 점수 계산
   useEffect(() => {
-    if (familyCount < 6) {
-      setFamilyCountScore(5 * (familyCount + 1));
-    } else {
-      setFamilyCountScore(35);
-    }
+    if (familyCount < 6) setFamilyCountScore(5 * (familyCount + 1));
+    else setFamilyCountScore(35);
   }, [familyCount]);
 
+  // 혼인 상태 토글 시 관련 값 초기화
   useEffect(() => {
     setSpouseAccountPeriod('');
     setMyAncestor('');
@@ -66,36 +73,30 @@ export default function Calculator() {
     setDescendant('');
     setBirthday('');
     setAccountDate('');
+    setShowResult(false);
   };
 
-  const [birthday, setBirthday] = useState('');
-  const [accountDate, setAccountDate] = useState('');
-
+  // 입력값 형식 맞추기 (YYYYMMDD → YYYY-MM-DD)
   const formatAccountDate = (e: React.ChangeEvent<HTMLInputElement>) => {
     let date = e.target.value.replace(/\D/g, '');
-
     if (date.length === 8) {
-      let formattedDate = `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`;
-      setAccountDate(formattedDate);
+      const formatted = `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`;
+      setAccountDate(formatted);
     } else {
       setAccountDate(date);
     }
   };
-
   const formatBirthday = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let birthday = e.target.value.replace(/\D/g, '');
-
-    if (birthday.length === 8) {
-      let formattedBirthday = `${birthday.slice(0, 4)}-${birthday.slice(4, 6)}-${birthday.slice(6, 8)}`;
-      setBirthday(formattedBirthday);
+    let b = e.target.value.replace(/\D/g, '');
+    if (b.length === 8) {
+      const formatted = `${b.slice(0, 4)}-${b.slice(4, 6)}-${b.slice(6, 8)}`;
+      setBirthday(formatted);
     } else {
-      setBirthday(birthday);
+      setBirthday(b);
     }
   };
 
-  const [totalYear, setTotalYear] = useState(0);
-  const [totalAccountYear, setTotalAccountYear] = useState(0);
-
+  // 가입 기간 계산 로직
   const accountCalculate = () => {
     const birth = dayjs(birthday);
     const adultYear = birth.add(19, 'year');
@@ -129,10 +130,37 @@ export default function Calculator() {
     }
   };
 
+  // 총합 계산
   const total = Number(homelessPeriod) + Number(familyCountScore) + totalYear + Number(spouseAccountPeriod);
+
+  // —————— 광고 컴포넌트 (한 번만 push 호출) ——————
+  function GoogleAd() {
+    useEffect(() => {
+      if (!adLoaded && typeof window !== 'undefined') {
+        try {
+          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+          setAdLoaded(true);
+        } catch (err) {
+          console.error('AdSense push error:', err);
+        }
+      }
+    }, []);
+
+    return (
+      <ins
+        className="adsbygoogle"
+        style={{ display: 'block' }}
+        data-ad-client="ca-pub-7334667748813914"
+        data-ad-slot="5721893051"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+    );
+  }
 
   return (
     <div>
+      {/* 1) 계산기 헤더 */}
       <div className="mb-6">
         <div className="flex items-center gap-3">
           <CalculatorIcon className="h-6 w-6 text-blue-500" />
@@ -150,12 +178,14 @@ export default function Calculator() {
         </div>
       </div>
 
+      {/* 2) 좌측: 입력 카드, 우측: 결과 카드 */}
       <div className="flex flex-col justify-between md:flex-row">
         <Card className="mb-10 ml-5 w-[480px]">
           <CardHeader className="border-b border-slate-100">
             <CardTitle>청약가점 계산기</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-4">
+            {/* 무주택기간 */}
             <div>
               <div className="flex">
                 <Check size={20} color="red" />
@@ -166,7 +196,7 @@ export default function Calculator() {
                   <SelectValue placeholder="기간 선택" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">유주택, 30세미만 미혼인 무주택 (0점) </SelectItem>
+                  <SelectItem value="0">유주택, 30세미만 미혼 (0점)</SelectItem>
                   <SelectItem value="2">1년 미만 (2점)</SelectItem>
                   <SelectItem value="4">1년 이상 ~ 2년 미만 (4점)</SelectItem>
                   <SelectItem value="6">2년 이상 ~ 3년 미만 (6점)</SelectItem>
@@ -191,6 +221,7 @@ export default function Calculator() {
               </p>
             </div>
 
+            {/* 부양가족수 */}
             <div>
               <div className="flex">
                 <Check size={20} color="red" />
@@ -276,6 +307,7 @@ export default function Calculator() {
               </Select>
             </div>
 
+            {/* 순위기산일 */}
             <div>
               <div className="flex">
                 <Check size={20} color="red" />
@@ -289,6 +321,7 @@ export default function Calculator() {
               />
             </div>
 
+            {/* 생년월일 */}
             <div>
               <div className="flex">
                 <Check size={20} color="red" />
@@ -300,7 +333,6 @@ export default function Calculator() {
                 onChange={formatBirthday}
                 value={birthday}
               />
-
               <div className="ml-5 mt-1 flex text-xs text-red-300">
                 <Info size={12} />
                 <p>
@@ -310,6 +342,7 @@ export default function Calculator() {
               </div>
             </div>
 
+            {/* 배우자 가입기간 */}
             <div>
               <div className="flex">
                 <Check size={20} color="red" />
@@ -336,6 +369,7 @@ export default function Calculator() {
               </p>
             </div>
           </CardContent>
+
           <CardFooter className="flex justify-between border-t border-slate-100 pt-4">
             <Button onClick={reset} className="bg-indigo-500 hover:bg-indigo-400">
               <RotateCcw /> 초기화
@@ -347,20 +381,20 @@ export default function Calculator() {
           </CardFooter>
         </Card>
 
+        {/* 결과 영역 */}
         <div className="mb-5 ml-5 w-[480px]">
-          {showResult && (
+          {showResult ? (
             <div className="flex flex-col rounded-md border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
               <p className="text-xl font-bold">청약가점 계산 결과를 확인해보세요</p>
-
               <div className="mt-5 flex justify-between">
                 <div className="space-y-5">
                   <p className="flex">
                     <Check size={20} color="green" className="mr-1" />
-                    무주택 기간{' '}
+                    무주택 기간
                   </p>
                   <p className="flex">
                     <Check size={20} color="green" className="mr-1" />
-                    부양가족수{' '}
+                    부양가족수
                   </p>
                   <p className="flex">
                     <Check size={20} color="green" className="mr-1" />
@@ -368,7 +402,7 @@ export default function Calculator() {
                   </p>
                   <p className="flex">
                     <Check size={20} color="green" className="mr-1" />
-                    배우자의 청약통장 가입 기간{' '}
+                    배우자의 청약통장 가입 기간
                   </p>
                 </div>
                 <div className="flex flex-col items-end space-y-5">
@@ -384,7 +418,6 @@ export default function Calculator() {
                     <span className="mr-1 text-lg font-bold">{totalAccountYear}</span>
                     <span className="flex items-end">점</span>
                   </div>
-
                   <div className="flex">
                     <span className="mr-1 text-lg font-bold">
                       {spouseAccountPeriod === '' ? 0 : spouseAccountPeriod}
@@ -398,16 +431,23 @@ export default function Calculator() {
                 총<span className="ml-2 mr-1 text-xl text-indigo-500">{total}</span>점
               </span>
             </div>
-          )}
-          {!showResult && (
+          ) : (
             <div className="flex flex-col rounded-md border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
               <p className="mb-2 text-lg font-semibold text-slate-600">아직 가점 계산기를 사용하지 않으셨네요!</p>
               <p className="text-sm text-slate-500">
-                왼쪽 항목을 모두 입력하신 후 <br />
+                왼쪽 항목을 모두 입력하신 후
+                <br />
                 <span className="font-medium text-indigo-600">청약 가점 계산 결과</span>를 확인해보세요.
               </p>
             </div>
           )}
+          {/* —————— 여기에 페이지 최하단 한 번만 스크립트 & 광고 태그를 삽입 —————— */}
+          <Script
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7334667748813914"
+            strategy="afterInteractive"
+            crossOrigin="anonymous"
+          />
+          <GoogleAd />
         </div>
       </div>
     </div>
