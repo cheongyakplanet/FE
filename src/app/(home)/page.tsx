@@ -53,7 +53,7 @@ const iconColors = [
 ];
 
 // 구글 애드센스 컴포넌트
-export function GoogleAd() {
+function GoogleAd() {
   return (
     <>
       {/* ① AdSense 라이브러리 로드 (한 번만) */}
