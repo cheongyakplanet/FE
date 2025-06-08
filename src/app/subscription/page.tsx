@@ -1,8 +1,9 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Fragment, Suspense, useEffect, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import Script from 'next/script';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import dayjs from 'dayjs';
@@ -28,6 +29,7 @@ import { useGetRegionList } from '@/services/subscription/hooks/useGetRegionList
 import { useGetSubscriptionByRegion } from '@/services/subscription/hooks/useGetSubscriptionByRegion';
 import { SubscriptionListDto } from '@/services/subscription/types';
 
+let hasPushedAd = false;
 const columnHelper = createColumnHelper<SubscriptionListDto>();
 const columns = [
   columnHelper.accessor('id', { id: 'id' }),
@@ -63,8 +65,10 @@ export default function Subscription() {
 
 function SubscriptionContent() {
   const params = useSearchParams();
-  const page = params.get('page');
+  const pageParam = params.get('page');
   const router = useRouter();
+
+  const [page, setPage] = useState(Number(pageParam ?? '1'));
 
   // 지역 검색 상태
   const [selectedRegion, setSelectedRegion] = useState<string>('');
@@ -105,6 +109,8 @@ function SubscriptionContent() {
     defaultPageIndex: parseInt(page ?? '1'),
     defaultPagingSize: 6,
   });
+
+  const rows = table.getRowModel().rows;
 
   const handlePageChange = (pageIndex: number) => {
     table.setPageIndex(pageIndex);
@@ -175,9 +181,9 @@ function SubscriptionContent() {
       </div>
     );
   }
-
   return (
     <div className="container mx-auto px-4 py-6">
+      {/* ───────────── 상단 헤더 ───────────── */}
       <div className="mb-6">
         <div className="flex items-center gap-3">
           <Award className="h-6 w-6 text-blue-500" />
@@ -189,13 +195,12 @@ function SubscriptionContent() {
         </div>
       </div>
 
-      {/* 지역 검색 필터 */}
+      {/* ───────────── 지역 검색 필터 ───────────── */}
       <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4">
         <div className="mb-4 flex items-center gap-2">
           <Search className="h-5 w-5 text-gray-500" />
           <h3 className="font-medium text-gray-900">지역별 검색</h3>
         </div>
-
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
           {/* 시/도 선택 */}
           <div className="flex-1">
@@ -241,7 +246,6 @@ function SubscriptionContent() {
               <Search className="mr-2 h-4 w-4" />
               검색
             </Button>
-
             {isRegionSearch && (
               <Button variant="outline" onClick={handleResetSearch} className="border-gray-300">
                 <X className="mr-2 h-4 w-4" />
@@ -251,7 +255,6 @@ function SubscriptionContent() {
           </div>
         </div>
 
-        {/* 검색 결과 표시 */}
         {isRegionSearch && (
           <div className="mt-4 rounded-lg bg-blue-50 p-3">
             <p className="text-sm text-blue-700">
@@ -264,6 +267,7 @@ function SubscriptionContent() {
         )}
       </div>
 
+      {/* ───────────── 총 개수 알림 ───────────── */}
       <div className="mb-6 rounded-lg bg-blue-50 p-4">
         <div className="flex items-center gap-2 text-blue-700">
           <Info className="h-5 w-5" />
@@ -275,13 +279,14 @@ function SubscriptionContent() {
         </div>
       </div>
 
+      {/* ───────────── 카드형 그리드 (3열) ───────────── */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row) => {
-            return (
+        {rows.length ? (
+          rows.map((row, idx) => (
+            <Fragment key={row.id}>
+              {/* ─── 개별 카드 ─── */}
               <Card
                 className="relative flex h-full cursor-pointer flex-col border-0 transition-all hover:shadow-lg"
-                key={row.id}
                 onClick={() => router.push(`/subscription/${row.getValue('id')}`)}
               >
                 <CardHeader className="pb-3">
@@ -291,11 +296,8 @@ function SubscriptionContent() {
                       <CardTitle className="line-clamp-1 text-lg">{row.getValue('houseNm')}</CardTitle>
                     </div>
                   </div>
-
                   <div className="mt-2 flex flex-wrap gap-2">
-                    <div
-                      className={`flex items-center truncate rounded-full border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800`}
-                    >
+                    <div className="flex items-center truncate rounded-full border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800">
                       <Tag className="mr-1 h-3.5 w-3.5" />
                       {row.getValue('rentSecdNm')}
                     </div>
@@ -304,7 +306,6 @@ function SubscriptionContent() {
                       {row.getValue('totSuplyHshldco') || 0}세대
                     </div>
                   </div>
-
                   <CardDescription className="mt-2 flex items-center gap-1">
                     <MapPin className="h-4 w-4 text-gray-400" />
                     {row.getValue('region')} {row.getValue('city')} {row.getValue('district')}
@@ -320,7 +321,6 @@ function SubscriptionContent() {
                         {formatDate(row.getValue('rceptBgnde'))} ~ {formatDate(row.getValue('rceptEndde'))}
                       </span>
                     </div>
-
                     <div className="flex items-center gap-2">
                       <Pickaxe className="h-4 w-4 text-gray-500" />
                       <span className="text-xs font-medium">시행사:</span>
@@ -335,22 +335,70 @@ function SubscriptionContent() {
                   </Button>
                 </CardFooter>
               </Card>
-            );
-          })
+
+              {/* ─── 6 번째 카드 뒤(idx === 2)에 광고 삽입 ─── */}
+              {idx === 5 && (
+                <div className="col-span-full flex justify-center">
+                  <div>
+                    {/* 
+                      AdSense 스크립트: 페이지 한 번만 로드 
+                      (네 번째 카드 뒤에 처음 등장할 때 실행됨)
+                    */}
+                    <Script
+                      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7334667748813914"
+                      strategy="afterInteractive"
+                      crossOrigin="anonymous"
+                    />
+                    <div className="mx-auto w-full max-w-[356px]">
+                      <ins
+                        className="adsbygoogle"
+                        style={{ display: 'block', width: '100%', height: '258px' }}
+                        data-ad-client="ca-pub-7334667748813914"
+                        data-ad-slot="8328709240"
+                        data-ad-format="auto"
+                      />
+                    </div>
+                    {/* 
+                      adsbygoogle.push() 호출은 화면이 충분히 렌더링된 후 한 번만 실행 
+                      (push() 자체를 새 컴포넌트로 분리하지 않고 여기서 직접 호출)
+                    */}
+                    <script
+                      dangerouslySetInnerHTML={{
+                        __html: `
+                        (function() {
+                          if (!window.hasPushedAd && window.adsbygoogle) {
+                            try {
+                              (adsbygoogle = window.adsbygoogle || []).push({});
+                              window.hasPushedAd = true;
+                            } catch (e) {
+                              console.error(e);
+                            }
+                          }
+                        })();`,
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </Fragment>
+          ))
         ) : (
-          <div className="col-span-3 flex h-36 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 p-10">
+          <div className="col-span-full flex h-36 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 p-10">
             <p className="text-center text-gray-500">청약 정보가 없습니다. 다른 조건으로 검색해보세요.</p>
           </div>
         )}
       </div>
 
-      {table.getRowModel().rows?.length > 0 && (
+      {/* ───────────── 페이지네이션 ───────────── */}
+      {rows.length > 0 && (
         <div className="mt-8 flex justify-center">
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
-                  onClick={() => table.previousPage()}
+                  onClick={() => {
+                    if (currentPage > 1) handlePageChange(currentPage - 1);
+                  }}
                   href={`/subscription?page=${currentPage - 1 <= 0 ? 1 : currentPage - 1}`}
                   className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
                 />
@@ -358,7 +406,6 @@ function SubscriptionContent() {
 
               {Array.from({ length: endPage - startPage }, (_, i) => i + startPage).map((pageIndex) => {
                 const currentPageIndex = pageIndex + 1;
-
                 return (
                   <PaginationItem key={currentPageIndex}>
                     <PaginationLink
@@ -374,7 +421,9 @@ function SubscriptionContent() {
 
               <PaginationItem>
                 <PaginationNext
-                  onClick={() => table.nextPage()}
+                  onClick={() => {
+                    if (currentPage < pageCount) handlePageChange(currentPage + 1);
+                  }}
                   href={`/subscription?page=${currentPage + 1 >= pageCount ? pageCount : currentPage + 1}`}
                   className={currentPage >= pageCount ? 'pointer-events-none opacity-50' : ''}
                 />
