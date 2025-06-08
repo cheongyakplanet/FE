@@ -78,9 +78,10 @@ function SubscriptionContent() {
   // 지역 데이터 조회
   const { data: regionList } = useGetRegionList();
   const { data: cityList } = useGetCityList(selectedRegion);
-
+  const pageNumber = page >= 1 ? page : 1;
+  const pageSize = 6;
   // 청약 데이터 조회 (전체 또는 지역별)
-  const { data: getAllSubscription, isLoading: isLoadingAll } = useGetAllSubscription(parseInt(page ?? '0'), 6);
+  const { data: getAllSubscription, isLoading: isLoadingAll } = useGetAllSubscription(pageNumber, pageSize);
   const { data: regionSubscription, isLoading: isLoadingRegion } = useGetSubscriptionByRegion(
     selectedRegion,
     selectedCity,
@@ -106,8 +107,8 @@ function SubscriptionContent() {
     totalPages: getAllSubscription?.data.totalPages || 0,
     totalElements: getAllSubscription?.data.totalElements || 0,
     rowId: 'id',
-    defaultPageIndex: parseInt(page ?? '1'),
-    defaultPagingSize: 6,
+    defaultPageIndex: pageNumber - 1,
+    defaultPagingSize: pageSize,
   });
 
   const rows = table.getRowModel().rows;
@@ -117,7 +118,7 @@ function SubscriptionContent() {
   };
 
   const pageCount = table.getPageCount();
-  const currentPage = parseInt(page ?? '1');
+  const currentPage = pageNumber;
 
   const MAX_PAGE_NUMBER = 5;
 
