@@ -80,7 +80,7 @@ function SubscriptionContent() {
   const { data: cityList } = useGetCityList(selectedRegion);
 
   const pageNumber = Number(pageParam ?? '1'); // 1-based
-  const pageSize = 6;
+  const pageSize = 5;
   const pageIndex = pageNumber - 1;
   // 청약 데이터 조회 (전체 또는 지역별)
   const { data: getAllSubscription, isLoading: isLoadingAll } = useGetAllSubscription(pageIndex, pageSize);
@@ -94,7 +94,7 @@ function SubscriptionContent() {
     isRegionSearch && regionSubscription
       ? {
           content: regionSubscription.data || [],
-          totalPages: Math.ceil((regionSubscription.data?.length || 0) / 6),
+          totalPages: Math.ceil((regionSubscription.data?.length || 0) / 5),
           totalElements: regionSubscription.data?.length || 0,
           currentPage: 1,
           size: 6,
@@ -339,8 +339,8 @@ function SubscriptionContent() {
                 </CardFooter>
               </Card>
 
-              {/* ─── 6 번째 카드 뒤(idx === 2)에 광고 삽입 ─── */}
-              {idx === 5 && (
+              {/* ─── 5 번째 카드 뒤(idx === 2)에 광고 삽입 ─── */}
+              {idx === 4 && (
                 <div className="col-span-full flex justify-center">
                   {/* ① AdSense 라이브러리 로드 */}
                   <Script
