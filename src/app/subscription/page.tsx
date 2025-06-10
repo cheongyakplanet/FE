@@ -285,10 +285,10 @@ function SubscriptionContent() {
       {/* ───────────── 카드형 그리드 (3열) ───────────── */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {rows.length ? (
-          rows.map((row, idx) => (
-            <Fragment key={row.id}>
-              {/* ─── 개별 카드 ─── */}
+          rows.flatMap((row, idx) => {
+            const card = (
               <Card
+                key={row.id}
                 className="relative flex h-full cursor-pointer flex-col border-0 transition-all hover:shadow-lg"
                 onClick={() => router.push(`/subscription/${row.getValue('id')}`)}
               >
@@ -338,47 +338,52 @@ function SubscriptionContent() {
                   </Button>
                 </CardFooter>
               </Card>
+            );
 
-              {/* ─── 6 번째 카드 뒤(idx === 2)에 광고 삽입 ─── */}
-              {idx === 5 && (
-                <div className="col-span-full flex justify-center">
-                  {/* ① AdSense 라이브러리 로드 */}
+            // 광고 카드
+            const adCard = (
+              <div
+                key={`ad-${idx}`}
+                className="relative flex h-full items-center justify-center rounded-lg border bg-white p-4 shadow-sm"
+              >
+                <div className="w-full max-w-[356px]">
                   <Script
-                    id="adsense-lib"
+                    id={`adsense-lib-${idx}`}
                     strategy="afterInteractive"
                     src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-7334667748813914"
                     crossOrigin="anonymous"
                   />
-
-                  {/* ② 광고 인젝션 영역: 최소 250px 너비 보장 */}
-                  <div className="mx-auto w-full min-w-[250px] max-w-[356px]">
-                    <ins
-                      className="adsbygoogle"
-                      style={{
-                        display: 'block',
-                        width: '100%',
-                        minWidth: '250px', // fluid 광고 최소 너비
-                        height: '258px',
-                      }}
-                      data-ad-client="ca-pub-7334667748813914"
-                      data-ad-slot="8328709240"
-                      data-ad-format="fluid"
-                      data-ad-layout-key="-6s+ef+2g-1o-55"
-                    />
-                  </div>
-
-                  {/* ③ adsbygoogle.push() 실행 */}
+                  <ins
+                    className="adsbygoogle"
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      minWidth: '250px',
+                      height: '258px',
+                    }}
+                    data-ad-client="ca-pub-7334667748813914"
+                    data-ad-slot="8328709240"
+                    data-ad-format="fluid"
+                    data-ad-layout-key="-6s+ef+2g-1o-55"
+                  />
                   <Script
-                    id="adsense-init"
+                    id={`adsense-init-${idx}`}
                     strategy="afterInteractive"
                     dangerouslySetInnerHTML={{
                       __html: `(adsbygoogle = window.adsbygoogle || []).push({});`,
                     }}
                   />
                 </div>
-              )}
-            </Fragment>
-          ))
+              </div>
+            );
+
+            // 5번째 카드 뒤에 광고 삽입
+            if (idx === 4) {
+              return [card, adCard];
+            }
+
+            return [card];
+          })
         ) : (
           <div className="col-span-full flex h-36 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 p-10">
             <p className="text-center text-gray-500">청약 정보가 없습니다. 다른 조건으로 검색해보세요.</p>
