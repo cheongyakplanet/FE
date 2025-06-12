@@ -130,6 +130,7 @@ const Chatbot = () => {
             <TooltipTrigger
               onClick={() => setIsOpen(true)}
               className="rounded-full bg-blue-600 px-4 py-2 text-white shadow-lg"
+              aria-label="챗봇"
             >
               <BotMessageSquare />
             </TooltipTrigger>
