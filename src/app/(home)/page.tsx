@@ -4,7 +4,9 @@ import SubscriptionList from './componenets/subscription-list';
 
 import { Suspense, useEffect, useState } from 'react';
 import Marquee from 'react-fast-marquee';
-import { Map, MapMarker } from 'react-kakao-maps-sdk';
+
+import dynamic from 'next/dynamic';
+// import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
@@ -40,6 +42,11 @@ import { useGetSubscriptionDetail } from '@/services/home/hooks/useGetSubscripti
 import { useGetKakaoExchange } from '@/services/member/hooks/useGetKakaoExchange';
 
 import { useTokenStore } from '@/stores/auth-store';
+
+// const SubscriptionList = dynamic(() => import('./componenets/subscription-list'), { ssr: false });
+// const Marquee = dynamic(() => import('react-fast-marquee'), { ssr: false });
+// const Map = dynamic(() => import('react-kakao-maps-sdk').then((mod) => mod.Map), { ssr: false });
+// const MapMarker = dynamic(() => import('react-kakao-maps-sdk').then((mod) => mod.MapMarker), { ssr: false });
 
 const bgColors = ['bg-blue-50', 'bg-red-50', 'bg-green-50', 'bg-purple-50', 'bg-orange-50', 'bg-pink-50'];
 const iconColors = [
@@ -139,6 +146,24 @@ export default function Home() {
   const { accessToken } = useTokenStore();
   const isSignin = !!accessToken;
 
+  // dynamic import
+  const Map = dynamic(() => import('react-kakao-maps-sdk').then((mod) => mod.Map), { ssr: false });
+  const MapMarker = dynamic(() => import('react-kakao-maps-sdk').then((mod) => mod.MapMarker), { ssr: false });
+
+  // 내부 상태
+  const [showMap, setShowMap] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setShowMap(true);
+    });
+
+    const mapEl = document.getElementById('kakao-map-trigger');
+    if (mapEl) observer.observe(mapEl);
+
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     updateToken({ ...token?.data });
   }, [token]);
@@ -203,10 +228,15 @@ export default function Home() {
         </Suspense>
 
         {/* 헤더 섹션 */}
-        <div className="mb-8 text-center">
+        {/* <div className="mb-8 text-center">
           <h1 className="mb-2 text-3xl font-bold text-gray-900">쉽고 간편한 청약 플랫폼</h1>
           <p className="text-gray-600">원하는 지역의 청약 정보를 한눈에 확인하세요</p>
-        </div>
+        </div> */}
+
+        <section className="flex h-[200px] flex-col items-center justify-center bg-white text-center">
+          <h1 className="text-4xl font-bold text-gray-900">쉽고 간편한 청약 플랫폼</h1>
+          <p className="mt-3 text-xl text-gray-600">원하는 지역의 청약 정보를 한눈에 확인하세요</p>
+        </section>
 
         {/* 인기 지역 TOP 섹션 */}
         <Card className="border-0 shadow-lg">
@@ -272,14 +302,27 @@ export default function Home() {
                 <Button>검색</Button>
               </div> */}
 
-                <Map
+                {/* 지도 섹션 */}
+                <div id="kakao-map-trigger" className="h-[400px] w-full rounded-md border shadow-sm">
+                  {showMap ? (
+                    <Map center={position} level={5} className="h-full w-full">
+                      <MapMarker position={position} />
+                    </Map>
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
+                      지도를 불러오는 중입니다...
+                    </div>
+                  )}
+                </div>
+
+                {/* <Map
                   id="kakao-map"
                   center={position}
                   className="h-[400px] w-full rounded-md border shadow-sm"
                   level={5}
                 >
                   <MapMarker position={position} />
-                </Map>
+                </Map> */}
               </div>
 
               {/* 우측: 인기 청약 물건 정보 */}
