@@ -49,13 +49,34 @@ export function useGoogleAds(adSlot: string) {
 
     const pushAd = () => {
       try {
-        if (window.adsbygoogle && !pushAttempted.current) {
+        if (window.adsbygoogle && !pushAttempted.current && adRef.current) {
+          // Check if the ad container has proper dimensions
+          const container = adRef.current.parentElement;
+          const containerWidth = container?.offsetWidth || 0;
+          
+          if (containerWidth < 250) {
+            // Wait a bit more for layout to stabilize
+            setTimeout(() => {
+              const newWidth = container?.offsetWidth || 0;
+              if (newWidth >= 250 && !pushAttempted.current) {
+                window.adsbygoogle.push({});
+                pushAttempted.current = true;
+                setIsLoaded(true);
+              } else if (newWidth < 250) {
+                console.warn(`AdSense container too narrow: ${newWidth}px (minimum 250px required)`);
+              }
+            }, 500);
+            return;
+          }
+          
           window.adsbygoogle.push({});
           pushAttempted.current = true;
           setIsLoaded(true);
         }
       } catch (err) {
         console.error(`AdSense push error for slot ${adSlot}:`, err);
+        // Reset flag to allow retry
+        pushAttempted.current = false;
       }
     };
 

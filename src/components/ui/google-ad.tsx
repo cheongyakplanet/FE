@@ -23,19 +23,21 @@ export function GoogleAd({
 
   if (!isScriptReady) {
     return (
-      <div className={`flex h-24 items-center justify-center bg-gray-50 ${className}`}>
+      <div className={`flex h-24 items-center justify-center bg-gray-50 ${className}`} style={{ minWidth: '250px', ...style }}>
         <div className="text-xs text-gray-400">광고 로딩 중...</div>
       </div>
     );
   }
 
   return (
-    <div className={className}>
+    <div className={className} style={{ minWidth: '250px' }}>
       <ins
         ref={adRef}
         className="adsbygoogle"
         style={{
           display: 'block',
+          minWidth: '250px',
+          width: '100%',
           ...style,
         }}
         data-ad-client="ca-pub-7334667748813914"
@@ -45,7 +47,7 @@ export function GoogleAd({
         {...(layoutKey && { 'data-ad-layout-key': layoutKey })}
       />
       {!isLoaded && isScriptReady && (
-        <div className="flex h-16 items-center justify-center bg-gray-50">
+        <div className="flex h-16 items-center justify-center bg-gray-50" style={{ minWidth: '250px' }}>
           <div className="text-xs text-gray-400">광고 준비 중...</div>
         </div>
       )}
