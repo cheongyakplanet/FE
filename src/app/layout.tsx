@@ -92,7 +92,7 @@ export default function RootLayout({
 
         <ReactQueryProvider>
           <Header />
-          <main className="mx-auto mt-12 max-w-screen-lg">{children}</main>
+          <main className="mx-auto mt-8 sm:mt-12 max-w-screen-lg px-2 sm:px-4">{children}</main>
           <Toaster />
           <Chatbot />
           <Footer />

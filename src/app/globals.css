@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile first responsive improvements */
+@media (max-width: 480px) {
+  .xs\:inline {
+    display: inline !important;
+  }
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -84,5 +91,27 @@ body {
   color: #374151;
 }
 .info-placeholder input:disabled::placeholder {
+  color: #000000;
+}
+
+/* Custom responsive breakpoints */
+@screen xs {
+  .xs\:inline {
+    display: inline;
+  }
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Kakao color custom */
+.bg-kakao {
+  background-color: #FEE500;
   color: #000000;
 }

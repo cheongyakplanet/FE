@@ -75,16 +75,16 @@ export default function SignUp() {
   }, [isLoginSuccess]);
 
   return (
-    <div className="container mx-auto flex min-h-[80vh] items-center justify-center py-10">
+    <div className="container mx-auto flex min-h-[80vh] items-center justify-center px-4 py-6 sm:py-10">
       <Card className="w-full max-w-md border-0 shadow-lg">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center justify-center gap-2 text-2xl">
-            <UserPlus className="h-6 w-6 text-blue-500" />
+        <CardHeader className="pb-2 px-4 sm:px-6">
+          <CardTitle className="flex items-center justify-center gap-2 text-xl sm:text-2xl">
+            <UserPlus className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" />
             회원가입
           </CardTitle>
-          <CardDescription className="text-center">회원가입을 위한 정보를 입력해 주세요.</CardDescription>
+          <CardDescription className="text-center text-sm sm:text-base">회원가입을 위한 정보를 입력해 주세요.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
@@ -92,13 +92,13 @@ export default function SignUp() {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-1">
+                    <FormLabel className="flex items-center gap-1 text-sm sm:text-base">
                       <User className="h-4 w-4 text-gray-500" />
                       이름
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input placeholder="별명을 입력해 주세요." className="pl-10" {...field} />
+                        <Input placeholder="별명을 입력해 주세요." className="pl-10 text-sm sm:text-base" {...field} />
                         <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       </div>
                     </FormControl>
@@ -111,13 +111,13 @@ export default function SignUp() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-1">
+                    <FormLabel className="flex items-center gap-1 text-sm sm:text-base">
                       <Mail className="h-4 w-4 text-gray-500" />
                       아이디
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input placeholder="이메일을 입력해 주세요." className="pl-10" {...field} />
+                        <Input placeholder="이메일을 입력해 주세요." className="pl-10 text-sm sm:text-base" {...field} />
                         <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       </div>
                     </FormControl>
@@ -130,13 +130,13 @@ export default function SignUp() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-1">
+                    <FormLabel className="flex items-center gap-1 text-sm sm:text-base">
                       <Lock className="h-4 w-4 text-gray-500" />
                       비밀번호
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input type="password" placeholder="비밀번호를 입력해 주세요." className="pl-10" {...field} />
+                        <Input type="password" placeholder="비밀번호를 입력해 주세요." className="pl-10 text-sm sm:text-base" {...field} />
                         <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       </div>
                     </FormControl>
@@ -156,34 +156,34 @@ export default function SignUp() {
               )}
 
               <div className="flex flex-col space-y-3">
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-sm sm:text-base py-2 sm:py-3">
                   회원가입하기
                 </Button>
-                <Link href="/find-auth" className="flex w-full justify-center text-xs text-gray-500 hover:underline">
+                <Link href="/find-auth" className="flex w-full justify-center text-xs sm:text-sm text-gray-500 hover:underline">
                   아이디/비밀번호 찾기
                 </Link>
 
                 <div className="relative flex items-center py-2">
                   <div className="flex-grow border-t border-gray-200"></div>
-                  <span className="mx-4 flex-shrink text-sm text-gray-400">또는</span>
+                  <span className="mx-4 flex-shrink text-xs sm:text-sm text-gray-400">또는</span>
                   <div className="flex-grow border-t border-gray-200"></div>
                 </div>
 
                 <Button
                   type="button"
                   variant="ghost"
-                  className="flex w-full items-center justify-center gap-8 bg-kakao hover:bg-yellow-300"
+                  className="flex w-full items-center justify-center gap-2 sm:gap-4 bg-kakao hover:bg-yellow-300 text-sm sm:text-base py-2 sm:py-3"
                   onClick={kakaoLogin}
                 >
-                  <Image src={kakaoLogo} alt="카카오 회원가입" width={24} height={24} />
+                  <Image src={kakaoLogo} alt="카카오 회원가입" width={20} height={20} className="sm:w-6 sm:h-6" />
                   <span>카카오 회원가입</span>
                 </Button>
               </div>
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="flex justify-center gap-1 border-t border-gray-100 pt-4 text-sm">
-          이미 계정이 있으신가요?&nbsp;
+        <CardFooter className="flex flex-wrap justify-center gap-1 border-t border-gray-100 pt-4 text-xs sm:text-sm px-4 sm:px-6">
+          <span>이미 계정이 있으신가요?</span>
           <Link href="/signin" className="font-medium text-blue-600 hover:underline">
             로그인하러 가기
           </Link>
