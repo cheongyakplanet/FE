@@ -20,6 +20,8 @@ import {
 } from '@/components/ui/pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
+import { GoogleAd } from '@/components/ui/google-ad';
+
 import { useGetPost, useGetPostDetail } from '@/services/community/hooks/useGetPost';
 
 interface PostDto {
@@ -39,41 +41,6 @@ const truncateText = (text: string, maxLength: number = 50): string => {
 const truncateTextMobile = (text: string, maxLength: number = 30): string => {
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 };
-let hasPushedAd = false;
-function GoogleAd() {
-  useEffect(() => {
-    // 브라우저 환경인지, 아직 push 안 했는지 확인
-    if (typeof window !== 'undefined' && !hasPushedAd) {
-      try {
-        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-        hasPushedAd = true;
-      } catch (err) {
-        console.error('AdSense push error:', err);
-      }
-    }
-  }, []);
-
-  return (
-    <>
-      {/* AdSense 스크립트는 페이지에 단 한 번만 삽입됩니다. */}
-      <Script
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7334667748813914"
-        strategy="afterInteractive"
-        crossOrigin="anonymous"
-      />
-      <div className="mx-auto w-full max-w-[736px]">
-        <ins
-          className="adsbygoogle"
-          style={{ display: 'block', width: '100%', height: '77px' }}
-          data-ad-client="ca-pub-7334667748813914"
-          data-ad-slot="5335419243"
-          data-ad-format="fluid"
-          data-ad-layout-key="-gu-3+1f-3d+2z"
-        />
-      </div>
-    </>
-  );
-}
 
 export default function PostTable({ sort, searchWord }: { sort: string; searchWord: string }) {
   const [page, setPage] = useState(1);
@@ -163,9 +130,13 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
                 {idx === 1 && (
                   <TableRow>
                     <TableCell colSpan={5} className="py-4">
-                      <div className="mx-auto w-full max-w-[720px]">
-                        <GoogleAd />
-                      </div>
+                      <GoogleAd 
+                        adSlot="5335419243"
+                        adFormat="fluid"
+                        layoutKey="-gu-3+1f-3d+2z"
+                        style={{ width: '100%', height: '77px' }}
+                        className="mx-auto w-full max-w-[720px]"
+                      />
                     </TableCell>
                   </TableRow>
                 )}
@@ -233,7 +204,13 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
 
             {idx === 1 && (
               <div className="py-4">
-                <GoogleAd />
+                <GoogleAd 
+                  adSlot="5335419243"
+                  adFormat="fluid"
+                  layoutKey="-gu-3+1f-3d+2z"
+                  style={{ width: '100%', height: '77px' }}
+                  className="mx-auto w-full max-w-[720px]"
+                />
               </div>
             )}
           </Fragment>

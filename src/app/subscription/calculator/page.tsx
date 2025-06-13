@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { GoogleAd } from '@/components/ui/google-ad';
 
 dayjs.extend(minMax);
 
@@ -36,8 +37,6 @@ export default function Calculator() {
   const [totalYear, setTotalYear] = useState(0);
   const [totalAccountYear, setTotalAccountYear] = useState(0);
 
-  // —————— 광고 로딩 플래그 ——————
-  const [adLoaded, setAdLoaded] = useState(false);
 
   // 결과 버튼 클릭 시 가계산
   const result = () => {
@@ -133,30 +132,6 @@ export default function Calculator() {
   // 총합 계산
   const total = Number(homelessPeriod) + Number(familyCountScore) + totalYear + Number(spouseAccountPeriod);
 
-  // —————— 광고 컴포넌트 (한 번만 push 호출) ——————
-  function GoogleAd() {
-    useEffect(() => {
-      if (!adLoaded && typeof window !== 'undefined') {
-        try {
-          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-          setAdLoaded(true);
-        } catch (err) {
-          console.error('AdSense push error:', err);
-        }
-      }
-    }, []);
-
-    return (
-      <ins
-        className="adsbygoogle"
-        style={{ display: 'block' }}
-        data-ad-client="ca-pub-7334667748813914"
-        data-ad-slot="5721893051"
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      />
-    );
-  }
 
   return (
     <div>
@@ -441,13 +416,8 @@ export default function Calculator() {
               </p>
             </div>
           )}
-          {/* —————— 여기에 페이지 최하단 한 번만 스크립트 & 광고 태그를 삽입 —————— */}
-          <Script
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7334667748813914"
-            strategy="afterInteractive"
-            crossOrigin="anonymous"
-          />
-          <GoogleAd />
+          {/* 광고 섹션 */}
+          <GoogleAd adSlot="5721893051" className="mt-6" />
         </div>
       </div>
     </div>

@@ -26,6 +26,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { GoogleAd } from '@/components/ui/google-ad';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -38,6 +39,7 @@ import { useGetPopularSubscription } from '@/services/home/hooks/useGetPopularSu
 import { useGetSubscriptionByRegion } from '@/services/home/hooks/useGetSubscriptionByRegion';
 import { useGetSubscriptionDetail } from '@/services/home/hooks/useGetSubscriptionDetail';
 import { useGetKakaoExchange } from '@/services/member/hooks/useGetKakaoExchange';
+import { useKakaoMap } from '@/hooks/useKakaoMap';
 
 import { useTokenStore } from '@/stores/auth-store';
 
@@ -51,42 +53,6 @@ const iconColors = [
   'text-pink-500',
 ];
 
-// 구글 애드센스 컴포넌트
-function GoogleAd() {
-  return (
-    <>
-      {/* ① AdSense 라이브러리 로드 (한 번만) */}
-      <Script
-        id="adsense-lib"
-        strategy="afterInteractive"
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-7334667748813914"
-        crossOrigin="anonymous"
-      />
-
-      {/* ② 광고 삽입 지점 */}
-      <ins
-        className="adsbygoogle"
-        style={{ display: 'block' }}
-        data-ad-client="ca-pub-7334667748813914"
-        data-ad-slot="6707376512"
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      />
-
-      {/* ③ adsbygoogle.push() 한 번만 실행 */}
-      <Script
-        id="adsense-init"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            (adsbygoogle = window.adsbygoogle || []).push({});
-          `,
-        }}
-      />
-    </>
-  );
-}
 
 // SearchParamsComponent를 생성하여 useSearchParams를 사용하는 부분 분리
 function SearchParamsComponent({ onStateReceived }: { onStateReceived: (state: string) => void }) {
@@ -138,6 +104,8 @@ export default function Home() {
 
   const { accessToken } = useTokenStore();
   const isSignin = !!accessToken;
+  
+  const { isMapReady, isLoading: mapLoading, error: mapError, geocodeAddress } = useKakaoMap();
 
   useEffect(() => {
     updateToken({ ...token?.data });
@@ -162,24 +130,16 @@ export default function Home() {
   }, [subDetail]);
 
   useEffect(() => {
-    if (!searchRegion.trim()) return;
+    if (!searchRegion.trim() || !isMapReady) return;
 
-    if (typeof window !== 'undefined' && window.kakao?.maps?.load) {
-      window.kakao.maps.load(() => {
-        const geocoder = new window.kakao.maps.services.Geocoder();
-
-        geocoder.addressSearch(searchRegion, function (result, status) {
-          if (status === window.kakao.maps.services.Status.OK) {
-            const coords = {
-              lat: parseFloat(result[0].y),
-              lng: parseFloat(result[0].x),
-            };
-            setPosition(coords);
-          }
-        });
+    geocodeAddress(searchRegion)
+      .then((coords) => {
+        setPosition(coords);
+      })
+      .catch((error) => {
+        console.error('Geocoding failed:', error);
       });
-    }
-  }, [searchRegion]);
+  }, [searchRegion, isMapReady, geocodeAddress]);
 
   useEffect(() => {
     if (subDetail) {
@@ -272,14 +232,30 @@ export default function Home() {
                 <Button>검색</Button>
               </div> */}
 
-                <Map
-                  id="kakao-map"
-                  center={position}
-                  className="h-[400px] w-full rounded-md border shadow-sm"
-                  level={5}
-                >
-                  <MapMarker position={position} />
-                </Map>
+                {mapError ? (
+                  <div className="flex h-[400px] w-full items-center justify-center rounded-md border bg-gray-50">
+                    <div className="text-center text-gray-500">
+                      <MapPin className="mx-auto mb-2 h-8 w-8" />
+                      <p>{mapError}</p>
+                    </div>
+                  </div>
+                ) : mapLoading ? (
+                  <div className="flex h-[400px] w-full items-center justify-center rounded-md border bg-gray-50">
+                    <div className="text-center text-gray-500">
+                      <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
+                      <p>지도 로딩 중...</p>
+                    </div>
+                  </div>
+                ) : (
+                  <Map
+                    id="kakao-map"
+                    center={position}
+                    className="h-[400px] w-full rounded-md border shadow-sm"
+                    level={5}
+                  >
+                    <MapMarker position={position} />
+                  </Map>
+                )}
               </div>
 
               {/* 우측: 인기 청약 물건 정보 */}
@@ -466,7 +442,7 @@ export default function Home() {
         </div>
 
         {/* 광고 섹션 */}
-        <GoogleAd />
+        <GoogleAd adSlot="6707376512" className="mx-auto max-w-4xl" />
       </div>
     </>
   );

@@ -20,6 +20,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { GoogleAd } from '@/components/ui/google-ad';
 
 import useTable from '@/hooks/useTable';
 
@@ -346,35 +347,18 @@ function SubscriptionContent() {
                 key={`ad-${idx}`}
                 className="relative flex h-full items-center justify-center rounded-lg border bg-white p-4 shadow-sm"
               >
-                <div className="w-full max-w-[356px]">
-
-                  <Script
-                    id={`adsense-lib-${idx}`}
-                    strategy="afterInteractive"
-                    src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-7334667748813914"
-                    crossOrigin="anonymous"
-                  />
-                  <ins
-                    className="adsbygoogle"
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      minWidth: '250px',
-                      height: '258px',
-                    }}
-                    data-ad-client="ca-pub-7334667748813914"
-                    data-ad-slot="8328709240"
-                    data-ad-format="fluid"
-                    data-ad-layout-key="-6s+ef+2g-1o-55"
-                  />
-                  <Script
-                    id={`adsense-init-${idx}`}
-                    strategy="afterInteractive"
-                    dangerouslySetInnerHTML={{
-                      __html: `(adsbygoogle = window.adsbygoogle || []).push({});`,
-                    }}
-                  />
-                </div>
+                <GoogleAd 
+                  adSlot="8328709240"
+                  adFormat="fluid"
+                  layoutKey="-6s+ef+2g-1o-55"
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    minWidth: '250px',
+                    height: '258px',
+                  }}
+                  className="w-full max-w-[356px]"
+                />
               </div>
             );
 

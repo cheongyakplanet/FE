@@ -42,6 +42,7 @@ import { useGetPriceSummary } from '@/services/subscription/hooks/useGetPriceSum
 import { useGetSubscriptionById } from '@/services/subscription/hooks/useGetSubscriptionById';
 import { usePostLikeSubscription } from '@/services/subscription/hooks/usePostLikeSubscription';
 import { PriceInfoDto } from '@/services/subscription/types';
+import { useKakaoMap } from '@/hooks/useKakaoMap';
 
 export default function SubscriptionDetail() {
   const router = useRouter();
@@ -60,6 +61,7 @@ export default function SubscriptionDetail() {
 
   const { data: getInfraBySubscription } = useGetInfraBySubscription(id as string);
   const infra = getInfraBySubscription?.data;
+  const { isMapReady, isLoading: mapLoading, error: mapError } = useKakaoMap();
   const chartConfig = {
     dealCount: {
       label: '거래건 수',
@@ -253,61 +255,84 @@ export default function SubscriptionDetail() {
       {/* 지도 섹션 */}
       <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <Map
-            id="subscription-map"
-            center={{
-              lat: Number(subscription.latitude),
-              lng: Number(subscription.longitude),
-            }}
-            className="h-full w-full rounded-xl border shadow"
-            level={4}
-          >
-            <MapMarker
-              position={{
+          {mapError ? (
+            <div className="flex h-[400px] w-full items-center justify-center rounded-xl border bg-gray-50">
+              <div className="text-center text-gray-500">
+                <MapPin className="mx-auto mb-2 h-8 w-8" />
+                <p>{mapError}</p>
+                <Button 
+                  variant="outline" 
+                  className="mt-2" 
+                  onClick={() => window.location.reload()}
+                >
+                  새로고침
+                </Button>
+              </div>
+            </div>
+          ) : mapLoading || !isMapReady ? (
+            <div className="flex h-[400px] w-full items-center justify-center rounded-xl border bg-gray-50">
+              <div className="text-center text-gray-500">
+                <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
+                <p>지도 로딩 중...</p>
+              </div>
+            </div>
+          ) : (
+            <Map
+              id="subscription-map"
+              center={{
                 lat: Number(subscription.latitude),
                 lng: Number(subscription.longitude),
               }}
-              image={{
-                src: '/map-pin-house.svg',
-                size: {
-                  width: 32,
-                  height: 32,
-                },
-              }}
-            />
-            {infra?.schools?.map((school, index) => (
+              className="h-full w-full rounded-xl border shadow"
+              level={4}
+            >
               <MapMarker
-                key={`school-${index}`}
                 position={{
-                  lat: Number(school.latitude),
-                  lng: Number(school.longitude),
+                  lat: Number(subscription.latitude),
+                  lng: Number(subscription.longitude),
                 }}
                 image={{
-                  src: '/school.svg',
+                  src: '/map-pin-house.svg',
                   size: {
-                    width: 24,
-                    height: 24,
+                    width: 32,
+                    height: 32,
                   },
                 }}
               />
-            ))}
-            {infra?.stations?.map((station, index) => (
-              <MapMarker
-                key={`station-${index}`}
-                position={{
-                  lat: Number(station.latitude),
-                  lng: Number(station.longitude),
-                }}
-                image={{
-                  src: '/tram-front.svg',
-                  size: {
-                    width: 24,
-                    height: 24,
-                  },
-                }}
-              />
-            ))}
-          </Map>
+              {infra?.schools?.map((school, index) => (
+                <MapMarker
+                  key={`school-${index}`}
+                  position={{
+                    lat: Number(school.latitude),
+                    lng: Number(school.longitude),
+                  }}
+                  image={{
+                    src: '/school.svg',
+                    size: {
+                      width: 24,
+                      height: 24,
+                    },
+                  }}
+                />
+              ))}
+              {infra?.stations?.map((station, index) => (
+                <MapMarker
+                  key={`station-${index}`}
+                  position={{
+                    lat: Number(station.latitude),
+                    lng: Number(station.longitude),
+                  }}
+                  image={{
+                    src: '/tram-front.svg',
+                    size: {
+                      width: 24,
+                      height: 24,
+                    },
+                  }}
+                />
+              ))}
+            </Map>
+          )}
         </div>
 
         <div className="flex flex-col gap-4">
