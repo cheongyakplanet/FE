@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { MarkdownEditor } from '@/components/ui/markdown-editor';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
@@ -26,11 +27,19 @@ export default function Post() {
   const [newPostData, setNewPostData] = useState({ title: '', content: '' });
   const [alert, setAlert] = useState('');
   const [postCategory, setPostCategory] = useState('');
+  const [useMarkdown, setUseMarkdown] = useState(true);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNewPostData({
       ...newPostData,
       [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleContentChange = (content: string) => {
+    setNewPostData({
+      ...newPostData,
+      content,
     });
   };
 
@@ -53,9 +62,12 @@ export default function Post() {
   return (
     <div className="flex animate-fade-in flex-col items-center">
       <div className="mb-4 text-center text-xl font-extrabold text-gray-800">이곳에 여러분의 이야기를 남겨주세요!</div>
-      <div className="flex">
-        <div className="mb-3 text-gray-600">
+      <div className="flex flex-col items-center gap-2">
+        <div className="text-center text-gray-600">
           📢 청약 정보를 나누고 소통하는 공간이에요! 예쁜 말로 서로를 배려해주세요.
+        </div>
+        <div className="text-center text-sm text-blue-600">
+          ✨ 마크다운 문법을 사용해서 더 풍부한 표현이 가능합니다!
         </div>
       </div>
 
@@ -94,15 +106,50 @@ export default function Post() {
           </div>
 
           <div>
-            <label className="mb-2 block text-lg font-semibold text-gray-800">내용</label>
-            <Textarea
-              name="content"
-              value={newPostData.content}
-              onChange={handleChange}
-              placeholder="내용을 입력해 주세요."
-              rows={8}
-              className="rounded-md border-gray-300 px-4 py-3 text-base placeholder:text-gray-400"
-            />
+            <div className="mb-4 flex items-center justify-between">
+              <label className="block text-lg font-semibold text-gray-800">내용</label>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-600">에디터 타입:</span>
+                <ToggleGroup
+                  type="single"
+                  value={useMarkdown ? 'markdown' : 'plain'}
+                  onValueChange={(value) => setUseMarkdown(value === 'markdown')}
+                  className="h-8"
+                >
+                  <ToggleGroupItem
+                    value="markdown"
+                    className="h-8 px-3 text-xs data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700"
+                  >
+                    마크다운
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="plain"
+                    className="h-8 px-3 text-xs data-[state=on]:bg-gray-100 data-[state=on]:text-gray-700"
+                  >
+                    일반 텍스트
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+            </div>
+            
+            {useMarkdown ? (
+              <MarkdownEditor
+                value={newPostData.content}
+                onChange={handleContentChange}
+                placeholder="마크다운 문법을 사용해서 내용을 작성해보세요. 가이드 버튼을 눌러 도움말을 확인하세요!"
+                height={350}
+              />
+            ) : (
+              <Textarea
+                name="content"
+                value={newPostData.content}
+                onChange={handleChange}
+                placeholder="내용을 입력해 주세요."
+                rows={12}
+                className="rounded-md border-gray-300 px-4 py-3 text-base placeholder:text-gray-400"
+              />
+            )}
+            
             {alert && <div className="mt-3 text-center text-sm text-red-500">{alert}</div>}
           </div>
         </CardContent>

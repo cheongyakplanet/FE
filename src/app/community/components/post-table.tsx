@@ -21,6 +21,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { GoogleAd } from '@/components/ui/google-ad';
+import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
 
 import { useGetPost, useGetPostDetail } from '@/services/community/hooks/useGetPost';
 
@@ -99,7 +100,12 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
                         </Badge>
                         <span className="font-medium text-slate-800">{post.title}</span>
                       </div>
-                      <p className="text-xs text-slate-500">{truncateText(post.content)}</p>
+                      <div className="text-xs text-slate-500 line-clamp-2">
+                        <MarkdownRenderer 
+                          content={truncateText(post.content)} 
+                          className="prose-p:mb-0 prose-p:text-xs prose-p:text-slate-500"
+                        />
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell className="py-4">
@@ -187,7 +193,12 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
               </div>
               
               <h3 className="mb-2 font-medium text-slate-800 leading-tight">{post.title}</h3>
-              <p className="mb-3 text-sm text-slate-500 leading-relaxed">{truncateTextMobile(post.content)}</p>
+              <div className="mb-3 text-sm text-slate-500 leading-relaxed line-clamp-3">
+                <MarkdownRenderer 
+                  content={truncateTextMobile(post.content)} 
+                  className="prose-p:mb-0 prose-p:text-sm prose-p:text-slate-500 prose-p:leading-relaxed"
+                />
+              </div>
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">

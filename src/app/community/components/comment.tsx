@@ -10,6 +10,7 @@ import { Calendar, MessageCircle, Send, User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -107,7 +108,7 @@ export default function Comment({ postId, comments: initComments }: { postId: st
               className="min-h-24 resize-none border-slate-200 text-sm text-slate-700 placeholder:text-slate-400 focus-visible:ring-slate-200"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="댓글을 작성해 주세요."
+              placeholder="댓글을 작성해 주세요. 마크다운 문법을 사용할 수 있습니다."
             />
             <Button
               onClick={() => handleComment(content)}
@@ -146,7 +147,12 @@ export default function Comment({ postId, comments: initComments }: { postId: st
                           <span>{Dayjs(comment.createdAt).format('YY.MM.DD')}</span>
                         </div>
                       </div>
-                      <p className="whitespace-pre-wrap text-sm text-slate-700">{comment.content}</p>
+                      <div className="text-sm text-slate-700">
+                        <MarkdownRenderer 
+                          content={comment.content}
+                          className="prose-p:mb-2 prose-p:text-sm prose-p:text-slate-700"
+                        />
+                      </div>
                       <div className="mt-2 flex justify-end">
                         <Button
                           variant="ghost"
@@ -169,7 +175,7 @@ export default function Comment({ postId, comments: initComments }: { postId: st
                           className="min-h-20 resize-none border-slate-200 text-sm text-slate-700 placeholder:text-slate-400 focus-visible:ring-slate-200"
                           value={reply}
                           onChange={(e) => setReply(e.target.value)}
-                          placeholder="답글을 작성해 주세요."
+                          placeholder="답글을 작성해 주세요. 마크다운 문법을 사용할 수 있습니다."
                         />
                         <Button
                           onClick={() => handleReply(reply, comment.id)}
@@ -204,7 +210,12 @@ export default function Comment({ postId, comments: initComments }: { postId: st
                                 <span>{Dayjs(reply.createdAt).format('YY.MM.DD')}</span>
                               </div>
                             </div>
-                            <p className="whitespace-pre-wrap text-sm text-slate-700">{reply.content}</p>
+                            <div className="text-sm text-slate-700">
+                              <MarkdownRenderer 
+                                content={reply.content}
+                                className="prose-p:mb-1 prose-p:text-sm prose-p:text-slate-700"
+                              />
+                            </div>
                           </div>
                         </div>
                       ))}

@@ -14,6 +14,7 @@ import { ArrowLeft, Calendar, Eye, MessageCircle, ThumbsDown, ThumbsUp } from 'l
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
 import { Separator } from '@/components/ui/separator';
 
 import auth from '@/lib/auth';
@@ -176,7 +177,12 @@ function DetailContent() {
         <Separator />
 
         <CardContent className="py-6">
-          <div className="min-h-[200px] whitespace-pre-wrap text-slate-700">{data.content}</div>
+          <div className="min-h-[200px]">
+            <MarkdownRenderer 
+              content={data.content} 
+              className="text-slate-700"
+            />
+          </div>
         </CardContent>
 
         <Separator />
