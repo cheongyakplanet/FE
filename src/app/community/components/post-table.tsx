@@ -32,7 +32,11 @@ interface PostDto {
   likes: number;
 }
 
-const truncateText = (text: string, maxLength: number = 25): string => {
+const truncateText = (text: string, maxLength: number = 50): string => {
+  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+};
+
+const truncateTextMobile = (text: string, maxLength: number = 30): string => {
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 };
 let hasPushedAd = false;
@@ -100,87 +104,149 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
 
   return (
     <div className="w-full">
-      <Table>
-        <TableHeader className="bg-slate-50">
-          <TableRow className="border-b">
-            <TableHead className="w-[60px] text-xs font-medium text-slate-600">번호</TableHead>
-            <TableHead className="text-xs font-medium text-slate-600">제목</TableHead>
-            <TableHead className="w-[100px] text-xs font-medium text-slate-600">작성자</TableHead>
-            <TableHead className="hidden w-[100px] text-xs font-medium text-slate-600 md:table-cell">작성일</TableHead>
-            <TableHead className="w-[100px] text-right text-xs font-medium text-slate-600">상태</TableHead>
-          </TableRow>
-        </TableHeader>
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader className="bg-slate-50">
+            <TableRow className="border-b">
+              <TableHead className="w-[60px] text-xs font-medium text-slate-600">번호</TableHead>
+              <TableHead className="text-xs font-medium text-slate-600">제목</TableHead>
+              <TableHead className="w-[100px] text-xs font-medium text-slate-600">작성자</TableHead>
+              <TableHead className="w-[100px] text-xs font-medium text-slate-600">작성일</TableHead>
+              <TableHead className="w-[100px] text-right text-xs font-medium text-slate-600">상태</TableHead>
+            </TableRow>
+          </TableHeader>
 
-        <TableBody>
-          {filterContents?.map((post: PostDto, idx: number) => (
-            <Fragment key={post.id}>
-              <TableRow
-                onClick={() => goDetailPage(post.id)}
-                className="cursor-pointer border-b transition-colors hover:bg-slate-50"
-              >
-                <TableCell className="py-4 text-center text-sm text-slate-500">{post.id}</TableCell>
-                <TableCell className="py-4">
-                  <div className="flex flex-col gap-1">
+          <TableBody>
+            {filterContents?.map((post: PostDto, idx: number) => (
+              <Fragment key={post.id}>
+                <TableRow
+                  onClick={() => goDetailPage(post.id)}
+                  className="cursor-pointer border-b transition-colors hover:bg-slate-50"
+                >
+                  <TableCell className="py-4 text-center text-sm text-slate-500">{post.id}</TableCell>
+                  <TableCell className="py-4">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-[10px] font-normal text-slate-600">
+                          {getCategory(post.id)}
+                        </Badge>
+                        <span className="font-medium text-slate-800">{post.title}</span>
+                      </div>
+                      <p className="text-xs text-slate-500">{truncateText(post.content)}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="text-[10px] font-normal text-slate-600">
-                        {getCategory(post.id)}
-                      </Badge>
-                      <span className="font-medium text-slate-800">{post.title}</span>
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs text-slate-600">
+                        {post.username.charAt(0)}
+                      </div>
+                      <span className="text-sm text-slate-600">{post.username}</span>
                     </div>
-                    <p className="text-xs text-slate-500">{truncateText(post.content)}</p>
-                  </div>
-                </TableCell>
-                <TableCell className="py-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs text-slate-600">
-                      {post.username.charAt(0)}
-                    </div>
-                    <span className="text-sm text-slate-600">{post.username}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="hidden py-4 text-xs text-slate-500 md:table-cell">
-                  {dayjs(post.createdAt).format('YY.MM.DD')}
-                </TableCell>
-                <TableCell className="py-4 text-right">
-                  <div className="flex items-center justify-end gap-3">
-                    <div className="flex items-center gap-1 text-xs text-slate-500">
-                      <Eye className="h-3 w-3" />
-                      <span>{post.views}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-slate-500">
-                      <ThumbsUp className="h-3 w-3" />
-                      <span>{post.likes}</span>
-                    </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-
-              {/* 3번째 게시물(idx === 2) 뒤에 광고 행 삽입 */}
-              {idx === 1 && (
-                <TableRow>
-                  <TableCell colSpan={2} className="py-4">
-                    <div className="mx-auto w-full max-w-[720px]">
-                      <GoogleAd />
+                  </TableCell>
+                  <TableCell className="py-4 text-xs text-slate-500">
+                    {dayjs(post.createdAt).format('YY.MM.DD')}
+                  </TableCell>
+                  <TableCell className="py-4 text-right">
+                    <div className="flex items-center justify-end gap-3">
+                      <div className="flex items-center gap-1 text-xs text-slate-500">
+                        <Eye className="h-3 w-3" />
+                        <span>{post.views}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-slate-500">
+                        <ThumbsUp className="h-3 w-3" />
+                        <span>{post.likes}</span>
+                      </div>
                     </div>
                   </TableCell>
                 </TableRow>
-              )}
-            </Fragment>
-          ))}
 
-          {filterContents?.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={5} className="h-32 text-center">
-                <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
-                  <Users className="h-8 w-8 text-slate-200" />
-                  <p>게시글이 없습니다</p>
-                  <p className="text-xs">첫 번째 게시글을 작성해보세요</p>
+                {idx === 1 && (
+                  <TableRow>
+                    <TableCell colSpan={5} className="py-4">
+                      <div className="mx-auto w-full max-w-[720px]">
+                        <GoogleAd />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </Fragment>
+            ))}
+
+            {filterContents?.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={5} className="h-32 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
+                    <Users className="h-8 w-8 text-slate-200" />
+                    <p>게시글이 없습니다</p>
+                    <p className="text-xs">첫 번째 게시글을 작성해보세요</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Mobile Layout */}
+      <div className="block space-y-4 md:hidden">
+
+        {filterContents?.map((post: PostDto, idx: number) => (
+          <Fragment key={post.id}>
+            <div
+              onClick={() => goDetailPage(post.id)}
+              className="cursor-pointer rounded-lg border bg-white p-4 shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
+            >
+              <div className="mb-3 flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-[10px] font-normal text-slate-600">
+                    {getCategory(post.id)}
+                  </Badge>
+                  <span className="text-xs text-slate-400">#{post.id}</span>
                 </div>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1 text-xs text-slate-500">
+                    <Eye className="h-3 w-3" />
+                    <span>{post.views}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-slate-500">
+                    <ThumbsUp className="h-3 w-3" />
+                    <span>{post.likes}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <h3 className="mb-2 font-medium text-slate-800 leading-tight">{post.title}</h3>
+              <p className="mb-3 text-sm text-slate-500 leading-relaxed">{truncateTextMobile(post.content)}</p>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs text-slate-600">
+                    {post.username.charAt(0)}
+                  </div>
+                  <span className="text-sm text-slate-600">{post.username}</span>
+                </div>
+                <span className="text-xs text-slate-400">
+                  {dayjs(post.createdAt).format('MM.DD')}
+                </span>
+              </div>
+            </div>
+
+            {idx === 1 && (
+              <div className="py-4">
+                <GoogleAd />
+              </div>
+            )}
+          </Fragment>
+        ))}
+
+        {filterContents?.length === 0 && (
+          <div className="flex h-32 flex-col items-center justify-center gap-2 text-slate-400">
+            <Users className="h-8 w-8 text-slate-200" />
+            <p>게시글이 없습니다</p>
+            <p className="text-xs">첫 번째 게시글을 작성해보세요</p>
+          </div>
+        )}
+      </div>
 
       <div className="mt-6 flex items-center justify-center">
         <Pagination>

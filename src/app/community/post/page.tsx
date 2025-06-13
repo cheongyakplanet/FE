@@ -20,7 +20,7 @@ const categories = [
   { value: 'QUESTION', label: '질문' },
 ];
 
-export default function post() {
+export default function Post() {
   const router = useRouter();
   const { mutate: newPost } = useNewPost();
   const [newPostData, setNewPostData] = useState({ title: '', content: '' });
