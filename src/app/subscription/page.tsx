@@ -347,6 +347,7 @@ function SubscriptionContent() {
                 className="relative flex h-full items-center justify-center rounded-lg border bg-white p-4 shadow-sm"
               >
                 <div className="w-full max-w-[356px]">
+
                   <Script
                     id={`adsense-lib-${idx}`}
                     strategy="afterInteractive"
