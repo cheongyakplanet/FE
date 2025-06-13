@@ -34,12 +34,11 @@ export default function SignIn() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('');
 
-  // TODO: 운영 시 defaultValues 롤백
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: 'test@test',
-      password: '1234',
+      email: '',
+      password: '',
     },
   });
 
@@ -84,7 +83,7 @@ export default function SignIn() {
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input placeholder="아이디를 입력해 주세요." className="pl-10 text-sm sm:text-base" {...field} />
+                        <Input placeholder="example@example.com" className="pl-10 text-sm sm:text-base" {...field} />
                         <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       </div>
                     </FormControl>
@@ -104,7 +103,7 @@ export default function SignIn() {
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input type="password" placeholder="비밀번호를 입력해 주세요." className="pl-10 text-sm sm:text-base" {...field} />
+                        <Input type="password" placeholder="8자리 이상" className="pl-10 text-sm sm:text-base" {...field} />
                         <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       </div>
                     </FormControl>
