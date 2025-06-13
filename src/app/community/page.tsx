@@ -32,7 +32,7 @@ export default function Community() {
 
       <div className="mb-6 space-y-4 md:flex md:flex-row md:items-center md:justify-between md:space-y-0 md:gap-4">
         <Tabs value={sort} onValueChange={setSort} className="w-full md:w-auto">
-          <TabsList className="grid w-full grid-cols-3 md:w-auto md:grid-cols-none">
+          <TabsList className="grid w-full grid-cols-3 md:flex md:w-auto md:space-x-1">
             <TabsTrigger value="time" className="flex items-center gap-1 md:gap-2">
               <Clock className="h-3 w-3 md:h-4 md:w-4" />
               <span className="text-xs md:text-sm">최신순</span>

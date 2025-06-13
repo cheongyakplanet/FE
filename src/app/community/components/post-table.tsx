@@ -140,8 +140,8 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
                         adSlot="5335419243"
                         adFormat="fluid"
                         layoutKey="-gu-3+1f-3d+2z"
-                        style={{ width: '100%', height: '77px' }}
-                        className="mx-auto w-full max-w-[720px]"
+                        style={{ width: '100%', height: '77px', minWidth: '250px' }}
+                        className="mx-auto w-full max-w-[720px] min-w-[250px]"
                       />
                     </TableCell>
                   </TableRow>
@@ -219,8 +219,8 @@ export default function PostTable({ sort, searchWord }: { sort: string; searchWo
                   adSlot="5335419243"
                   adFormat="fluid"
                   layoutKey="-gu-3+1f-3d+2z"
-                  style={{ width: '100%', height: '77px' }}
-                  className="mx-auto w-full max-w-[720px]"
+                  style={{ width: '100%', height: '77px', minWidth: '250px' }}
+                  className="mx-auto w-full max-w-[720px] min-w-[250px]"
                 />
               </div>
             )}
