@@ -15,11 +15,53 @@ import ReactQueryProvider from '@/providers/react-query-provider';
 const BMJUAFont = localFont({ src: '../assets/fonts/GmarketSansMedium.otf' });
 
 export const metadata: Metadata = {
-  title: '청약플래닛',
+  title: '청약플래닛 - 청약 정보 종합 플랫폼',
   description:
     '청약플래닛에서 지역별 청약 정보, 청약 일정, 가점 계산기를 한 곳에서 확인하세요. 초보자도 쉽게 이용할 수 있는 청약 정보 종합 플랫폼입니다.',
+  keywords: '청약, 아파트청약, 청약정보, 청약일정, 가점계산기, 부동산, 아파트, 청약플래닛',
+  authors: [{ name: '청약플래닛' }],
+  creator: '청약플래닛',
+  publisher: '청약플래닛',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   icons: {
     icon: '/cheongyakplanet.png',
+  },
+  openGraph: {
+    title: '청약플래닛 - 청약 정보 종합 플랫폼',
+    description: '지역별 청약 정보와 일정을 한눈에! 가점 계산기로 나의 청약 점수도 확인하세요.',
+    url: 'https://cheongyakplanet.com',
+    siteName: '청약플래닛',
+    images: [
+      {
+        url: '/cheongyakplanet.png',
+        width: 1200,
+        height: 630,
+        alt: '청약플래닛 - 청약 정보 종합 플랫폼',
+      },
+    ],
+    locale: 'ko_KR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '청약플래닛 - 청약 정보 종합 플랫폼',
+    description: '지역별 청약 정보와 일정을 한눈에! 가점 계산기로 나의 청약 점수도 확인하세요.',
+    images: ['/cheongyakplanet.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   verification: {
     other: {
