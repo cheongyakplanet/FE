@@ -24,8 +24,8 @@ import { MemberLoginDto } from '@/services/member/types';
 const KAKAO_LOGIN_URL = `${process.env.NEXT_PUBLIC_OAUTH_KAKAO_API_URL}?client_id=${process.env.NEXT_PUBLIC_OAUTH_KAKAO_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_OAUTH_KAKAO_REDIRECT_URL}&response_type=code&prompt=login`;
 
 const formSchema = z.object({
-  email: z.string(),
-  password: z.string(),
+  email: z.string().email('올바른 이메일 형식을 입력해주세요'),
+  password: z.string().min(8, '비밀번호는 8자리 이상이어야 합니다'),
 });
 
 export default function SignIn() {
@@ -83,7 +83,12 @@ export default function SignIn() {
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input placeholder="example@example.com" className="pl-10 text-sm sm:text-base" {...field} />
+                        <Input 
+                          placeholder="example@example.com" 
+                          className="pl-10 text-sm sm:text-base" 
+                          autoComplete="username"
+                          {...field} 
+                        />
                         <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       </div>
                     </FormControl>
@@ -103,7 +108,13 @@ export default function SignIn() {
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input type="password" placeholder="8자리 이상" className="pl-10 text-sm sm:text-base" {...field} />
+                        <Input 
+                          type="password" 
+                          placeholder="8자리 이상" 
+                          className="pl-10 text-sm sm:text-base" 
+                          autoComplete="current-password"
+                          {...field} 
+                        />
                         <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       </div>
                     </FormControl>
