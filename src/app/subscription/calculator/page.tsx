@@ -416,8 +416,37 @@ export default function Calculator() {
               </p>
             </div>
           )}
-          {/* 광고 섹션 */}
-          <GoogleAd adSlot="5721893051" className="mt-6" />
+            {/* 광고 섹션 */}
+            <div className="mt-6 flex justify-center">
+              {/* 1) AdSense 스크립트 로드 */}
+              <Script
+              async
+              strategy="afterInteractive"
+              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7334667748813914"
+              crossOrigin="anonymous"
+            />
+
+            {/* 2) 광고 인라인 태그 */}
+            <ins
+              className="adsbygoogle"
+              style={{
+                display: 'block',
+                textAlign: 'center',
+                width: '100%',
+                minWidth: '250px',
+                height: '258px',
+              }}
+              data-ad-layout="in-article"
+              data-ad-format="fluid"
+              data-ad-client="ca-pub-7334667748813914"
+              data-ad-slot="3886416259"
+            ></ins>
+
+            {/* 3) 광고 초기화 */}
+            <Script id="adsense-calc-init" strategy="afterInteractive">
+              {`(adsbygoogle = window.adsbygoogle || []).push({});`}
+            </Script>
+          </div>
         </div>
       </div>
     </div>
