@@ -15,6 +15,7 @@ import ReactQueryProvider from '@/providers/react-query-provider';
 const BMJUAFont = localFont({ src: '../assets/fonts/GmarketSansMedium.otf' });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.cheongyakplanet.site/'),
   title: '청약플래닛 - 청약 정보 종합 플랫폼',
   description:
     '청약플래닛에서 지역별 청약 정보, 청약 일정, 가점 계산기를 한 곳에서 확인하세요. 초보자도 쉽게 이용할 수 있는 청약 정보 종합 플랫폼입니다.',
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '청약플래닛 - 청약 정보 종합 플랫폼',
     description: '지역별 청약 정보와 일정을 한눈에! 가점 계산기로 나의 청약 점수도 확인하세요.',
-    url: 'https://cheongyakplanet.com',
+    url: 'https://cheongyakplanet.site/',
     siteName: '청약플래닛',
     images: [
       {
