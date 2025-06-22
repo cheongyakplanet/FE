@@ -33,6 +33,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+import { useKakaoMap } from '@/hooks/useKakaoMap';
+
 import { cn } from '@/lib/utils';
 
 import { useDeleteLikeSubscription } from '@/services/subscription/hooks/useDeleteLikeSubscription';
@@ -42,13 +44,15 @@ import { useGetPriceSummary } from '@/services/subscription/hooks/useGetPriceSum
 import { useGetSubscriptionById } from '@/services/subscription/hooks/useGetSubscriptionById';
 import { usePostLikeSubscription } from '@/services/subscription/hooks/usePostLikeSubscription';
 import { PriceInfoDto } from '@/services/subscription/types';
-import { useKakaoMap } from '@/hooks/useKakaoMap';
 
-export default function SubscriptionDetailClient() {
+interface Props {
+  id: string;
+}
+
+export default function SubscriptionDetailClient({ id }: Props) {
+  const { data: getSubscriptionById } = useGetSubscriptionById(id);
   const router = useRouter();
   const params = useParams();
-  const { id } = params;
-  const { data: getSubscriptionById } = useGetSubscriptionById(id as string);
   const { mutate: createLike } = usePostLikeSubscription(id as string);
   const { mutate: deleteLike } = useDeleteLikeSubscription(id as string);
   const { data: getIsLike } = useGetLikeSubscriptionById(id as string);
@@ -260,11 +264,7 @@ export default function SubscriptionDetailClient() {
               <div className="text-center text-gray-500">
                 <MapPin className="mx-auto mb-2 h-8 w-8" />
                 <p>{mapError}</p>
-                <Button 
-                  variant="outline" 
-                  className="mt-2" 
-                  onClick={() => window.location.reload()}
-                >
+                <Button variant="outline" className="mt-2" onClick={() => window.location.reload()}>
                   새로고침
                 </Button>
               </div>

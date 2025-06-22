@@ -1,5 +1,7 @@
-import type { Metadata } from 'next';
 import SubscriptionDetailClient from './subscription-detail-client';
+
+import type { Metadata } from 'next';
+
 import { GET_subscription_by_id } from '@/services/subscription/api';
 
 interface Props {
@@ -8,27 +10,30 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  
+
   try {
     const response = await GET_subscription_by_id(id);
     const subscription = response.data.data;
-    
+
     if (!subscription) {
       return {
         title: '청약 정보를 찾을 수 없습니다 - 청약플래닛',
         description: '요청하신 청약 정보를 찾을 수 없습니다. 청약플래닛에서 다른 청약 정보를 확인해보세요.',
+        robots: { index: false, follow: false },
       };
     }
 
     const title = `${subscription.houseNm} 청약 정보 - 청약플래닛`;
     const description = `${subscription.hssplyAdres}에 위치한 ${subscription.houseNm} 청약 정보를 확인하세요. ${subscription.rentSecdNm} ${subscription.houseDtlSecdNm}, 총 ${subscription.totalSupplyCountTotal}세대 공급. 청약기간: ${new Date(subscription.rceptBgnde).toLocaleDateString('ko-KR')} ~ ${new Date(subscription.rceptEndde).toLocaleDateString('ko-KR')}`;
-    
-    const images = [{
-      url: '/cheongyakplanet.png',
-      width: 1200,
-      height: 630,
-      alt: `${subscription.houseNm} 청약 정보`,
-    }];
+
+    const images = [
+      {
+        url: '/cheongyakplanet.png',
+        width: 1200,
+        height: 630,
+        alt: `${subscription.houseNm} 청약 정보`,
+      },
+    ];
 
     return {
       title,
@@ -68,6 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function SubscriptionDetail({ params }: Props) {
-  return <SubscriptionDetailClient />;
+export default async function SubscriptionDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <SubscriptionDetailClient id={id} />;
 }
