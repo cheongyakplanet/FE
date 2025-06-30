@@ -30,6 +30,8 @@ import { GoogleAd } from '@/components/ui/google-ad';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+import { useKakaoMap } from '@/hooks/useKakaoMap';
+
 import { useGetFacilitiesBySubscription } from '@/services/home/hooks/useGetFacilitiesBySubscription';
 import { useGetInfraBySubscription } from '@/services/home/hooks/useGetInfraBySubscription';
 import { useGetMyLocation } from '@/services/home/hooks/useGetMyLocations';
@@ -39,7 +41,6 @@ import { useGetPopularSubscription } from '@/services/home/hooks/useGetPopularSu
 import { useGetSubscriptionByRegion } from '@/services/home/hooks/useGetSubscriptionByRegion';
 import { useGetSubscriptionDetail } from '@/services/home/hooks/useGetSubscriptionDetail';
 import { useGetKakaoExchange } from '@/services/member/hooks/useGetKakaoExchange';
-import { useKakaoMap } from '@/hooks/useKakaoMap';
 
 import { useTokenStore } from '@/stores/auth-store';
 
@@ -52,7 +53,6 @@ const iconColors = [
   'text-orange-500',
   'text-pink-500',
 ];
-
 
 // SearchParamsComponent를 생성하여 useSearchParams를 사용하는 부분 분리
 function SearchParamsComponent({ onStateReceived }: { onStateReceived: (state: string) => void }) {
@@ -104,7 +104,7 @@ export default function Home() {
 
   const { accessToken } = useTokenStore();
   const isSignin = !!accessToken;
-  
+
   const { isMapReady, isLoading: mapLoading, error: mapError, geocodeAddress } = useKakaoMap();
 
   useEffect(() => {

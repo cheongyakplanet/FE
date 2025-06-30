@@ -31,6 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { GoogleAd } from '@/components/ui/google-ad';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { useKakaoMap } from '@/hooks/useKakaoMap';
@@ -732,6 +733,8 @@ export default function SubscriptionDetailClient({ id }: Props) {
           </Card>
         </TabsContent>
       </Tabs>
+      {/* 광고 섹션 */}
+      <GoogleAd adSlot="2036226073" className="mx-auto max-w-4xl" />
     </div>
   );
 }
