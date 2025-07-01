@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from 'react';
 
-import Script from 'next/script';
-
 import dayjs from 'dayjs';
 import minMax from 'dayjs/plugin/minMax';
 import { Calculator as CalculatorIcon, Check, CircleHelp, Info } from 'lucide-react';
@@ -418,35 +416,20 @@ export default function Calculator() {
           )}
             {/* 광고 섹션 */}
             <div className="mt-6 flex justify-center">
-              {/* 1) AdSense 스크립트 로드 */}
-              <Script
-              async
-              strategy="afterInteractive"
-              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7334667748813914"
-              crossOrigin="anonymous"
-            />
-
-            {/* 2) 광고 인라인 태그 */}
-            <ins
-              className="adsbygoogle"
-              style={{
-                display: 'block',
-                textAlign: 'center',
-                width: '100%',
-                minWidth: '250px',
-                height: '258px',
-              }}
-              data-ad-layout="in-article"
-              data-ad-format="fluid"
-              data-ad-client="ca-pub-7334667748813914"
-              data-ad-slot="3886416259"
-            ></ins>
-
-            {/* 3) 광고 초기화 */}
-            <Script id="adsense-calc-init" strategy="afterInteractive">
-              {`(adsbygoogle = window.adsbygoogle || []).push({});`}
-            </Script>
-          </div>
+              <GoogleAd 
+                adSlot="3886416259"
+                adFormat="fluid"
+                layoutKey="-6s+ef+2g-1o-55"
+                style={{
+                  display: 'block',
+                  textAlign: 'center',
+                  width: '100%',
+                  minWidth: '250px',
+                  height: '258px',
+                }}
+                className="w-full max-w-[480px]"
+              />
+            </div>
         </div>
       </div>
     </div>

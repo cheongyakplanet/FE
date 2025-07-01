@@ -13,8 +13,13 @@ export function useGoogleAds(adSlot: string) {
   const pushAttempted = useRef(false);
 
   useEffect(() => {
+    // Skip during SSR
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     const checkAdSenseReady = () => {
-      if (typeof window !== 'undefined' && window.adsbygoogle) {
+      if (window.adsbygoogle) {
         setIsScriptReady(true);
         return true;
       }
@@ -43,6 +48,11 @@ export function useGoogleAds(adSlot: string) {
   }, []);
 
   useEffect(() => {
+    // Skip during SSR
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     if (!isScriptReady || !adRef.current || pushAttempted.current || isLoaded) {
       return;
     }
