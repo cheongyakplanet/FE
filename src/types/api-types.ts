@@ -24,3 +24,16 @@ export interface ApiResponse<T> {
     status: string;
   };
 }
+
+export interface ApiErrorResponse {
+  response: {
+    data: {
+      status: string;
+      data: {
+        code: string;
+        message: string;
+        details: string;
+      };
+    };
+  };
+}

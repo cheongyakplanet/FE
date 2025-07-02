@@ -1,5 +1,17 @@
 'use client';
 
+/**
+ * Enhanced Login Page with Improved Error Handling
+ * 
+ * Features:
+ * - Displays backend error messages from API responses
+ * - Maps error codes (e.g., SIGN004) to user-friendly Korean messages
+ * - Shows loading state during login attempts
+ * - Clears error messages when user starts typing
+ * - Includes i18n support for future internationalization
+ * - Uses reusable ErrorAlert component for consistent styling
+ */
+
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -8,15 +20,18 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Lock, LogIn, Mail } from 'lucide-react';
+import { AlertCircle, Lock, LogIn, Mail, AlertTriangle } from 'lucide-react';
 import { z } from 'zod';
 
 import kakaoLogo from '@/assets/images/kakao_symbol.svg';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { ErrorAlert } from '@/components/ui/error-alert';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+
+import { extractErrorInfo, getErrorMessage } from '@/lib/error-messages';
 
 import { usePostLogin } from '@/services/member/hooks/usePostLogin';
 import { MemberLoginDto } from '@/services/member/types';
@@ -29,7 +44,7 @@ const formSchema = z.object({
 });
 
 export default function SignIn() {
-  const { mutate: postLogin, isSuccess: isLoginSuccess } = usePostLogin();
+  const { mutate: postLogin, isSuccess: isLoginSuccess, isPending, error } = usePostLogin();
 
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('');
@@ -43,10 +58,37 @@ export default function SignIn() {
   });
 
   const onSubmit = (data: MemberLoginDto) => {
-    try {
-      postLogin({ email: data.email, password: data.password });
-    } catch (error) {
-      setErrorMessage('로그인 정보가 일치하지 않습니다.');
+    // Clear any existing error message
+    setErrorMessage('');
+    
+    postLogin(
+      { email: data.email, password: data.password },
+      {
+        onError: (error: any) => {
+          const errorInfo = extractErrorInfo(error);
+          
+          let friendlyMessage;
+          if (errorInfo.code || errorInfo.message || errorInfo.details) {
+            friendlyMessage = getErrorMessage(
+              errorInfo.code,
+              errorInfo.message || errorInfo.details,
+              '로그인 정보가 일치하지 않습니다.'
+            );
+          } else {
+            // Fallback if extraction fails
+            friendlyMessage = '로그인 정보가 일치하지 않습니다. 이메일과 비밀번호를 확인해주세요.';
+          }
+          
+          setErrorMessage(friendlyMessage);
+        }
+      }
+    );
+  };
+
+  // Clear error message when user starts typing
+  const clearErrorOnChange = () => {
+    if (errorMessage) {
+      setErrorMessage('');
     }
   };
 
@@ -87,7 +129,11 @@ export default function SignIn() {
                           placeholder="example@example.com" 
                           className="pl-10 text-sm sm:text-base" 
                           autoComplete="username"
-                          {...field} 
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            clearErrorOnChange();
+                          }}
                         />
                         <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       </div>
@@ -113,7 +159,11 @@ export default function SignIn() {
                           placeholder="8자리 이상" 
                           className="pl-10 text-sm sm:text-base" 
                           autoComplete="current-password"
-                          {...field} 
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            clearErrorOnChange();
+                          }}
                         />
                         <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       </div>
@@ -127,15 +177,28 @@ export default function SignIn() {
               ></FormField>
 
               {errorMessage && (
-                <div className="flex items-center justify-center gap-1 rounded-md bg-red-50 p-2 text-red-600">
-                  <AlertCircle className="h-4 w-4" />
-                  <span>{errorMessage}</span>
-                </div>
+                <ErrorAlert
+                  title="로그인 실패"
+                  message={errorMessage}
+                  onDismiss={() => setErrorMessage('')}
+                  variant="error"
+                />
               )}
 
               <div className="flex flex-col space-y-3">
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-sm sm:text-base py-2 sm:py-3">
-                  로그인
+                <Button 
+                  type="submit" 
+                  disabled={isPending}
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-sm sm:text-base py-2 sm:py-3"
+                >
+                  {isPending ? (
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      로그인 중...
+                    </div>
+                  ) : (
+                    '로그인'
+                  )}
                 </Button>
                 <Link href="/find-auth" className="flex w-full justify-center text-xs sm:text-sm text-gray-500 hover:underline">
                   아이디/비밀번호 찾기
