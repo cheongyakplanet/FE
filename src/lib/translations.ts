@@ -51,12 +51,19 @@ export type UIKey = keyof typeof TRANSLATIONS.ko.ui;
 /**
  * Get translated text by key and language
  */
-export function t(
-  category: 'errors' | 'ui',
-  key: ErrorKey | UIKey,
+export function t<T extends 'errors' | 'ui'>(
+  category: T,
+  key: T extends 'errors' ? ErrorKey : UIKey,
   language: Language = 'ko'
 ): string {
-  return TRANSLATIONS[language]?.[category]?.[key as any] || TRANSLATIONS.ko[category][key as any];
+  const translation = TRANSLATIONS[language]?.[category];
+  const fallback = TRANSLATIONS.ko[category];
+  
+  if (category === 'errors') {
+    return (translation as any)?.[key] || (fallback as any)[key];
+  } else {
+    return (translation as any)?.[key] || (fallback as any)[key];
+  }
 }
 
 /**
