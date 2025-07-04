@@ -14,6 +14,7 @@ import { ArrowLeft, Calendar, Eye, MessageCircle, ThumbsDown, ThumbsUp } from 'l
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { GoogleAd } from '@/components/ui/google-ad';
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
 import { Separator } from '@/components/ui/separator';
 
@@ -178,10 +179,7 @@ function DetailContent() {
 
         <CardContent className="py-6">
           <div className="min-h-[200px]">
-            <MarkdownRenderer 
-              content={data.content} 
-              className="text-slate-700"
-            />
+            <MarkdownRenderer content={data.content} className="text-slate-700" />
           </div>
         </CardContent>
 
@@ -238,6 +236,9 @@ function DetailContent() {
         {/* 댓글 목록 */}
         <Comment postId={data.id} comments={data.comments} />
       </div>
+
+      {/* 광고 섹션 */}
+      <GoogleAd adSlot="3511145184" className="mx-auto max-w-4xl" />
 
       <NewPost />
     </div>
