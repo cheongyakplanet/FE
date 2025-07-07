@@ -41,7 +41,7 @@ import { cn } from '@/lib/utils';
 import { useDeleteLikeSubscription } from '@/services/subscription/hooks/useDeleteLikeSubscription';
 import { useGetInfraBySubscription } from '@/services/subscription/hooks/useGetInfraBySubscription';
 import { useGetLikeSubscriptionById } from '@/services/subscription/hooks/useGetLikeSubscriptionById';
-import { useGetPriceSummary } from '@/services/subscription/hooks/useGetPriceSummary';
+import { useGetPriceSummaryWithFallback } from '@/services/subscription/hooks/useGetPriceSummaryWithFallback';
 import { useGetSubscriptionById } from '@/services/subscription/hooks/useGetSubscriptionById';
 import { usePostLikeSubscription } from '@/services/subscription/hooks/usePostLikeSubscription';
 import { PriceInfoDto } from '@/services/subscription/types';
@@ -58,10 +58,15 @@ export default function SubscriptionDetailClient({ id }: Props) {
   const { mutate: deleteLike } = useDeleteLikeSubscription(id as string);
   const { data: getIsLike } = useGetLikeSubscriptionById(id as string);
   const subscription = getSubscriptionById?.data;
-  const { data: getPriceSummary } = useGetPriceSummary(
+  const { 
+    data: getPriceSummary, 
+    isLoading: isPriceSummaryLoading, 
+    error: priceSummaryError,
+    isEmpty: isPriceSummaryEmpty 
+  } = useGetPriceSummaryWithFallback(
+    id as string,
     subscription?.region.trim() ?? '',
     subscription?.city.trim() ?? '',
-    subscription?.district.trim() ?? '',
   );
 
   const { data: getInfraBySubscription } = useGetInfraBySubscription(id as string);
@@ -576,63 +581,91 @@ export default function SubscriptionDetailClient({ id }: Props) {
               <CardDescription>청약 건물 주변 실거래가 차트</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={chartConfig} className="h-[200px] w-full">
-                <ComposedChart
-                  accessibilityLayer
-                  data={[...(getPriceSummary?.data || [])].sort((a, b) => a.dealYearMonth - b.dealYearMonth)}
-                >
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="dealYearMonth"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                    tickFormatter={(ym) => String(ym).slice(-2) + '월'}
-                  />
-                  {/* 왼쪽 축: 거래 건수 */}
-                  <YAxis yAxisId="left" label={{ value: '건수', angle: -90, position: 'insideLeft' }} />
-                  {/* 오른쪽 축: ㎡당 가격 */}
-                  <YAxis
-                    yAxisId="right"
-                    orientation="right"
-                    label={{ value: '가격(만원)', angle: 90, position: 'insideRight' }}
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={
-                      <ChartTooltipContent
-                        labelKey="dealYearMonth"
-                        indicator="line"
-                        formatter={(value, name, item, index) => {
-                          return (
-                            <>
-                              <div
-                                className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[--color-bg]"
-                                style={
-                                  {
-                                    '--color-bg': `var(--color-${name})`,
-                                  } as React.CSSProperties
-                                }
-                              />
-                              {chartConfig[name as keyof typeof chartConfig]?.label || name}
-                              <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
-                                {value}
-                                <span className="font-normal text-muted-foreground">
-                                  {chartConfig[name as keyof typeof chartConfig]?.unit || ''}
-                                </span>
-                              </div>
-                            </>
-                          );
-                        }}
-                      />
-                    }
-                  />
-                  {/* 막대: 거래 건수 (왼쪽 축) */}
-                  <Bar yAxisId="left" dataKey="dealCount" fill="var(--color-dealCount)" radius={4} />
-                  {/* 선: ㎡당 가격 (오른쪽 축) */}
-                  <Line yAxisId="right" dataKey="pricePerAr" stroke="var(--color-pricePerAr)" />
-                </ComposedChart>
-              </ChartContainer>
+              {isPriceSummaryLoading ? (
+                <div className="flex h-[200px] w-full items-center justify-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
+                    <p className="text-sm text-slate-600">실거래가 데이터를 불러오는 중...</p>
+                  </div>
+                </div>
+              ) : priceSummaryError ? (
+                <div className="flex h-[200px] w-full items-center justify-center">
+                  <div className="text-center">
+                    <p className="text-red-600 font-medium">{priceSummaryError}</p>
+                    <Button 
+                      variant="outline" 
+                      className="mt-2" 
+                      onClick={() => window.location.reload()}
+                    >
+                      다시 시도
+                    </Button>
+                  </div>
+                </div>
+              ) : isPriceSummaryEmpty ? (
+                <div className="flex h-[200px] w-full items-center justify-center">
+                  <div className="text-center">
+                    <p className="text-slate-600">실거래가 거래 데이터가 없습니다.</p>
+                  </div>
+                </div>
+              ) : (
+                <ChartContainer config={chartConfig} className="h-[200px] w-full">
+                  <ComposedChart
+                    accessibilityLayer
+                    data={Array.isArray(getPriceSummary) ? getPriceSummary.sort((a, b) => a.dealYearMonth - b.dealYearMonth) : []}
+                  >
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey="dealYearMonth"
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      tickFormatter={(ym) => String(ym).slice(-2) + '월'}
+                    />
+                    {/* 왼쪽 축: 거래 건수 */}
+                    <YAxis yAxisId="left" label={{ value: '건수', angle: -90, position: 'insideLeft' }} />
+                    {/* 오른쪽 축: ㎡당 가격 */}
+                    <YAxis
+                      yAxisId="right"
+                      orientation="right"
+                      label={{ value: '가격(만원)', angle: 90, position: 'insideRight' }}
+                    />
+                    <ChartTooltip
+                      cursor={false}
+                      content={
+                        <ChartTooltipContent
+                          labelKey="dealYearMonth"
+                          indicator="line"
+                          formatter={(value, name, item, index) => {
+                            return (
+                              <>
+                                <div
+                                  className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[--color-bg]"
+                                  style={
+                                    {
+                                      '--color-bg': `var(--color-${name})`,
+                                    } as React.CSSProperties
+                                  }
+                                />
+                                {chartConfig[name as keyof typeof chartConfig]?.label || name}
+                                <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
+                                  {value}
+                                  <span className="font-normal text-muted-foreground">
+                                    {chartConfig[name as keyof typeof chartConfig]?.unit || ''}
+                                  </span>
+                                </div>
+                              </>
+                            );
+                          }}
+                        />
+                      }
+                    />
+                    {/* 막대: 거래 건수 (왼쪽 축) */}
+                    <Bar yAxisId="left" dataKey="dealCount" fill="var(--color-dealCount)" radius={4} />
+                    {/* 선: ㎡당 가격 (오른쪽 축) */}
+                    <Line yAxisId="right" dataKey="pricePerAr" stroke="var(--color-pricePerAr)" />
+                  </ComposedChart>
+                </ChartContainer>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

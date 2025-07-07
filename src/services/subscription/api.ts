@@ -75,6 +75,22 @@ export const GET_price_summary = async ({
   return await api.get(`/api/info/subscription/PriceSummary`, { params: { region, city, umdNm } });
 };
 
+/** 청약 ID로 실거래가 검색 */
+export const GET_price_summary_by_id = async (subscriptionId: string): Promise<ApiResponse<PriceSummaryDto[]>> => {
+  return await api.get(`/api/info/subscription/PriceSummary/${subscriptionId}`);
+};
+
+/** 지역별 실거래가 검색 (fallback) */
+export const GET_price_summary_by_region = async ({
+  region,
+  city,
+}: {
+  region: string;
+  city: string;
+}): Promise<ApiResponse<PriceSummaryDto[]>> => {
+  return await api.get(`/api/info/subscription/PriceSummary/Region`, { params: { region, city } });
+};
+
 /** 청약 물건의 주변 인프라 */
 export const GET_infra_by_subscription = async (subscriptionId: string): Promise<ApiResponse<InfraDto>> => {
   return await api.get(`/api/info/subscription/${subscriptionId}/detail/infra`);
