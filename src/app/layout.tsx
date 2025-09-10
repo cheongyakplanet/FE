@@ -16,10 +16,13 @@ const BMJUAFont = localFont({ src: '../assets/fonts/GmarketSansMedium.otf' });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.cheongyakplanet.site/'),
-  title: '청약플래닛 - 청약 정보 종합 플랫폼',
+  title: {
+    default: '청약플래닛 - 전국 청약 정보와 일정을 한눈에',
+    template: '%s | 청약플래닛'
+  },
   description:
-    '청약플래닛에서 지역별 청약 정보, 청약 일정, 가점 계산기를 한 곳에서 확인하세요. 초보자도 쉽게 이용할 수 있는 청약 정보 종합 플랫폼입니다.',
-  keywords: '청약, 아파트청약, 청약정보, 청약일정, 가점계산기, 부동산, 아파트, 청약플래닛',
+    '전국 아파트 청약 정보를 실시간으로 확인하세요. 청약 일정, 분양가, 접수 기간, 당첨자 발표까지 모든 정보를 제공합니다. 청약 가점 계산기와 지역별 청약 현황으로 성공 확률을 높이세요.',
+  keywords: '청약정보, 아파트청약, 청약일정, 분양정보, 신규아파트, 청약접수, 청약캘린더, 가점계산기, 부동산청약, 아파트분양, 청약당첨, 청약가점, 지역별청약, 청약플래닛',
   authors: [{ name: '청약플래닛' }],
   creator: '청약플래닛',
   publisher: '청약플래닛',
@@ -32,8 +35,8 @@ export const metadata: Metadata = {
     icon: '/cheongyakplanet.png',
   },
   openGraph: {
-    title: '청약플래닛 - 청약 정보 종합 플랫폼',
-    description: '지역별 청약 정보와 일정을 한눈에! 가점 계산기로 나의 청약 점수도 확인하세요.',
+    title: '청약플래닛 - 전국 청약 정보와 일정을 한눈에',
+    description: '전국 아파트 청약 정보를 실시간으로 확인하고, 청약 가점 계산기로 성공 확률을 높이세요.',
     url: 'https://cheongyakplanet.site/',
     siteName: '청약플래닛',
     images: [
@@ -41,7 +44,7 @@ export const metadata: Metadata = {
         url: '/cheongyakplanet.png',
         width: 1200,
         height: 630,
-        alt: '청약플래닛 - 청약 정보 종합 플랫폼',
+        alt: '청약플래닛 - 전국 청약 정보 플랫폼',
       },
     ],
     locale: 'ko_KR',
@@ -49,8 +52,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '청약플래닛 - 청약 정보 종합 플랫폼',
-    description: '지역별 청약 정보와 일정을 한눈에! 가점 계산기로 나의 청약 점수도 확인하세요.',
+    title: '청약플래닛 - 전국 청약 정보와 일정을 한눈에',
+    description: '전국 아파트 청약 정보를 실시간으로 확인하고, 청약 가점 계산기로 성공 확률을 높이세요.',
     images: ['/cheongyakplanet.png'],
   },
   robots: {

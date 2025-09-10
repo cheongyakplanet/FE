@@ -1,70 +1,41 @@
-'use client';
+import type { Metadata } from 'next';
 
-import NewPost from './components/newPost';
-import PostTable from './components/post-table';
+import CommunityContent from './community-content';
 
-import { useState } from 'react';
-
-import { Clock, Eye, Home, MessageSquare, Search, ThumbsUp, Users } from 'lucide-react';
-
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+export const metadata: Metadata = {
+  title: '청약 커뮤니티 | 청약 후기와 정보 공유 - 청약플래닛',
+  description: '청약 성공 후기, 팁, 질문을 나누는 커뮤니티입니다. 청약 전문가들과 함께 정보를 공유하고 궁금한 점을 해결하세요. 실시간 청약 뉴스와 분석도 확인하실 수 있습니다.',
+  keywords: '청약커뮤니티, 청약후기, 청약팁, 청약질문, 청약정보공유, 청약성공사례, 아파트청약후기, 청약경험담, 청약토론, 청약플래닛',
+  openGraph: {
+    title: '청약 커뮤니티 | 청약 후기와 정보 공유 - 청약플래닛',
+    description: '청약 성공 후기와 팁을 나누고, 궁금한 점을 해결하는 커뮤니티입니다.',
+    url: 'https://cheongyakplanet.site/community',
+    siteName: '청약플래닛',
+    type: 'website',
+    images: [
+      {
+        url: '/cheongyakplanet.png',
+        width: 1200,
+        height: 630,
+        alt: '청약플래닛 - 청약 커뮤니티',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '청약 커뮤니티 | 청약 후기와 정보 공유 - 청약플래닛',
+    description: '청약 성공 후기와 팁을 나누고, 궁금한 점을 해결하는 커뮤니티입니다.',
+    images: ['/cheongyakplanet.png'],
+  },
+  alternates: {
+    canonical: 'https://cheongyakplanet.site/community',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function Community() {
-  const [searchWord, setSearchWord] = useState('');
-  const [sort, setSort] = useState('time');
-
-  return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="mb-6">
-        <div className="flex items-center gap-3">
-          <MessageSquare className="h-5 w-5 text-blue-500 md:h-6 md:w-6" />
-          <h1 className="text-xl font-bold text-slate-900 md:text-2xl">청약 커뮤니티</h1>
-        </div>
-        <div className="mt-2 flex animate-wave items-center gap-2 text-slate-600">
-          <Users className="h-4 w-4" />
-          <p className="text-sm md:text-base">함께 나누는 청약 이야기, 지금 확인해 보세요! 👀</p>
-        </div>
-      </div>
-
-      <div className="mb-6 space-y-4 md:flex md:flex-row md:items-center md:justify-between md:space-y-0 md:gap-4">
-        <Tabs value={sort} onValueChange={setSort} className="w-full md:w-auto">
-          <TabsList className="grid w-full grid-cols-3 md:flex md:w-auto md:space-x-1">
-            <TabsTrigger value="time" className="flex items-center gap-1 md:gap-2">
-              <Clock className="h-3 w-3 md:h-4 md:w-4" />
-              <span className="text-xs md:text-sm">최신순</span>
-            </TabsTrigger>
-            <TabsTrigger value="views" className="flex items-center gap-1 md:gap-2">
-              <Eye className="h-3 w-3 md:h-4 md:w-4" />
-              <span className="text-xs md:text-sm">조회수</span>
-            </TabsTrigger>
-            <TabsTrigger value="likes" className="flex items-center gap-1 md:gap-2">
-              <ThumbsUp className="h-3 w-3 md:h-4 md:w-4" />
-              <span className="text-xs md:text-sm">좋아요</span>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <div className="relative w-full md:w-1/3">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <Input
-            className="rounded-full pl-10 text-sm md:text-base"
-            placeholder="제목, 내용 검색하기"
-            value={searchWord}
-            onChange={(e) => setSearchWord(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <Card className="mb-6 border-0 bg-white/80 shadow-sm backdrop-blur-sm">
-        <CardContent className="p-0 md:p-6">
-          <PostTable sort={sort} searchWord={searchWord} />
-        </CardContent>
-      </Card>
-
-      <NewPost />
-    </div>
-  );
+  return <CommunityContent />;
 }

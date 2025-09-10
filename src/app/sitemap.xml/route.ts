@@ -102,31 +102,43 @@ export async function GET() {
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
-    // 1. 정적 페이지들
+    // 1. 정적 페이지들 - SEO 우선순위 최적화
     const staticPages = [
-      { url: '', priority: '1.0', changefreq: 'daily' },
-      { url: '/subscription', priority: '0.9', changefreq: 'daily' },
-      { url: '/community', priority: '0.9', changefreq: 'daily' },
-      { url: '/guide', priority: '0.8', changefreq: 'monthly' },
-      { url: '/calculator', priority: '0.8', changefreq: 'monthly' },
-      { url: '/about', priority: '0.7', changefreq: 'monthly' },
-      { url: '/contact', priority: '0.7', changefreq: 'monthly' },
+      { url: '', priority: '1.0', changefreq: 'daily' }, // 홈페이지 최우선
+      { url: '/subscription', priority: '0.9', changefreq: 'daily' }, // 청약 목록 높은 우선순위
+      { url: '/community', priority: '0.8', changefreq: 'daily' }, // 커뮤니티
+      { url: '/subscription/guide', priority: '0.8', changefreq: 'weekly' }, // 청약 가이드
+      { url: '/subscription/calculator', priority: '0.8', changefreq: 'weekly' }, // 가점 계산기
+      { url: '/subscription/calendar', priority: '0.7', changefreq: 'weekly' }, // 청약 캘린더
+      { url: '/mypage', priority: '0.6', changefreq: 'monthly' }, // 마이페이지
+      { url: '/signin', priority: '0.5', changefreq: 'monthly' }, // 로그인
+      { url: '/signup', priority: '0.5', changefreq: 'monthly' }, // 회원가입
     ];
 
     staticPages.forEach((page) => {
       sitemap += createUrlEntry(`${SITE_BASE_URL}${page.url}`, currentDate, page.changefreq, page.priority);
     });
 
-    // 2. 청약 상세 페이지들 (동적)
+    // 2. 청약 상세 페이지들 (동적) - SEO 친화적 URL
     subscriptions.forEach((subscription) => {
-      if (subscription.id) {
+      if (subscription.id && subscription.houseNm) {
         const lastmod = subscription.rceptBgnde
           ? new Date(subscription.rceptBgnde).toISOString()
           : subscription.createdAt
             ? new Date(subscription.createdAt).toISOString()
             : currentDate;
 
-        sitemap += createUrlEntry(`${SITE_BASE_URL}/subscription/${subscription.id}`, lastmod, 'weekly', '0.8');
+        // Generate SEO-friendly slug
+        const slug = subscription.houseNm
+          .replace(/[^\w\s가-힣]/g, '') // 특수문자 제거
+          .replace(/\s+/g, '-') // 공백을 하이픈으로
+          .toLowerCase();
+
+        // 새로운 SEO 친화적 URL - 높은 우선순위
+        sitemap += createUrlEntry(`${SITE_BASE_URL}/subscription/${subscription.id}/${slug}`, lastmod, 'weekly', '0.9');
+        
+        // 기존 URL 하위 호환성 - 낮은 우선순위
+        sitemap += createUrlEntry(`${SITE_BASE_URL}/subscription/${subscription.id}`, lastmod, 'weekly', '0.6');
       }
     });
 
@@ -139,42 +151,53 @@ export async function GET() {
             ? new Date(post.updatedAt).toISOString()
             : currentDate;
 
-        sitemap += createUrlEntry(`${SITE_BASE_URL}/community/${post.id}`, lastmod, 'daily', '0.7');
+        sitemap += createUrlEntry(`${SITE_BASE_URL}/community/detail?id=${post.id}`, lastmod, 'daily', '0.7');
       }
     });
 
-    // 4. 페이지네이션 URL들 (청약)
+    // 4. 페이지네이션 URL들 - 우선순위 조정
     const subscriptionPages = Math.ceil(subscriptions.length / 10);
-    for (let i = 1; i <= Math.min(subscriptionPages, 50); i++) {
-      // 최대 50페이지까지
-      sitemap += createUrlEntry(`${SITE_BASE_URL}/subscription?page=${i}`, currentDate, 'daily', '0.6');
+    for (let i = 1; i <= Math.min(subscriptionPages, 20); i++) {
+      // 첫 20페이지만 포함 (SEO 효율성 증대)
+      const priority = i <= 5 ? '0.7' : '0.5'; // 첫 5페이지는 높은 우선순위
+      sitemap += createUrlEntry(`${SITE_BASE_URL}/subscription?page=${i}`, currentDate, 'daily', priority);
     }
 
-    // 5. 페이지네이션 URL들 (커뮤니티)
+    // 5. 커뮤니티 페이지네이션 URL들
     const communityPages = Math.ceil(posts.length / 10);
-    for (let i = 1; i <= Math.min(communityPages, 30); i++) {
-      // 최대 30페이지까지
-      sitemap += createUrlEntry(`${SITE_BASE_URL}/community?page=${i}`, currentDate, 'daily', '0.6');
+    for (let i = 1; i <= Math.min(communityPages, 10); i++) {
+      // 첫 10페이지만 포함
+      const priority = i <= 3 ? '0.6' : '0.4'; // 첫 3페이지는 높은 우선순위
+      sitemap += createUrlEntry(`${SITE_BASE_URL}/community?page=${i}`, currentDate, 'daily', priority);
     }
 
-    // 6. 지역별 청약 페이지들 (예시)
+    // 6. 지역별 청약 페이지들 - 인기 지역 우선순위 차등화
     const popularRegions = [
-      '서울특별시',
-      '경기도',
-      '인천광역시',
-      '부산광역시',
-      '대구광역시',
-      '광주광역시',
-      '대전광역시',
-      '울산광역시',
+      { region: '서울특별시', priority: '0.8' }, // 가장 높은 검색량
+      { region: '경기도', priority: '0.8' },
+      { region: '인천광역시', priority: '0.7' },
+      { region: '부산광역시', priority: '0.7' },
+      { region: '대구광역시', priority: '0.6' },
+      { region: '광주광역시', priority: '0.6' },
+      { region: '대전광역시', priority: '0.6' },
+      { region: '울산광역시', priority: '0.6' },
+      { region: '세종특별자치시', priority: '0.5' },
+      { region: '강원도', priority: '0.5' },
+      { region: '충청북도', priority: '0.5' },
+      { region: '충청남도', priority: '0.5' },
+      { region: '전라북도', priority: '0.5' },
+      { region: '전라남도', priority: '0.5' },
+      { region: '경상북도', priority: '0.5' },
+      { region: '경상남도', priority: '0.5' },
+      { region: '제주특별자치도', priority: '0.5' },
     ];
 
-    popularRegions.forEach((region) => {
+    popularRegions.forEach(({ region, priority }) => {
       sitemap += createUrlEntry(
         `${SITE_BASE_URL}/subscription?region=${encodeURIComponent(region)}`,
         currentDate,
         'weekly',
-        '0.7',
+        priority,
       );
     });
 

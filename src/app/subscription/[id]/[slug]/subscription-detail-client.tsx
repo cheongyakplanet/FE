@@ -28,6 +28,8 @@ import {
 import { Bar, BarChart, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from 'recharts';
 
 import { Badge } from '@/components/ui/badge';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { RelatedSubscriptions } from '@/components/ui/related-subscriptions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -49,6 +51,13 @@ import { PriceInfoDto } from '@/services/subscription/types';
 interface Props {
   id: string;
 }
+
+const isValidCoordinate = (lat: string | number, lng: string | number): boolean => {
+  const latNum = Number(lat);
+  const lngNum = Number(lng);
+  return !isNaN(latNum) && !isNaN(lngNum) && latNum !== 0 && lngNum !== 0 && 
+         latNum >= -90 && latNum <= 90 && lngNum >= -180 && lngNum <= 180;
+};
 
 export default function SubscriptionDetailClient({ id }: Props) {
   const { data: getSubscriptionById } = useGetSubscriptionById(id);
@@ -218,6 +227,17 @@ export default function SubscriptionDetailClient({ id }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      {/* 브레드크럼 네비게이션 */}
+      <div className="mb-4">
+        <Breadcrumb
+          items={[
+            { label: '청약 정보', href: '/subscription' },
+            { label: subscription?.region || '지역' },
+            { label: subscription?.houseNm || '청약 상세' },
+          ]}
+        />
+      </div>
+
       {/* 뒤로가기 버튼 */}
       <div className="mb-6">
         <Button
@@ -282,61 +302,74 @@ export default function SubscriptionDetailClient({ id }: Props) {
                 <p>지도 로딩 중...</p>
               </div>
             </div>
+          ) : !subscription || !isValidCoordinate(subscription.latitude, subscription.longitude) ? (
+            <div className="flex h-[400px] w-full items-center justify-center rounded-xl border bg-gray-50">
+              <div className="text-center text-gray-500">
+                <MapPin className="mx-auto mb-2 h-8 w-8" />
+                <p>위치 정보가 없어 지도를 표시할 수 없습니다.</p>
+              </div>
+            </div>
           ) : (
             <Map
               id="subscription-map"
               center={{
-                lat: Number(subscription.latitude),
-                lng: Number(subscription.longitude),
+                lat: Number(subscription.latitude) || 37.5665,
+                lng: Number(subscription.longitude) || 126.9780,
               }}
-              className="h-full w-full rounded-xl border shadow"
+              className="h-[400px] w-full rounded-xl border shadow"
               level={4}
             >
-              <MapMarker
-                position={{
-                  lat: Number(subscription.latitude),
-                  lng: Number(subscription.longitude),
-                }}
-                image={{
-                  src: '/map-pin-house.svg',
-                  size: {
-                    width: 32,
-                    height: 32,
-                  },
-                }}
-              />
-              {infra?.schools?.map((school, index) => (
+              {isValidCoordinate(subscription.latitude, subscription.longitude) && (
                 <MapMarker
-                  key={`school-${index}`}
                   position={{
-                    lat: Number(school.latitude),
-                    lng: Number(school.longitude),
+                    lat: Number(subscription.latitude),
+                    lng: Number(subscription.longitude),
                   }}
                   image={{
-                    src: '/school.svg',
+                    src: '/map-pin-house.svg',
                     size: {
-                      width: 24,
-                      height: 24,
+                      width: 32,
+                      height: 32,
                     },
                   }}
                 />
-              ))}
-              {infra?.stations?.map((station, index) => (
-                <MapMarker
-                  key={`station-${index}`}
-                  position={{
-                    lat: Number(station.latitude),
-                    lng: Number(station.longitude),
-                  }}
-                  image={{
-                    src: '/tram-front.svg',
-                    size: {
-                      width: 24,
-                      height: 24,
-                    },
-                  }}
-                />
-              ))}
+              )}
+              {infra?.schools?.map((school, index) => 
+                isValidCoordinate(school.latitude, school.longitude) ? (
+                  <MapMarker
+                    key={`school-${index}`}
+                    position={{
+                      lat: Number(school.latitude),
+                      lng: Number(school.longitude),
+                    }}
+                    image={{
+                      src: '/school.svg',
+                      size: {
+                        width: 24,
+                        height: 24,
+                      },
+                    }}
+                  />
+                ) : null
+              )}
+              {infra?.stations?.map((station, index) => 
+                isValidCoordinate(station.latitude, station.longitude) ? (
+                  <MapMarker
+                    key={`station-${index}`}
+                    position={{
+                      lat: Number(station.latitude),
+                      lng: Number(station.longitude),
+                    }}
+                    image={{
+                      src: '/tram-front.svg',
+                      size: {
+                        width: 24,
+                        height: 24,
+                      },
+                    }}
+                  />
+                ) : null
+              )}
             </Map>
           )}
         </div>
@@ -766,6 +799,14 @@ export default function SubscriptionDetailClient({ id }: Props) {
           </Card>
         </TabsContent>
       </Tabs>
+      {/* 관련 청약 추천 섹션 */}
+      <RelatedSubscriptions
+        currentSubscriptionId={subscription.id}
+        region={subscription.region}
+        city={subscription.city}
+        className="mb-8"
+      />
+
       {/* 광고 섹션 */}
       <GoogleAd adSlot="2036226073" className="mx-auto max-w-4xl" />
     </div>
