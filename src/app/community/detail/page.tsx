@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
-import { GET_community_post_detail } from '@/services/community/api';
+import { GET_postDetail } from '@/services/community/api';
 
 import CommunityDetailContent from './community-detail-content';
 
@@ -21,8 +21,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   }
 
   try {
-    const response = await GET_community_post_detail(id);
-    const post = response.data.data;
+    const post = await GET_postDetail(id);
 
     if (!post) {
       return {

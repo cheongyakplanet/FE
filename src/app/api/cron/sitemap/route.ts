@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 
+// 동적 렌더링 강제 (revalidatePath 사용을 위함)
+export const dynamic = 'force-dynamic';
+
 // 외부 cron 서비스용 엔드포인트
 export async function GET() {
   try {
