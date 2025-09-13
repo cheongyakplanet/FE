@@ -95,7 +95,7 @@ export const useGetPriceSummaryWithFallback = (
     primaryQuery.isError,
     primaryQuery.data,
     enabled,
-    secondaryQuery,
+    secondaryQuery.refetch,
   ]);
 
   useEffect(() => {
